@@ -1,0 +1,49 @@
+<div class="container d-flex flex-column align-items-center mt-4">
+   <!-- Category Name -->
+   <h2>{{ categoryName }}</h2>
+
+   <!-- Show quiz results & retry button only after submission -->
+   <div *ngIf="validateSubmitted" class="container mt-4 text-center">
+     <h3>Quiz Results</h3>
+     <p>Total Questions: {{ totalQuestions }}</p>
+     <p>Correct Answers: {{ correctAnswers }}</p>
+     <p>Your Score: {{ score }}%</p>
+ 
+     <div class="mt-3">
+      <button (click)="resetQuiz()" class="btn btn-success">Retry Quiz</button>
+    </div>
+   </div>
+
+   <!-- Your answers label -->
+   <div *ngIf="validateSubmitted" class="mt-4">
+    <h3>Your Answers</h3>
+    <!-- your answers list goes here -->
+  </div>
+
+  <!-- Quiz Form -->
+  <form (ngSubmit)="submitAnswers()" class="container mt-4 text-center">
+    <div *ngFor="let question of questions; let i = index" class="mb-4 w-75 mx-auto">
+      <h5 [style.white-space]="'nowrap'">{{ question.text }}</h5>
+      
+      <div *ngFor="let option of question.options" 
+           class="option-box"
+           [ngClass]="{
+              'selected-option': selectedAnswers[question.id] === option.id,
+              'correct-answer': validateSubmitted && option.isCorrect,
+              'wrong-answer': validateSubmitted && selectedAnswers[question.id] === option.id && !option.isCorrect
+            }"
+           (click)="selectOption(question.id, option.id)">
+        {{ option.text }}
+      </div>
+    </div>
+
+    <div *ngIf="!validateSubmitted" class="text-center">
+      <button type="submit" class="btn btn-primary mt-3">Submit</button>
+    </div>
+  </form>
+
+  <!-- Show error message if any -->
+  <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+    {{ errorMessage }}
+  </div>
+</div>

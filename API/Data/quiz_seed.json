@@ -1,0 +1,28 @@
+{
+  "category": {
+    "name": "Basic Math"
+  },
+  "quiz": {
+    "title": "Math Quiz 1"
+  },
+  "questions": [
+    {
+      "text": "What is 2 + 2?",
+      "options": [
+        { "text": "3", "isCorrect": 0 },
+        { "text": "4", "isCorrect": 1 },
+        { "text": "5", "isCorrect": 0 },
+        { "text": "6", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "What is 5 - 3?",
+      "options": [
+        { "text": "1", "isCorrect": 0 },
+        { "text": "2", "isCorrect": 1 },
+        { "text": "3", "isCorrect": 0 },
+        { "text": "4", "isCorrect": 0 }
+      ]
+    }
+  ]
+}

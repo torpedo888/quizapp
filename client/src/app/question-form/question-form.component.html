@@ -1,0 +1,31 @@
+<div class="form-container">
+  <form (ngSubmit)="onSubmit()">
+      <!-- Category Field -->
+      <div>
+          <label for="category">Category:</label>
+          <input type="text" id="category" [(ngModel)]="categoryName" name="category" required>
+      </div>
+
+      <!-- Question Field -->
+      <div>
+          <label for="question">Question Text:</label>
+          <input type="text" id="question" [(ngModel)]="questionText" name="question" required>
+      </div>
+
+      <!-- Options Field -->
+      <div id="options-container">
+          <label>Options:</label>
+          <div *ngFor="let option of options; let i = index" class="option-field">
+              <input type="text" [(ngModel)]="options[i].text" name="option-{{i}}" placeholder="Option text" required>
+              <input type="radio" [(ngModel)]="correctOptionIndex" [value]="i" name="correctOption"> Correct
+              <button type="button" (click)="removeOption(i)">Remove</button>
+          </div>
+          <button type="button" (click)="addOption()">Add Option</button>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit">Submit</button>
+  </form>
+</div>
+
+  

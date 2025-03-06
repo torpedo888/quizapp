@@ -1,0 +1,71 @@
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">Quiz App</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" 
+                    aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+          <ul class="navbar-nav me-auto mb-2 mb-md-0">
+            @if(this.accountService.currentUser()){
+              <li *appHasRole="['Admin','Moderator']" class="nav-item">
+                <a routerLink="/admin" routerLinkActive="active" class="nav-link" aria-current="page" href="#">Admin</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" routerLink="/quiz" routerLinkActive="active" aria-current="page" href="#">Quiz</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" routerLink="/addquestion" href="#">Add Questions</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" (click)="logout()" aria-disabled="true">Logout</a>
+              </li>
+          }
+          </ul>
+
+        @if(this.accountService.currentUser()){
+          <div dropdown class="dropdown">
+            <a dropdownToggle class="dropdown-toggle text-light text-decoration-none">
+              Welcome {{this.accountService.currentUser()?.username | titlecase}} 
+            </a>
+            <div *dropdownMenu class="dropdown-menu">
+              <a class="dropdown-item">Edit profile</a>
+              <a class="dropdown-item" (click)="logout()">Logout</a>
+            </div>
+          </div>
+
+          <div class="btn-group" dropdown>
+            <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+                role="menu" aria-labelledby="button-basic">
+              <li role="menuitem"><a class="dropdown-item" href="#">Action</a></li>
+              <li role="menuitem"><a class="dropdown-item" href="#">Another action</a></li>
+              <li role="menuitem"><a class="dropdown-item" href="#">Something else here</a></li>
+              <li class="divider dropdown-divider"></li>
+              <li role="menuitem"><a class="dropdown-item" href="#">Separated link</a>
+              </li>
+            </ul>
+          </div>
+          
+        }
+
+        @if(!this.accountService.currentUser()){
+          <form #loginForm="ngForm" (ngSubmit)="login()" class="d-flex" role="search" autocomplete="off">
+            <input name="username" 
+              [(ngModel)]="model.username"
+              class="form-control me-2"
+              placeholder="username">
+            <input name="password" 
+              [(ngModel)]="model.password" 
+              class="form-control me-2" 
+              placeholder="password" 
+              type="password">
+            <button class="btn btn-success" type="submit">Login</button>
+          </form>
+        }
+        
+      </div>
+    </div>
+  </nav>

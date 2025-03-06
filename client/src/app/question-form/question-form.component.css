@@ -1,0 +1,11 @@
+.form-container {
+    max-width: 600px;
+    margin: auto;
+}
+
+.option-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}

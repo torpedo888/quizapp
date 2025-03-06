@@ -1,0 +1,42 @@
+.readonly-radio {
+    pointer-events: none; /* Disables interaction with the radio button */
+    opacity: 0.5; /* Dims the radio button to indicate it is "readonly" */
+  }
+
+.option-box {
+    display: block;
+    padding: 10px 15px;
+    margin: 5px 0;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    text-align: center;
+    background-color: #f8f9fa;
+}
+
+.option-box:hover {
+    background-color: #e9ecef;
+}
+
+.selected-option {
+    border-color: #007bff;
+    background-color: #cce5ff;
+}
+
+.correct-answer {
+    background-color: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+
+.wrong-answer {
+    background-color: #ff6961;
+    color: white;
+    border-color: #ff6961;
+}
+
+/* youranswers */
+.your-answers h3 {
+    text-decoration: underline;
+  }
