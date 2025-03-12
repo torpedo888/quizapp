@@ -1,49 +1,66 @@
 <div class="container d-flex flex-column align-items-center mt-4">
-   <!-- Category Name -->
-   <h2>{{ categoryName }}</h2>
+  <!-- Quiz Title and Category -->
+  <h2 class="text-center text-primary mb-2">{{ quizTitle }}</h2>
+  <p class="text-center mb-4">{{ categoryName }}</p>
 
-   <!-- Show quiz results & retry button only after submission -->
-   <div *ngIf="validateSubmitted" class="container mt-4 text-center">
-     <h3>Quiz Results</h3>
-     <p>Total Questions: {{ totalQuestions }}</p>
-     <p>Correct Answers: {{ correctAnswers }}</p>
-     <p>Your Score: {{ score }}%</p>
- 
-     <div class="mt-3">
-      <button (click)="resetQuiz()" class="btn btn-success">Retry Quiz</button>
-    </div>
-   </div>
-
-   <!-- Your answers label -->
-   <div *ngIf="validateSubmitted" class="mt-4">
-    <h3>Your Answers</h3>
-    <!-- your answers list goes here -->
+  <!-- Timer (visible only before submission) -->
+  <div *ngIf="!validateSubmitted" class="mb-3">
+    <span class="badge bg-danger fs-5">Time: {{ timer }} sec</span>
   </div>
 
-  <!-- Quiz Form -->
-  <form (ngSubmit)="submitAnswers()" class="container mt-4 text-center">
-    <div *ngFor="let question of questions; let i = index" class="mb-4 w-75 mx-auto">
-      <h5 [style.white-space]="'nowrap'">{{ question.text }}</h5>
-      
-      <div *ngFor="let option of question.options" 
-           class="option-box"
-           [ngClass]="{
-              'selected-option': selectedAnswers[question.id] === option.id,
-              'correct-answer': validateSubmitted && option.isCorrect,
-              'wrong-answer': validateSubmitted && selectedAnswers[question.id] === option.id && !option.isCorrect
-            }"
-           (click)="selectOption(question.id, option.id)">
-        {{ option.text }}
+  <!-- Display one question at a time -->
+  <div *ngIf="questions.length > 0 && currentQuestionIndex < questions.length" class="card mb-4 w-75 mx-auto shadow-sm">
+    <div class="card-header bg-white">
+      <h5 class="mb-0">Question {{ currentQuestionIndex + 1 }} of {{ totalQuestions }}</h5>
+    </div>
+    <div class="card-body">
+      <h4 class="card-title" [style.white-space]="'nowrap'">
+        {{ questions[currentQuestionIndex]?.text }}
+      </h4>
+      <div class="list-group mt-3">
+        <button
+          *ngFor="let option of questions[currentQuestionIndex]?.options"
+          type="button"
+          class="list-group-item list-group-item-action"
+          (click)="selectOption(questions[currentQuestionIndex].id, option.id)"
+          [ngClass]="{
+            'active': selectedAnswers[questions[currentQuestionIndex].id] === option.id,
+            'correct-answer': validateCurrentQuestion && option.isCorrect,
+            'wrong-answer': validateCurrentQuestion && selectedAnswers[questions[currentQuestionIndex].id] === option.id && !option.isCorrect
+          }"
+        >
+          {{ option.text }}
+        </button>
       </div>
     </div>
+  </div>
 
-    <div *ngIf="!validateSubmitted" class="text-center">
-      <button type="submit" class="btn btn-primary mt-3">Submit</button>
-    </div>
-  </form>
+  <!-- Next or See Results Button -->
+  <div *ngIf="!validateSubmitted" class="text-center">
+    <button
+      *ngIf="currentQuestionIndex < questions.length - 1"
+      class="btn btn-primary mt-3"
+      (click)="nextQuestion()"
+      [disabled]="isProcessingNext"
+    >
+      Next
+      <svg aria-hidden="true" class="rmd-icon rmd-icon--svg ms-2" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width: 24px; height: 24px;">
+        <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path>
+      </svg>
+    </button>
+    <button
+      *ngIf="currentQuestionIndex === questions.length - 1"
+      class="btn btn-primary mt-3"
+      (click)="submitAnswers()"
+      [disabled]="isProcessingNext"
+    >
+      See Results
+    </button>
+  </div>
 
-  <!-- Show error message if any -->
+  <!-- Error Message -->
   <div *ngIf="errorMessage" class="alert alert-danger mt-3">
     {{ errorMessage }}
   </div>
+  
 </div>

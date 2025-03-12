@@ -1,0 +1,29 @@
+<div class="quiz-form-container">
+    <h2>{{ quizId ? 'Edit' : 'Add' }} Quiz</h2>
+  
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+  
+    <form (submit)="saveQuiz()">
+        <label for="title">Quiz Title:</label>
+        <input type="text" id="title" [(ngModel)]="title" name="title" required />
+      
+        <label for="category">Select Category:</label>
+        <select id="category" [(ngModel)]="categoryId" name="categoryId" required>
+          <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
+        </select>
+      
+        <label for="imageFile">Upload Image:</label>
+        <input type="file" id="imageFile" (change)="onFileSelected($event)" />
+      
+        <div *ngIf="previewImage">
+          <p>Preview:</p>
+          <img [src]="previewImage" alt="Quiz Image" class="preview-img" />
+        </div>
+      
+        <button type="submit">{{ quizId ? 'Update' : 'Add' }} Quiz</button>
+      </form>
+      
+  </div>
+  

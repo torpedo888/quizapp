@@ -1,0 +1,29 @@
+{
+  "category": {
+    "name": "Advanced Math"
+  },
+  "quiz": {
+    "title": "Math Quiz 4",
+    "imageUrl": "imgs/quiz/monstermansionmatch.png"
+  },
+  "questions": [
+    {
+      "text": "What is 9 + 6?",
+      "options": [
+        { "text": "12", "isCorrect": 0 },
+        { "text": "15", "isCorrect": 1 },
+        { "text": "18", "isCorrect": 0 },
+        { "text": "21", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "What is 20 ÷ 4?",
+      "options": [
+        { "text": "4", "isCorrect": 1 },
+        { "text": "5", "isCorrect": 0 },
+        { "text": "6", "isCorrect": 0 },
+        { "text": "8", "isCorrect": 0 }
+      ]
+    }
+  ]
+}

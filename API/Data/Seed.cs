@@ -72,137 +72,79 @@ namespace API.Data
             Console.WriteLine("Users have been seeded successfully.");
         }
 
-        public static async Task EmptyQuizDatabase(DataContext context)
-        {
-            // Clear existing data
-            await context.Options.ExecuteDeleteAsync();
-            await context.Questions.ExecuteDeleteAsync();
-            await context.Quizzes.ExecuteDeleteAsync();
-            await context.Categories.ExecuteDeleteAsync();
+        
 
-            await context.SaveChangesAsync();
+        // public static async Task SeedQuizDatabase(DataContext context)
+        // {
+        //     // Clear existing data
+        //    // await EmptyQuizDatabase(context);
 
-            // Reset autoincrement values
-            await context.Database.ExecuteSqlRawAsync("DELETE FROM sqlite_sequence WHERE name='Options';");
-            await context.Database.ExecuteSqlRawAsync("DELETE FROM sqlite_sequence WHERE name='Questions';");
-            await context.Database.ExecuteSqlRawAsync("DELETE FROM sqlite_sequence WHERE name='Quizzes';");
-            await context.Database.ExecuteSqlRawAsync("DELETE FROM sqlite_sequence WHERE name='Categories';");
-        }
+        //     if (!await context.Quizzes.AnyAsync())
+        //     {
+        //         var json = await File.ReadAllTextAsync("Data/quiz2_seed.json");
+        //         var quizSeedData = JsonSerializer.Deserialize<QuizSeedData>(json);
 
-        public static async Task SeedQuizDatabase(DataContext context)
-        {
-            // Clear existing data
-            await EmptyQuizDatabase(context);
+        //         if (quizSeedData != null)
+        //         {
+        //             // Add Category
+        //             var category = new Category { Name = quizSeedData.Category.Name };
+        //             await context.Categories.AddAsync(category);
+        //             await context.SaveChangesAsync();
 
-            if (!await context.Quizzes.AnyAsync())
-            {
-                var json = await File.ReadAllTextAsync("Data/quiz2_seed.json");
-                var quizSeedData = JsonSerializer.Deserialize<QuizSeedData>(json);
+        //             // Add Quiz
+        //             var quiz = new Quiz
+        //             {
+        //                 Title = quizSeedData.Quiz.Title,
+        //                 CategoryId = category.Id,
+        //                 ImageUrl = quizSeedData.Quiz.ImageUrl
+        //             };
+        //             await context.Quizzes.AddAsync(quiz);
+        //             await context.SaveChangesAsync();
 
-                if (quizSeedData != null)
-                {
-                    // Add Category
-                    var category = new Category { Name = quizSeedData.Category.Name };
-                    await context.Categories.AddAsync(category);
-                    await context.SaveChangesAsync();
+        //             // Add Questions & Options
+        //             foreach (var questionData in quizSeedData.Questions)
+        //             {
+        //                 var question = new Question
+        //                 {
+        //                     Text = questionData.Text,
+        //                     CorrectOptionId = questionData.CorrectOptionId,
+        //                     QuizId = quiz.Id,
+        //                     CategoryId = category.Id
+        //                 };
 
-                    // Add Quiz
-                    var quiz = new Quiz
-                    {
-                        Title = quizSeedData.Quiz.Title,
-                        CategoryId = category.Id
-                    };
-                    await context.Quizzes.AddAsync(quiz);
-                    await context.SaveChangesAsync();
+        //                 // Add Question
+        //                 await context.Questions.AddAsync(question);
+        //                 await context.SaveChangesAsync(); // Save to get Question Id
 
-                    // Add Questions & Options
-                    foreach (var questionData in quizSeedData.Questions)
-                    {
-                        var question = new Question
-                        {
-                            Text = questionData.Text,
-                            CorrectOptionId = questionData.CorrectOptionId,
-                            QuizId = quiz.Id,
-                            CategoryId = category.Id
-                        };
+        //                 var options = new List<Option>();
+        //                 foreach (var optionData in questionData.Options)
+        //                 {
+        //                     var option = new Option
+        //                     {
+        //                         Text = optionData.Text,
+        //                         QuestionId = question.Id,
+        //                         IsCorrect = optionData.IsCorrect
+        //                     };
+        //                     options.Add(option);
+        //                 }
+        //                 context.Options.AddRange(options);
+        //                 context.SaveChanges(); // Save to get Option IDs
 
-                        // Add Question
-                        await context.Questions.AddAsync(question);
-                        await context.SaveChangesAsync(); // Save to get Question Id
-
-                        var options = new List<Option>();
-                        foreach (var optionData in questionData.Options)
-                        {
-                            var option = new Option
-                            {
-                                Text = optionData.Text,
-                                QuestionId = question.Id,
-                                IsCorrect = optionData.IsCorrect
-                            };
-                            options.Add(option);
-                        }
-                        context.Options.AddRange(options);
-                        context.SaveChanges(); // Save to get Option IDs
-
-                        // Update CorrectOptionId for Question
-                        var correctOption = options.FirstOrDefault(o => o.IsCorrect == 1); // Find the correct option
-                        if (correctOption != null)
-                        {
-                            question.CorrectOptionId = correctOption.Id;
-                            context.SaveChanges(); // Save the correctOptionId for the question
-                        }
-                    }
-                }
-            }
-        }
+        //                 // Update CorrectOptionId for Question
+        //                 var correctOption = options.FirstOrDefault(o => o.IsCorrect == 1); // Find the correct option
+        //                 if (correctOption != null)
+        //                 {
+        //                     question.CorrectOptionId = correctOption.Id;
+        //                     context.SaveChanges(); // Save the correctOptionId for the question
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
     }
 
-    public class QuizSeedData
-    {
-        [JsonPropertyName("category")]
-        public CategoryData Category { get; set; }
-
-        [JsonPropertyName("quiz")]
-        public QuizData Quiz { get; set; }
-
-        [JsonPropertyName("questions")]
-        public List<QuestionData> Questions { get; set; }
-    }
-
-    public class CategoryData
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
-    }
-
-    public class QuizData
-    {
-        [JsonPropertyName("title")]
-        public string Title { get; set; }
-    }
-
-    public class QuestionData
-    {
-        [JsonPropertyName("text")]
-        public string Text { get; set; }
-
-        [JsonPropertyName("correctOptionId")]
-        public int CorrectOptionId { get; set; }
-
-        [JsonPropertyName("options")]
-        public List<OptionData> Options { get; set; }
-    }
-
-    public class OptionData
-    {
-        [JsonPropertyName("text")]
-        public string Text { get; set; }
-
-        [JsonPropertyName("isCorrect")]
-        public int IsCorrect { get; set; }
-
-    }
+    
 
 
 }

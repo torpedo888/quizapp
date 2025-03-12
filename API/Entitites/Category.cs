@@ -15,6 +15,9 @@ public class Category
     [JsonPropertyName("name")]
     public string Name { get; set; }
 
+    [JsonPropertyName("imageUrl")]
+    public string? ImageUrl { get; set; }
+
     // Navigation Property
     public ICollection<Question> Questions { get; set; } = new List<Question>();
 }

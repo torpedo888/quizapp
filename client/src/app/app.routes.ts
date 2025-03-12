@@ -12,9 +12,15 @@ import { QuestionListComponent } from './question-list/question-list.component';
 import { QuestionFormComponent } from './question-form/question-form.component';
 import { AdminPanelComponent } from './admin/admin-panel/admin-panel.component';
 import { adminGuard } from './_guards/admin.guard';
+import { QuizComponent } from './quiz/quiz.component';
+import { QuizResultComponent } from './quiz-result/quiz-result.component';
+import { CategoryListComponent } from './category-list/category-list.component';
+import { CategoryFormComponent } from './category-form/category-form.component';
+import { QuizFormComponent } from './quiz-form/quiz-form.component'; 
+import { QuizListComponent } from './quiz-list/quiz-list.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', component: CategoryListComponent },
   {
     path: '',
     runGuardsAndResolvers: 'always',
@@ -24,8 +30,17 @@ export const routes: Routes = [
       { path: 'members/:id', component: MemberDetailComponent },
       { path: 'lists', component: ListsComponent },
       { path: 'messages', component: MessagesComponent },
-      { path: 'quiz', component: QuestionListComponent },
+      { path: 'quiz', component: CategoryListComponent },
+      { path: 'quiz/:id', component: QuestionListComponent },
+      { path: 'quiz-result', component: QuizResultComponent },
       { path: 'addquestion', component: QuestionFormComponent },
+      { path: '', component: CategoryListComponent }, // Homepage
+      { path: 'categories', component: CategoryListComponent },
+      { path: 'category-form', component: CategoryFormComponent }, // Add category
+      { path: 'category-form/:id', component: CategoryFormComponent }, // Edit category
+      { path: 'quiz-form', component: QuizFormComponent }, // 👈 Add new route for creating a quiz
+      { path: 'quiz-form/:id', component: QuizFormComponent }, // 👈 Add new route for editing a quiz
+      { path: 'quiz-list/:categoryId', component: QuizListComponent },
       { path: 'admin', component: AdminPanelComponent, canActivate: [adminGuard]}
     ],
   },

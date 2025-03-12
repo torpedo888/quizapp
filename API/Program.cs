@@ -8,6 +8,8 @@ using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging.Console;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +21,9 @@ builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddIdentityService(builder.Configuration);
 
 var app = builder.Build();
+
+Console.WriteLine($"WebRootPath: {builder.Environment.WebRootPath}");
+Console.WriteLine(Directory.GetCurrentDirectory());
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -33,6 +38,19 @@ app.UseCors(x => x.AllowAnyHeader()
                   .AllowAnyMethod()
                   .WithOrigins("http://localhost:4200")
                   .AllowCredentials()); // Add this line if you're sending credentials
+
+app.UseStaticFiles();  // Serves files from wwwroot by default
+// Optionally add custom middleware to serve from uploads directory
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads")),
+    RequestPath = "/wwwroot/uploads"
+});
+// app.UseStaticFiles(new StaticFileOptions
+// {
+//     FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads")),
+//     RequestPath = "/uploads"
+// });
 
 app.UseAuthentication();
 
@@ -49,9 +67,6 @@ try
     var userManager = services.GetRequiredService<UserManager<AppUser>>();
     var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
     await context.Database.MigrateAsync();
-    await Seed.SeedUsers(userManager, roleManager);
-    
-    //await Seed.SeedDatabase(context);
 
 }
 catch (Exception ex)

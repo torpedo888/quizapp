@@ -4,12 +4,7 @@ import { catchError, Observable, tap } from 'rxjs';
 import { Option } from './_models/Option';
 import { Question } from './_models/Question';
 import { map } from 'rxjs/operators';
-
-
-// export interface QuestionResponse {
-//   question: Question;
-//   options: Option[];
-// }
+import { Quiz } from './_models/Quiz';
 
 @Injectable({
   providedIn: 'root',
@@ -22,27 +17,13 @@ export class QuestionService {
 
    private apiGetUrl = 'https://localhost:5001/api/questions';
 
-  // constructor(private http: HttpClient) {}
-
-  // saveQuestion(question: Question): Observable<Question> {
-  //   return this.http.post<Question>(this.apiUrl, question);
-  // }
-
-  //private apiUrl = apiGetUrl; // Change this to match your backend
+   private apiQuizUrl = this.apiUrl + '/quiz';
 
   constructor(private http: HttpClient) {}
 
   getQuestions(): Observable<Question[]> {
     console.log('Calling API to fetch questions...');
   
-    // return this.http.get<Question[]>(this.apiGetUrl).pipe(
-    //   tap((data) => console.log('API call to fetch questions completed', data)),
-    //   catchError((error: HttpErrorResponse) => {
-    //     console.error('API call failed:', error);
-    //     throw error; // Rethrow the error
-    //   })
-    // );
-
     return this.http.get<Question[]>(this.apiGetUrl).pipe(
       map((questions: Question[]) =>
         questions.map(q => ({
@@ -59,6 +40,19 @@ export class QuestionService {
 
   submitAnswers(answers: { questionId: number; selectedOptionId: number }[]): Observable<any> {
     return this.http.post(`${this.apiUrl}/questions/submit`, { answers });
+  }
+
+  // getQuizzes(): Observable<Quiz[]> {
+  //   console.log(this.apiQuizUrl)
+  //   return this.http.get<Quiz[]>(this.apiQuizUrl);
+  // }
+
+  // getQuizById(id: number): Observable<Quiz> {
+  //   return this.http.get<Quiz>(`${this.apiQuizUrl}/${id}`);
+  // }
+
+  getQuestionsByQuizId(quizId: number): Observable<Question[]> {
+    return this.http.get<Question[]>(`${this.apiQuizUrl}/${quizId}/questions`);
   }
   
 }

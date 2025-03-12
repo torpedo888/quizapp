@@ -3,7 +3,8 @@
     "name": "Basic Math"
   },
   "quiz": {
-    "title": "Math Quiz 1"
+    "title": "Math Quiz 1",
+    "imageUrl": "imgs/quiz/mathbingo"
   },
   "questions": [
     {

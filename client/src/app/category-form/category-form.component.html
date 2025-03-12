@@ -1,0 +1,23 @@
+<div class="form-container">
+    <h2>{{ categoryId ? 'Edit' : 'Add' }} Category</h2>
+  
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+  
+    <form (ngSubmit)="saveCategory()">
+      <label for="name">Category Name:</label>
+      <input type="text" id="name" [(ngModel)]="categoryName" name="categoryName" required>
+  
+      <label for="imageFile">Upload Image:</label>
+      <input type="file" id="imageFile" (change)="onFileSelected($event)" name="imageFile">
+  
+      <div *ngIf="previewImage">
+        <p>Preview:</p>
+        <img [src]="previewImage" alt="Category Image" class="preview-img">
+      </div>
+  
+      <button type="submit">{{ categoryId ? 'Update' : 'Add' }} Category</button>
+    </form>
+  </div>
+  

@@ -1,0 +1,15 @@
+<div class="container mt-4">
+  <h1 class="text-center">Come on play quiz!</h1>
+  <h2 class="text-center">Please select a category</h2>
+  <div class="row">
+    <div class="col-md-4" *ngFor="let category of categories">
+      <div class="card">
+        <img [src]="'https://localhost:5001' + category.imageUrl" class="card-img-top" alt="{{ category.name }}">
+        <div class="card-body">
+          <h5 class="card-title">{{ category.name }}</h5>
+          <a class="btn btn-primary" [routerLink]="['/quiz-list', category.id]" [state]="{ categoryName: category.name }">View Quizzes</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

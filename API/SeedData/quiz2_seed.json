@@ -3,7 +3,8 @@
       "name": "Basic Math"
     },
     "quiz": {
-      "title": "Math Quiz 2"
+      "title": "Math Quiz 2",
+      "imageUrl": "imgs/quiz/mathman"
     },
     "questions": [
       {

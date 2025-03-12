@@ -164,6 +164,10 @@ namespace API.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("TEXT")
+                        .HasAnnotation("Relational:JsonPropertyName", "imageUrl");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT")
@@ -180,7 +184,7 @@ namespace API.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsCorrect")
+                    b.Property<int>("IsCorrect")
                         .HasColumnType("INTEGER")
                         .HasAnnotation("Relational:JsonPropertyName", "isCorrect");
 
@@ -262,6 +266,10 @@ namespace API.Data.Migrations
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("TEXT")
+                        .HasAnnotation("Relational:JsonPropertyName", "imageUrl");
 
                     b.Property<string>("Title")
                         .IsRequired()

@@ -8,6 +8,8 @@ import { AccountService } from './_services/account.service';
 import { HomeComponent } from './home/home.component';
 import { PhotoManagementComponent } from './admin/photo-management/photo-management.component';
 import { UserManagementComponent } from './admin/user-management/user-management.component';
+import { QuizComponent } from './quiz/quiz.component'; 
+import { FlashcardComponent } from './flashcard/flashcard.component';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +22,9 @@ import { UserManagementComponent } from './admin/user-management/user-management
     NavComponent,
     HomeComponent,
     UserManagementComponent,
-    PhotoManagementComponent
+    PhotoManagementComponent,
+    QuizComponent,
+    FlashcardComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',

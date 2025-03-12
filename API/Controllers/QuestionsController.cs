@@ -167,6 +167,31 @@ public class QuestionsController(DataContext context) : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("{quizId}/questions")]
+    public async Task<IActionResult> GetQuestionsByQuizId(int quizId)
+    {
+        var questions = await _context.Questions
+            .Where(q => q.QuizId == quizId)
+            .Include(q => q.Options)
+            .ToListAsync();
+
+        if (!questions.Any()) return NotFound();
+
+        var questionDtos = questions.Select(q => new QuestionDto
+        {
+            Id = q.Id,
+            Text = q.Text,
+            Options = q.Options.Select(o => new OptionDto
+            {
+                Id = o.Id,
+                Text = o.Text,
+                IsCorrect = o.IsCorrect == 1
+            }).ToList()
+        }).ToList();
+
+        return Ok(questionDtos);
+    }
+
 }
 
 public class QuestionCreateRequest

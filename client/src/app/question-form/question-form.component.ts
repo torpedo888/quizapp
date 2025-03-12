@@ -2,13 +2,14 @@ import { Component } from '@angular/core';
 import { QuestionService } from '../question.service'; // Adjust the path as necessary
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { FlashcardComponent } from '../flashcard/flashcard.component'; 
 
 @Component({
   selector: 'app-question-form',
   standalone: true,
   templateUrl: './question-form.component.html',
   styleUrls: ['./question-form.component.css'],
-  imports: [FormsModule, CommonModule]
+  imports: [FormsModule, CommonModule, FlashcardComponent]
 })
 export class QuestionFormComponent {
   categoryName: string = ''; // Assuming you'll handle categories as well

@@ -20,7 +20,7 @@ namespace API.Controllers
         {
             try
             {
-                await Seed.SeedQuizDatabase(_context);
+                await QuizSeeder.SeedDatabase(_context, "SeedData");
                 return Ok("Database seeded successfully.");
             }
             catch (Exception ex)
@@ -34,7 +34,7 @@ namespace API.Controllers
         {
             try
             {
-                await Seed.EmptyQuizDatabase(_context); 
+                await QuizSeeder.EmptyQuizDatabase(_context); 
                 return Ok("Database emptied successfully.");
             }
             catch (Exception ex)

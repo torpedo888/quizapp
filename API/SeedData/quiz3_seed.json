@@ -1,0 +1,29 @@
+{
+  "category": {
+    "name": "Intermediate Math"
+  },
+  "quiz": {
+    "title": "Math Quiz 3",
+    "imageUrl": "imgs/quiz/mathquiz"
+  },
+  "questions": [
+    {
+      "text": "What is 15 - 7?",
+      "options": [
+        { "text": "5", "isCorrect": 0 },
+        { "text": "8", "isCorrect": 1 },
+        { "text": "10", "isCorrect": 0 },
+        { "text": "12", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "What is 6 × 6?",
+      "options": [
+        { "text": "30", "isCorrect": 0 },
+        { "text": "36", "isCorrect": 1 },
+        { "text": "42", "isCorrect": 0 },
+        { "text": "48", "isCorrect": 0 }
+      ]
+    }
+  ]
+}

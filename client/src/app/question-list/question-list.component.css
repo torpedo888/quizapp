@@ -1,6 +1,6 @@
-.readonly-radio {
+/* .readonly-radio {
     pointer-events: none; /* Disables interaction with the radio button */
-    opacity: 0.5; /* Dims the radio button to indicate it is "readonly" */
+   /* opacity: 0.5; /* Dims the radio button to indicate it is "readonly" 
   }
 
 .option-box {
@@ -35,8 +35,39 @@
     color: white;
     border-color: #ff6961;
 }
+*/
 
-/* youranswers */
+/*
+/* youranswers 
 .your-answers h3 {
     text-decoration: underline;
+}
+
+*/
+
+.option-box {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
   }
+  
+  .option-box:hover {
+    background-color: #e9ecef;
+  }
+  
+  .selected-option {
+    background-color: #cce5ff;
+    border-color: #007bff;
+  }
+  
+  .correct-answer {
+    background-color: #28a745 !important;
+    color: #fff !important;
+    border-color: #28a745 !important;
+  }
+  
+  .wrong-answer {
+    background-color: #ff6961 !important;
+    color: #fff !important;
+    border-color: #ff6961 !important;
+  }
+  
