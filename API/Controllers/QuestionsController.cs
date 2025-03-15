@@ -173,6 +173,7 @@ public class QuestionsController(DataContext context) : ControllerBase
         var questions = await _context.Questions
             .Where(q => q.QuizId == quizId)
             .Include(q => q.Options)
+            .Include(q => q.Category) // Ensure category is included
             .ToListAsync();
 
         if (!questions.Any()) return NotFound();
@@ -181,6 +182,8 @@ public class QuestionsController(DataContext context) : ControllerBase
         {
             Id = q.Id,
             Text = q.Text,
+            ImageUrl = q.ImageUrl, // Include ImageUrl field
+            CategoryName = q.Category != null ? q.Category.Name : "Unknown",
             Options = q.Options.Select(o => new OptionDto
             {
                 Id = o.Id,
@@ -192,6 +195,107 @@ public class QuestionsController(DataContext context) : ControllerBase
         return Ok(questionDtos);
     }
 
+
+    [HttpPost("{quizId}/questions")]
+    public async Task<IActionResult> CreateQuestion(int quizId, 
+        [FromForm] IFormFile? imageFile, 
+        [FromForm] IFormFile? audioFile,
+        [FromForm] string text, 
+        [FromForm] int correctOptionId, 
+        [FromForm] string optionsJson,
+        [FromForm] int categoryId)
+    {
+        var quiz = await _context.Quizzes.FindAsync(quizId);
+        if (quiz == null) return NotFound("Quiz not found");
+
+        // Validate Category ID
+        var category = await _context.Categories.FindAsync(categoryId);
+        if (category == null) return NotFound("Category not found");
+
+        string? imageUrl = null;
+        string? audioUrl = null;
+
+        // ✅ Handle Image Upload
+        if (imageFile != null)
+        {
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+            Directory.CreateDirectory(uploadsFolder);
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(fileStream);
+            }
+            imageUrl = $"/images/{uniqueFileName}";
+        }
+
+        // ✅ Handle Audio Upload
+        if (audioFile != null)
+        {
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/audio");
+            Directory.CreateDirectory(uploadsFolder);
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(audioFile.FileName);
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await audioFile.CopyToAsync(fileStream);
+            }
+            audioUrl = $"/audio/{uniqueFileName}";
+        }
+
+        // ✅ Deserialize options
+        var options = System.Text.Json.JsonSerializer.Deserialize<List<Option>>(optionsJson);
+        
+        var question = new Question
+        {
+            CategoryId = categoryId,
+            QuizId = quizId,
+            Text = text,
+            CorrectOptionId = correctOptionId,
+            ImageUrl = imageUrl, // Store the image URL
+            AudioUrl = audioUrl, // Store the audio URL
+            Options = options ?? new List<Option>()
+        };
+
+        _context.Questions.Add(question);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "Question added successfully", question.Id });
+    }
+
+    [HttpPut("questions/{questionId}")]
+    public async Task<IActionResult> UpdateQuestion(int questionId, [FromForm] IFormFile? imageFile, [FromForm] string text, [FromForm] int correctOptionId, [FromForm] string optionsJson)
+    {
+        var question = await _context.Questions.Include(q => q.Options).FirstOrDefaultAsync(q => q.Id == questionId);
+        if (question == null) return NotFound("Question not found");
+
+        question.Text = text;
+        question.CorrectOptionId = correctOptionId;
+
+        // Handle Image Update
+        if (imageFile != null)
+        {
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+            Directory.CreateDirectory(uploadsFolder);
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(fileStream);
+            }
+            question.ImageUrl = $"/images/{uniqueFileName}";
+        }
+
+        // Update Options
+        _context.Options.RemoveRange(question.Options);
+        await _context.SaveChangesAsync();
+        
+        var options = System.Text.Json.JsonSerializer.Deserialize<List<Option>>(optionsJson);
+        question.Options = options ?? new List<Option>();
+
+        await _context.SaveChangesAsync();
+        return Ok(new { message = "Question updated successfully" });
+    }
 }
 
 public class QuestionCreateRequest

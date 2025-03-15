@@ -10,7 +10,7 @@ public class Quiz
     public string Title { get; set; }
 
     [JsonPropertyName("imageUrl")]
-    public string? ImageUrl { get; set; }    
+    public string? ImageUrl { get; set; }
 
     // Foreign key for Category
     public int CategoryId { get; set; }

@@ -4,5 +4,6 @@ export interface Question {
     id: number;
     text: string;
     options: Option[];
+    imageUrl: string;
     categoryName?: string;
   }

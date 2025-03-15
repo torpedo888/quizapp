@@ -1,35 +1,69 @@
-<div class="form-container">
-
-    <app-flashcard frontText="Hello" backText="Szia"></app-flashcard>
-<app-flashcard frontText="Thank you" backText="Köszönöm"></app-flashcard>
-
-  <form (ngSubmit)="onSubmit()">
-      <!-- Category Field -->
-      <div>
-          <label for="category">Category:</label>
-          <input type="text" id="category" [(ngModel)]="categoryName" name="category" required>
-      </div>
-
-      <!-- Question Field -->
-      <div>
-          <label for="question">Question Text:</label>
-          <input type="text" id="question" [(ngModel)]="questionText" name="question" required>
-      </div>
-
-      <!-- Options Field -->
-      <div id="options-container">
-          <label>Options:</label>
-          <div *ngFor="let option of options; let i = index" class="option-field">
-              <input type="text" [(ngModel)]="options[i].text" name="option-{{i}}" placeholder="Option text" required>
-              <input type="radio" [(ngModel)]="correctOptionIndex" [value]="i" name="correctOption"> Correct
-              <button type="button" (click)="removeOption(i)">Remove</button>
+<div class="container mt-4">
+    <form (ngSubmit)="onSubmit()" class="needs-validation" novalidate>
+        <!-- Category Field (Dropdown) -->
+        <div class="mb-3">
+            <label for="category" class="form-label">Select Category:</label>
+            <select id="category" class="form-select" [(ngModel)]="selectedCategoryId" name="category" (change)="onCategoryChange()" required>
+              <option value="" disabled>Select a category</option>
+              <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
+            </select>
           </div>
-          <button type="button" (click)="addOption()">Add Option</button>
-      </div>
 
-      <!-- Submit Button -->
-      <button type="submit">Submit</button>
-  </form>
+        <!-- Quiz Dropdown -->
+        <!-- <div class="mb-3">
+            <label for="quiz" class="form-label">Select Quiz:</label>
+            <select id="quiz" [(ngModel)]="selectedQuizId" name="quizId" class="form-select" required>
+                <option value="" disabled>Select a quiz</option>
+                <option *ngFor="let quiz of quizzes" [value]="quiz.id">{{ quiz.title }}</option>
+            </select>
+        </div> -->
+
+        <div class="mb-3" *ngIf="quizzes.length > 0">
+            <label for="quiz" class="form-label">Select Quiz:</label>
+            <select id="quiz" class="form-select" [(ngModel)]="selectedQuizId" name="quizId" required>
+              <option value="" disabled>Select a quiz</option>
+              <option *ngFor="let quiz of quizzes" [value]="quiz.id">{{ quiz.title }}</option>
+            </select>
+          </div>
+          <div *ngIf="selectedCategoryId && quizzes.length === 0" class="alert alert-warning">
+            No quizzes available for this category.
+          </div>
+
+        <!-- Question Text Field -->
+        <div class="mb-3">
+            <label for="questionText" class="form-label">Question Text:</label>
+            <input type="text" id="questionText" [(ngModel)]="questionText" name="questionText" class="form-control" required />
+        </div>
+
+        <!-- Options -->
+        <div class="mb-3">
+            <label class="form-label">Options:</label>
+            <div *ngFor="let option of options; let i = index" class="mb-2">
+                <div class="input-group">
+                    <input type="text" [(ngModel)]="options[i].text" name="option-{{i}}" class="form-control" placeholder="Option text" required />
+                    <div class="input-group-text">
+                        <input type="radio" [(ngModel)]="correctOptionIndex" [value]="i" name="correctOption" />
+                        Correct
+                    </div>
+                    <button type="button" class="btn btn-danger ms-2" (click)="removeOption(i)">Remove</button>
+                </div>
+            </div>
+            <button type="button" class="btn btn-secondary" (click)="addOption()">Add Option</button>
+        </div>
+
+        <!-- Image Upload -->
+        <div class="mb-3">
+            <label for="imageFile" class="form-label">Upload Image:</label>
+            <input type="file" id="imageFile" class="form-control" (change)="onImageSelected($event)" />
+        </div>
+
+        <!-- Audio Upload -->
+        <div class="mb-3">
+            <label for="audioFile" class="form-label">Upload Audio:</label>
+            <input type="file" id="audioFile" class="form-control" (change)="onAudioSelected($event)" />
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
 </div>
-
-  

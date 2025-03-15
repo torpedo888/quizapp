@@ -1,66 +1,114 @@
-<div class="container d-flex flex-column align-items-center mt-4">
-  <!-- Quiz Title and Category -->
-  <h2 class="text-center text-primary mb-2">{{ quizTitle }}</h2>
-  <p class="text-center mb-4">{{ categoryName }}</p>
-
-  <!-- Timer (visible only before submission) -->
-  <div *ngIf="!validateSubmitted" class="mb-3">
-    <span class="badge bg-danger fs-5">Time: {{ timer }} sec</span>
-  </div>
-
-  <!-- Display one question at a time -->
-  <div *ngIf="questions.length > 0 && currentQuestionIndex < questions.length" class="card mb-4 w-75 mx-auto shadow-sm">
-    <div class="card-header bg-white">
-      <h5 class="mb-0">Question {{ currentQuestionIndex + 1 }} of {{ totalQuestions }}</h5>
-    </div>
-    <div class="card-body">
-      <h4 class="card-title" [style.white-space]="'nowrap'">
-        {{ questions[currentQuestionIndex]?.text }}
-      </h4>
-      <div class="list-group mt-3">
-        <button
-          *ngFor="let option of questions[currentQuestionIndex]?.options"
-          type="button"
-          class="list-group-item list-group-item-action"
-          (click)="selectOption(questions[currentQuestionIndex].id, option.id)"
-          [ngClass]="{
-            'active': selectedAnswers[questions[currentQuestionIndex].id] === option.id,
-            'correct-answer': validateCurrentQuestion && option.isCorrect,
-            'wrong-answer': validateCurrentQuestion && selectedAnswers[questions[currentQuestionIndex].id] === option.id && !option.isCorrect
-          }"
-        >
-          {{ option.text }}
-        </button>
+<div class="container d-flex justify-content-center align-items-center vh-100">
+  <div class="quiz-card w-75 p-5 shadow-lg rounded-3 position-relative">
+    
+    <!-- Progress Bar -->
+    <div class="position-absolute top-0 start-0 w-100 px-4 pt-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <span class="text-white fw-bold">{{ currentQuestionIndex + 1 }} / {{ totalQuestions }}</span>
+      </div>
+      <div class="progress mt-2" style="height: 6px; background-color: rgba(255, 255, 255, 0.3);">
+        <div class="progress-bar bg-white" role="progressbar" 
+             [style.width]="((currentQuestionIndex + 1) / totalQuestions) * 100 + '%'">
+        </div>
       </div>
     </div>
+    
+    <!-- Question Text -->
+    <h2 class="text-white text-center fw-bold mt-5">{{ questions[currentQuestionIndex]?.text }}</h2>
+    
+    <!-- Answer Choices (Radio Style with Underline) -->
+    <div class="mt-4 px-4">
+      <div *ngFor="let option of questions[currentQuestionIndex]?.options" class="form-check quiz-option">
+        <input class="form-check-input d-none" type="radio" 
+               name="question{{currentQuestionIndex}}" 
+               [value]="option.id" 
+               [checked]="selectedAnswers[questions[currentQuestionIndex].id] === option.id"
+               (change)="selectOption(questions[currentQuestionIndex].id, option.id)"
+               [disabled]="validateCurrentQuestion" id="option{{ option.id }}">
+        <label class="form-check-label text-white fs-5 d-flex align-items-center" for="option{{ option.id }}">
+          <span class="radio-circle me-2"></span>
+          {{ option.text }}
+          <i *ngIf="selectedAnswers[questions[currentQuestionIndex].id] === option.id && option.isCorrect" 
+              class="fa-solid fa-check text-success ms-2"></i>
+        </label>
+        <span class="underline"></span>
+      </div>
+    </div>
+    
+    <!-- Navigation Buttons -->
+    <div class="d-flex justify-content-center mt-4">
+      <button *ngIf="currentQuestionIndex < questions.length - 1" 
+              class="btn btn-light btn-lg px-5" 
+              (click)="nextQuestion()" 
+              [disabled]="isProcessingNext">
+        Next →
+      </button>
+      <button *ngIf="currentQuestionIndex === questions.length - 1" 
+              class="btn btn-success btn-lg px-5" 
+              (click)="submitAnswers()"
+              [disabled]="isProcessingNext">
+        See Results
+      </button>
+    </div>
   </div>
-
-  <!-- Next or See Results Button -->
-  <div *ngIf="!validateSubmitted" class="text-center">
-    <button
-      *ngIf="currentQuestionIndex < questions.length - 1"
-      class="btn btn-primary mt-3"
-      (click)="nextQuestion()"
-      [disabled]="isProcessingNext"
-    >
-      Next
-      <svg aria-hidden="true" class="rmd-icon rmd-icon--svg ms-2" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width: 24px; height: 24px;">
-        <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path>
-      </svg>
-    </button>
-    <button
-      *ngIf="currentQuestionIndex === questions.length - 1"
-      class="btn btn-primary mt-3"
-      (click)="submitAnswers()"
-      [disabled]="isProcessingNext"
-    >
-      See Results
-    </button>
-  </div>
-
-  <!-- Error Message -->
-  <div *ngIf="errorMessage" class="alert alert-danger mt-3">
-    {{ errorMessage }}
-  </div>
-  
 </div>
+
+<!-- Styles -->
+<style>
+  .quiz-card {
+    background-color: #E4865C;
+    color: white;
+    text-align: center;
+    border-radius: 20px;
+    width: 80%;
+  }
+  .progress-bar {
+    background-color: white !important;
+  }
+  .form-check-label {
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding-left: 30px;
+  }
+  
+  .radio-circle {
+    width: 18px;
+    height: 18px;
+    border: 2px solid white !important;
+    border-radius: 50%;
+    display: inline-block;
+    position: absolute;
+    left: 0;
+  }
+  .form-check-input:checked + .form-check-label .radio-circle {
+    background-color: white;
+  }
+
+  .quiz-options {
+    margin-top: 20px;
+  }
+
+  .quiz-option {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+  }
+
+  .quiz-option input[type="radio"] {
+    margin-right: 10px;
+  }
+
+  .quiz-option label {
+    font-size: 16px;
+  }
+
+  .quiz-option input[type="radio"]:checked + label {
+    font-weight: bold;
+  }
+</style>

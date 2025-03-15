@@ -16,6 +16,10 @@ namespace API.Helpers
             CreateMap<Photo, PhotoDto>();
 
             CreateMap<RegisterDto, AppUser>();
+
+            CreateMap<Question, QuestionDto>()
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl));
         }
     }
 }

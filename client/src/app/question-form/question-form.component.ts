@@ -1,59 +1,139 @@
-import { Component } from '@angular/core';
-import { QuestionService } from '../question.service'; // Adjust the path as necessary
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { QuizService } from '../_services/quiz.service'; // Adjust the path as necessary
+import { QuestionService } from '../question.service'; // Ensure you have QuestionService imported
+import { FormBuilder, FormGroup, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FlashcardComponent } from '../flashcard/flashcard.component'; 
+import { CategoryService } from '../_services/category.service';
 
 @Component({
   selector: 'app-question-form',
   standalone: true,
   templateUrl: './question-form.component.html',
   styleUrls: ['./question-form.component.css'],
-  imports: [FormsModule, CommonModule, FlashcardComponent]
+  imports: [FormsModule, CommonModule] // Make sure FormsModule is here
 })
-export class QuestionFormComponent {
-  categoryName: string = ''; // Assuming you'll handle categories as well
-  questionText: string = '';
+export class QuestionFormComponent implements OnInit {
+  selectedCategoryId: number | null = null;
+  categoryName: string = ''; 
+  questionText: string = ''; // Make sure this property exists
   options: { id: number; text: string }[] = [{ id: 0, text: '' }];
   correctOptionIndex: number | null = null;
   quizId: number = 1; // Set this to the relevant Quiz ID
   categoryId: number = 1;
+  selectedImageFile: File | null = null; // For file upload
+  selectedAudioFile: File | null = null; // For file upload
+  quizzes: any[] = []; // This will hold the list of quizzes
+  selectedQuizId: number | null = null; // Store selected quiz ID
+  questionForm: FormGroup; // Form group to handle form submission
 
-  constructor(private questionService: QuestionService) {}
+  categories: any[] = [];
 
-  // Adds a new empty option to the options array
-  addOption() {
-    const newOptionId = this.options.length > 0 ? this.options[this.options.length - 1].id + 1 : 1; // Simple way to assign new ID
-    this.options.push({ id: newOptionId, text: '' });
+  constructor(
+    private quizService: QuizService,
+    private categoryService: CategoryService,
+    private questionService: QuestionService, // Inject the QuestionService
+    private fb: FormBuilder
+  ) {
+    this.questionForm = this.fb.group({
+      questionText: [''],
+      selectedQuizId: [null], // Add this to hold the quizId
+      categoryId: [null],
+      correctOptionId: [null],
+      optionsJson: [''],
+      selectedImageFile: [null],
+      selectedAudioFile: [null],
+    });
   }
 
-  // Removes an option from the options array
-  removeOption(index: number) {
-    this.options.splice(index, 1);
+  ngOnInit(): void {
+
+    this.categoryService.getCategories().subscribe((categories) => {
+      this.categories = categories;
+    });
+
   }
 
-  onSubmit() {
-    // Constructing the data object
-    // const formData: Question = {
-    //   id: 0, // Set to 0 or leave undefined if you're creating a new question
-    //   text: this.questionText,
-    //   correctOptionId: this.correctOptionIndex !== null ? this.options[this.correctOptionIndex].id : 0, // Set correctOptionId based on the selected option
-    //   quizId: this.quizId,
-    //   categoryId: this.categoryId
-    // };
-
-   // console.log('Form Data:', JSON.stringify(formData, null, 2));
-
-    // // Using the QuestionService to save the question
-    // this.questionService.saveQuestion(formData).subscribe(
-    //   response => {
-    //     // Handle success
-    //     console.log('Question saved!', response);
-    //   },
-    //   error => {
-    //     // Handle error
-    //     console.error('Error saving question', error);
-    //   }
-    // );
+  onCategoryChange() {
+    if (this.selectedCategoryId) {
+      this.categoryService.getQuizzesByCategory(this.selectedCategoryId).subscribe(data => {
+        this.quizzes = data;
+      });
+    } else {
+      this.quizzes = [];
+    }
   }
+
+    // Adds a new empty option to the options array
+    addOption() {
+      const newOptionId = this.options.length > 0 ? this.options[this.options.length - 1].id + 1 : 1;
+      this.options.push({ id: newOptionId, text: '' });
+    }
+  
+    // Removes an option from the options array
+    removeOption(index: number) {
+      this.options.splice(index, 1);
+    }
+  
+    onImageSelected(event: any) {
+      const file = event.target.files[0];
+      if (file) {
+        this.selectedImageFile = file;
+      }
+    }
+  
+    onAudioSelected(event: any) {
+      const file = event.target.files[0];
+      if (file) {
+        this.selectedAudioFile = file;
+      }
+    }
+
+    onSubmit() {
+      // Ensure question text is not empty
+      if (!this.questionText.trim()) {
+        console.error('Question text is required.');
+        return;
+      }
+    
+      // Prepare the form data
+      const formData = new FormData();
+      
+      // Append question text
+      formData.append('text', this.questionText);
+    
+      // Append categoryId and correctOptionId (make sure these are valid)
+      //formData.append('categoryId', this.categoryId.toString());
+      formData.append('categoryId', String(this.categoryId)); 
+
+
+      if (this.correctOptionIndex !== null) {
+        formData.append('correctOptionId', this.correctOptionIndex.toString());
+      } else {
+        console.error('Correct option is required.');
+        return;
+      }
+    
+      // Serialize the options array as JSON and append it
+      const optionsJson = JSON.stringify(this.options.map(option => ({ text: option.text })));
+      formData.append('optionsJson', optionsJson);
+    
+      // Append image and audio files if selected
+      if (this.selectedImageFile) {
+        formData.append('imageFile', this.selectedImageFile);
+      }
+      if (this.selectedAudioFile) {
+        formData.append('audioFile', this.selectedAudioFile);
+      }
+    
+      // Submit the form data to the service
+      this.questionService.saveQuestion(this.quizId, formData).subscribe(
+        (response) => {
+          console.log('Question saved!', response);
+        },
+        (error) => {
+          console.error('Error saving question', error);
+        }
+      );
+    }
+    
 }
