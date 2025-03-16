@@ -37,17 +37,10 @@
     
     <!-- Navigation Buttons -->
     <div class="d-flex justify-content-center mt-4">
-      <button *ngIf="currentQuestionIndex < questions.length - 1" 
-              class="btn btn-light btn-lg px-5" 
-              (click)="nextQuestion()" 
+      <button class="btn btn-light btn-lg px-5" 
+              (click)="handleNextOrSubmit()" 
               [disabled]="isProcessingNext">
-        Next →
-      </button>
-      <button *ngIf="currentQuestionIndex === questions.length - 1" 
-              class="btn btn-success btn-lg px-5" 
-              (click)="submitAnswers()"
-              [disabled]="isProcessingNext">
-        See Results
+        {{ currentQuestionIndex === questions.length - 1 ? 'See Results' : 'Next →' }}
       </button>
     </div>
   </div>

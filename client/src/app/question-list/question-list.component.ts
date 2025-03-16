@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Question } from '../_models/Question';
 import { QuestionService } from '../question.service';
@@ -24,6 +24,7 @@ export class QuestionListComponent implements OnInit, OnDestroy {
   validateSubmitted: boolean = false;
   validateCurrentQuestion: boolean = false; // Flag for per-question validation
   isProcessingNext: boolean = false;
+  incorrectAnswers: { [questionId: number]: number } = {};
 
   // Quiz results
   correctAnswers: number = 0;
@@ -38,7 +39,8 @@ export class QuestionListComponent implements OnInit, OnDestroy {
   constructor(
     private questionService: QuestionService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -90,7 +92,7 @@ export class QuestionListComponent implements OnInit, OnDestroy {
         clearInterval(this.timerInterval);
         this.nextQuestion(); // Auto advance when time's up
       }
-    }, 1000);
+    }, 500);
   }
 
   selectOption(questionId: number, optionId: number): void {
@@ -99,75 +101,79 @@ export class QuestionListComponent implements OnInit, OnDestroy {
     }
   }
 
-  nextQuestion(): void {
-    // Prevent double-clicks
+  handleNextOrSubmit(): void {
     if (this.isProcessingNext) {
       return;
     }
     this.isProcessingNext = true;
-
-    // Validate current question: show correct (green) or wrong (red) for 2 seconds.
-    this.validateCurrentQuestion = true;
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval);
+  
+    if (this.currentQuestionIndex === this.questions.length - 1) {
+      this.submitAnswers();
+    } else {
+      this.nextQuestion();
     }
+  }
+  
+  nextQuestion(): void {
+    this.validateCurrentQuestion = true;
+  
     setTimeout(() => {
-      this.validateCurrentQuestion = false;
+      this.validateCurrentQuestion = false; // Reset validation state
+  
       if (this.currentQuestionIndex < this.questions.length - 1) {
         this.currentQuestionIndex++;
-        this.startTimer();
-      } else {
-        // Last question: submit answers
-        this.submitAnswers();
+        this.cdr.detectChanges(); // Force UI update
       }
-      this.isProcessingNext = false;
-    }, 1000);
+  
+      this.isProcessingNext = false; // Ensure this flag resets properly
+    }, 300);
   }
+  
 
   submitAnswers(): void {
-    this.validateSubmitted = true;
-    // Optionally, you might want to disable further changes.
-    if (this.questions.some(q => !this.selectedAnswers[q.id])) {
-      this.errorMessage = 'Please answer all questions before submitting.';
-      return;
-    }
-  
-    // Calculate results locally (or call backend service to evaluate)
-    this.correctAnswers = this.questions.filter(q => {
-      const selected = this.selectedAnswers[q.id];
-      const correctOption = q.options.find(o => o.isCorrect);
-      return selected === correctOption?.id;
-    }).length;
-    this.score = Math.round((this.correctAnswers / this.totalQuestions) * 100);
+  this.validateSubmitted = true;
+  this.errorMessage = '';
 
-    // Stop any active timer
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval);
-    }
-
-    if (this.questions.some(q => !this.selectedAnswers[q.id])) {
-      this.errorMessage = 'Please answer all questions before submitting.';
-      return;
-    }
-  
-    // Calculate results locally
-    this.correctAnswers = this.questions.filter(q => {
-      const selected = this.selectedAnswers[q.id];
-      const correctOption = q.options.find(o => o.isCorrect);
-      return selected === correctOption?.id;
-    }).length;
-    this.score = Math.round((this.correctAnswers / this.totalQuestions) * 100);
-
-    // Navigate to the quiz result component, passing data
-    this.router.navigate(['/quiz-result'], {
-      state: {
-        quizId: this.quizId,
-        totalQuestions: this.totalQuestions,
-        correctAnswers: this.correctAnswers,
-        score: this.score
-      }
-    });
+  // Ensure all questions are answered before submission
+  if (this.questions.some(q => !this.selectedAnswers[q.id])) {
+    this.errorMessage = 'Please answer all questions before submitting.';
+    return;
   }
+
+  this.correctAnswers = 0;
+  this.score = 0;
+  this.incorrectAnswers = {}; // Reset previous incorrect answers
+
+  for (let q of this.questions) {
+    const selected = this.selectedAnswers[q.id];
+    const correctOption = q.options.find(o => o.isCorrect);
+
+    if (selected === correctOption?.id) {
+      this.correctAnswers++;
+    } else {
+      this.incorrectAnswers[q.id] = selected; // Store incorrect answer
+    }
+  }
+
+  // Calculate final score
+  this.score = Math.round((this.correctAnswers / this.totalQuestions) * 100);
+
+  // Stop any active timer
+  if (this.timerInterval) {
+    clearInterval(this.timerInterval);
+  }
+
+  // Navigate to the quiz result component, passing data
+  this.router.navigate(['/quiz-result'], {
+    state: {
+      quizId: this.quizId,
+      totalQuestions: this.totalQuestions,
+      correctAnswers: this.correctAnswers,
+      score: this.score
+    }
+  });
+}
+
 
   resetQuiz(): void {
     this.selectedAnswers = {};

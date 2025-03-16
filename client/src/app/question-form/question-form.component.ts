@@ -4,6 +4,7 @@ import { QuestionService } from '../question.service'; // Ensure you have Questi
 import { FormBuilder, FormGroup, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CategoryService } from '../_services/category.service';
+import { Option } from '../_models/Option';
 
 @Component({
   selector: 'app-question-form',
@@ -16,7 +17,7 @@ export class QuestionFormComponent implements OnInit {
   selectedCategoryId: number | null = null;
   categoryName: string = ''; 
   questionText: string = ''; // Make sure this property exists
-  options: { id: number; text: string }[] = [{ id: 0, text: '' }];
+  options: Option[] = [];
   correctOptionIndex: number | null = null;
   quizId: number = 1; // Set this to the relevant Quiz ID
   categoryId: number = 1;
@@ -66,7 +67,7 @@ export class QuestionFormComponent implements OnInit {
     // Adds a new empty option to the options array
     addOption() {
       const newOptionId = this.options.length > 0 ? this.options[this.options.length - 1].id + 1 : 1;
-      this.options.push({ id: newOptionId, text: '' });
+      this.options.push({ id: newOptionId, text: '', isCorrect: false });
     }
   
     // Removes an option from the options array
@@ -106,15 +107,16 @@ export class QuestionFormComponent implements OnInit {
       formData.append('categoryId', String(this.categoryId)); 
 
 
-      if (this.correctOptionIndex !== null) {
-        formData.append('correctOptionId', this.correctOptionIndex.toString());
-      } else {
-        console.error('Correct option is required.');
-        return;
-      }
+      // if (this.correctOptionIndex !== null) {
+      //   formData.append('correctOptionId', this.correctOptionIndex.toString());
+      // } else {
+      //   console.error('Correct option is required.');
+      //   return;
+      // }
     
       // Serialize the options array as JSON and append it
-      const optionsJson = JSON.stringify(this.options.map(option => ({ text: option.text })));
+      const optionsJson = JSON.stringify(this.options.map(option => 
+        ({ text: option.text, isCorrect: option.isCorrect ? 1 : 0 })));
       formData.append('optionsJson', optionsJson);
     
       // Append image and audio files if selected

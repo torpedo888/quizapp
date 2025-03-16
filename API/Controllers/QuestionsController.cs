@@ -246,6 +246,19 @@ public class QuestionsController(DataContext context) : ControllerBase
         // ✅ Deserialize options
         var options = System.Text.Json.JsonSerializer.Deserialize<List<Option>>(optionsJson);
         
+        // var question = new Question
+        // {
+        //     CategoryId = categoryId,
+        //     QuizId = quizId,
+        //     Text = text,
+        //     CorrectOptionId = correctOptionId,
+        //     ImageUrl = imageUrl, // Store the image URL
+        //     AudioUrl = audioUrl, // Store the audio URL
+        //     Options = options ?? new List<Option>()
+        // };
+
+        // _context.Questions.Add(question);
+
         var question = new Question
         {
             CategoryId = categoryId,
@@ -253,12 +266,22 @@ public class QuestionsController(DataContext context) : ControllerBase
             Text = text,
             CorrectOptionId = correctOptionId,
             ImageUrl = imageUrl, // Store the image URL
-            AudioUrl = audioUrl, // Store the audio URL
-            Options = options ?? new List<Option>()
+            AudioUrl = audioUrl // Store the audio URL
         };
+        context.Questions.Add(question);
+        await context.SaveChangesAsync();
 
-        _context.Questions.Add(question);
-        await _context.SaveChangesAsync();
+        foreach (var optionData in options!)
+        {
+            var option = new Option
+            {
+                Text = optionData.Text,
+                IsCorrect = optionData.IsCorrect,
+                QuestionId = question.Id
+            };
+            context.Options.Add(option);
+        }
+        await context.SaveChangesAsync();
 
         return Ok(new { message = "Question added successfully", question.Id });
     }

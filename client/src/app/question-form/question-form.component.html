@@ -42,7 +42,7 @@
                 <div class="input-group">
                     <input type="text" [(ngModel)]="options[i].text" name="option-{{i}}" class="form-control" placeholder="Option text" required />
                     <div class="input-group-text">
-                        <input type="radio" [(ngModel)]="correctOptionIndex" [value]="i" name="correctOption" />
+                        <input type="checkbox" [(ngModel)]="option.isCorrect" name="option{{ option.id }}" id="option{{ option.id }}">
                         Correct
                     </div>
                     <button type="button" class="btn btn-danger ms-2" (click)="removeOption(i)">Remove</button>
