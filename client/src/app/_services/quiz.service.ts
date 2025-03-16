@@ -30,4 +30,8 @@ export class QuizService {
   updateQuiz(id: number, formData: FormData): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/${id}`, formData);
   }
+
+  deleteQuestion(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
 }

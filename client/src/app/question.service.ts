@@ -21,7 +21,7 @@ export class QuestionService {
   getQuestions(): Observable<Question[]> {
     console.log('Calling API to fetch questions...');
   
-    return this.http.get<Question[]>(this.apiUrl).pipe(
+    return this.http.get<Question[]>(this.apiQuestionUrl).pipe(
       map((questions: Question[]) =>
         questions.map(q => ({
           ...q,
@@ -43,11 +43,12 @@ export class QuestionService {
     return this.http.get<Question[]>(`${this.apiQuizUrl}/${quizId}/questions`);
   }
 
-  // saveQuestion(formData: FormData): Observable<any> {
-  //   return this.http.post(this.apiQuestionUrl, formData);
-  // }
   saveQuestion(quizId: number, formData: FormData): Observable<any> {
     return this.http.post(`${this.apiQuestionUrl}/${quizId}/questions`, formData);
+  }
+
+  deleteQuestions(ids: number[]): Observable<void> {
+    return this.http.post<void>(`${this.apiQuizUrl}/delete-multiple`, { ids });
   }
   
 }

@@ -18,6 +18,7 @@ import { CategoryListComponent } from './category-list/category-list.component';
 import { CategoryFormComponent } from './category-form/category-form.component';
 import { QuizFormComponent } from './quiz-form/quiz-form.component'; 
 import { QuizListComponent } from './quiz-list/quiz-list.component';
+import { QuestionListEditComponent } from './question-list-edit/question-list-edit.component';
 
 export const routes: Routes = [
   { path: '', component: CategoryListComponent },
@@ -34,6 +35,7 @@ export const routes: Routes = [
       { path: 'quiz/:id', component: QuestionListComponent },
       { path: 'quiz-result', component: QuizResultComponent },
       { path: 'addquestion', component: QuestionFormComponent },
+      { path: 'editquestion', component: QuestionListEditComponent },
       { path: '', component: CategoryListComponent }, // Homepage
       { path: 'categories', component: CategoryListComponent },
       { path: 'category-form', component: CategoryFormComponent }, // Add category

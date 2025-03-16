@@ -3,6 +3,7 @@ using API.Data;
 using API.Entitites;
 using API.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace API.Controllers;
 
@@ -74,47 +75,6 @@ public class QuizController : ControllerBase
         return Ok(quizDto);
     }
 
-    // POST: api/quiz (Create)
-    // [HttpPost]
-    // public async Task<IActionResult> CreateQuiz([FromForm] string title, [FromForm] IFormFile imageFile)
-    // {
-    //     if (string.IsNullOrWhiteSpace(title) || imageFile == null)
-    //         return BadRequest("Title and image are required.");
-
-    //     // Ensure the uploads directory exists
-    //     string uploadDir = Path.Combine(_environment.WebRootPath, "uploads");
-    //     if (!Directory.Exists(uploadDir))
-    //     {
-    //         Directory.CreateDirectory(uploadDir);
-    //     }
-
-    //     // Save the image
-    //     string fileName = $"{Guid.NewGuid()}_{imageFile.FileName}";
-    //     string filePath = Path.Combine(uploadDir, fileName);
-    //     string imageUrl = $"/uploads/{fileName}";
-
-    //     using (var stream = new FileStream(filePath, FileMode.Create))
-    //     {
-    //         await imageFile.CopyToAsync(stream);
-    //     }
-
-    //     var quiz = new Quiz
-    //     {
-    //         Title = title,
-    //         ImageUrl = imageUrl
-    //     };
-
-    //     _context.Quizzes.Add(quiz);
-    //     await _context.SaveChangesAsync();
-
-    //     return CreatedAtAction(nameof(GetQuizById), new { id = quiz.Id }, new QuizDto
-    //     {
-    //         Id = quiz.Id,
-    //         Title = quiz.Title,
-    //         ImageUrl = quiz.ImageUrl
-    //     });
-    // }
-
     [HttpPost]
     public async Task<IActionResult> CreateQuiz([FromForm] string title, [FromForm] IFormFile imageFile, [FromForm] int categoryId)
     {
@@ -156,7 +116,7 @@ public class QuizController : ControllerBase
         {
             return StatusCode(500, $"Internal error: {ex.Message}");
         }
-}
+    }
 
 
     // PUT: api/quiz/{id} (Update)
@@ -231,4 +191,44 @@ public class QuizController : ControllerBase
         return Ok(questionDtos);
     }
 
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteQuestion(int id)
+    {
+        var question = await _context.Questions
+            .Include(q => q.Options) // Ensure related options are also loaded
+            .FirstOrDefaultAsync(q => q.Id == id);
+
+        if (question == null)
+        {
+            return NotFound(new { message = "Question not found" });
+        }
+
+        _context.Options.RemoveRange(question.Options); // Delete associated options
+        _context.Questions.Remove(question); // Delete the question itself
+        await _context.SaveChangesAsync(); // Save changes to the database
+
+        return Ok(new { message = "Question deleted successfully" });
+    }
+
+    [HttpPost("delete-multiple")]
+    public async Task<IActionResult> DeleteMultiple([FromBody] DeleteQuestionsRequest request)
+    {
+        if (request.Ids == null || request.Ids.Count == 0)
+            return BadRequest("No questions selected for deletion.");
+
+        var questionsToDelete = await _context.Questions.Where(q => request.Ids.Contains(q.Id)).ToListAsync();
+        if (!questionsToDelete.Any())
+            return NotFound("No questions found to delete.");
+
+        _context.Questions.RemoveRange(questionsToDelete);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+}
+
+public class DeleteQuestionsRequest
+{
+    public List<int> Ids { get; set; }
 }
