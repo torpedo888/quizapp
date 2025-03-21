@@ -244,21 +244,8 @@ public class QuestionsController(DataContext context) : ControllerBase
         }
 
         // ✅ Deserialize options
-        var options = System.Text.Json.JsonSerializer.Deserialize<List<Option>>(optionsJson);
+        var options = System.Text.Json.JsonSerializer.Deserialize<List<OptionDto>>(optionsJson);
         
-        // var question = new Question
-        // {
-        //     CategoryId = categoryId,
-        //     QuizId = quizId,
-        //     Text = text,
-        //     CorrectOptionId = correctOptionId,
-        //     ImageUrl = imageUrl, // Store the image URL
-        //     AudioUrl = audioUrl, // Store the audio URL
-        //     Options = options ?? new List<Option>()
-        // };
-
-        // _context.Questions.Add(question);
-
         var question = new Question
         {
             CategoryId = categoryId,
@@ -276,7 +263,7 @@ public class QuestionsController(DataContext context) : ControllerBase
             var option = new Option
             {
                 Text = optionData.Text,
-                IsCorrect = optionData.IsCorrect,
+                IsCorrect = optionData.IsCorrect ? 1 : 0,
                 QuestionId = question.Id
             };
             context.Options.Add(option);
@@ -286,16 +273,28 @@ public class QuestionsController(DataContext context) : ControllerBase
         return Ok(new { message = "Question added successfully", question.Id });
     }
 
-    [HttpPut("questions/{questionId}")]
-    public async Task<IActionResult> UpdateQuestion(int questionId, [FromForm] IFormFile? imageFile, [FromForm] string text, [FromForm] int correctOptionId, [FromForm] string optionsJson)
+    [HttpPut("{quizId}/questions/{questionId}")]
+    public async Task<IActionResult> UpdateQuestion(int quizId, int questionId,
+        [FromForm] IFormFile? imageFile,
+        [FromForm] IFormFile? audioFile,
+        [FromForm] string text,
+        [FromForm] int correctOptionId,
+        [FromForm] string optionsJson,
+        [FromForm] int categoryId)
     {
-        var question = await _context.Questions.Include(q => q.Options).FirstOrDefaultAsync(q => q.Id == questionId);
+        var question = await _context.Questions.FindAsync(questionId);
         if (question == null) return NotFound("Question not found");
 
-        question.Text = text;
-        question.CorrectOptionId = correctOptionId;
+        if (question.QuizId != quizId) return BadRequest("Question does not belong to this quiz");
 
-        // Handle Image Update
+        // Validate Category ID
+        var category = await _context.Categories.FindAsync(categoryId);
+        if (category == null) return NotFound("Category not found");
+
+        string? imageUrl = question.ImageUrl; // Keep existing image
+        string? audioUrl = question.AudioUrl; // Keep existing audio
+
+        // ✅ Handle Image Upload (Update if new image is provided)
         if (imageFile != null)
         {
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
@@ -306,19 +305,57 @@ public class QuestionsController(DataContext context) : ControllerBase
             {
                 await imageFile.CopyToAsync(fileStream);
             }
-            question.ImageUrl = $"/images/{uniqueFileName}";
+            imageUrl = $"/images/{uniqueFileName}";
         }
 
-        // Update Options
-        _context.Options.RemoveRange(question.Options);
-        await _context.SaveChangesAsync();
-        
-        var options = System.Text.Json.JsonSerializer.Deserialize<List<Option>>(optionsJson);
-        question.Options = options ?? new List<Option>();
+        // ✅ Handle Audio Upload (Update if new audio is provided)
+        if (audioFile != null)
+        {
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/audio");
+            Directory.CreateDirectory(uploadsFolder);
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(audioFile.FileName);
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await audioFile.CopyToAsync(fileStream);
+            }
+            audioUrl = $"/audio/{uniqueFileName}";
+        }
 
+        // ✅ Deserialize options
+        var options = System.Text.Json.JsonSerializer.Deserialize<List<OptionDto>>(optionsJson);
+        if (options == null) return BadRequest("Invalid options data");
+
+        // ✅ Update Question Fields
+        question.Text = text;
+        question.CategoryId = categoryId;
+        question.CorrectOptionId = correctOptionId;
+        question.ImageUrl = imageUrl;
+        question.AudioUrl = audioUrl;
+
+        _context.Questions.Update(question);
         await _context.SaveChangesAsync();
-        return Ok(new { message = "Question updated successfully" });
+
+        // ✅ Remove old options & add new ones
+        var existingOptions = _context.Options.Where(o => o.QuestionId == question.Id);
+        _context.Options.RemoveRange(existingOptions);
+        await _context.SaveChangesAsync();
+
+        foreach (var optionData in options)
+        {
+            var option = new Option
+            {
+                Text = optionData.Text,
+                IsCorrect = optionData.IsCorrect ? 1 : 0,
+                QuestionId = question.Id
+            };
+            _context.Options.Add(option);
+        }
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "Question updated successfully", question.Id });
     }
+
 }
 
 public class QuestionCreateRequest

@@ -13,10 +13,17 @@
       </div>
     </div>
     
+    <!-- Question Image -->
+    <div class="text-center mt-4">
+      <img *ngIf="questions[currentQuestionIndex]?.imageUrl" 
+          [src]="'https://localhost:5001' + questions[currentQuestionIndex]?.imageUrl" 
+          alt="Question Image" 
+          class="img-fluid rounded shadow-lg">
+    </div>
+
     <!-- Question Text -->
     <h2 class="text-white text-center fw-bold mt-5">{{ questions[currentQuestionIndex]?.text }}</h2>
     
-    <!-- Answer Choices (Radio Style with Underline) -->
     <div class="mt-4 px-4">
       <div *ngFor="let option of questions[currentQuestionIndex]?.options" class="form-check quiz-option">
         <input class="form-check-input d-none" type="radio" 
@@ -24,16 +31,21 @@
                [value]="option.id" 
                [checked]="selectedAnswers[questions[currentQuestionIndex].id] === option.id"
                (change)="selectOption(questions[currentQuestionIndex].id, option.id)"
-               [disabled]="validateCurrentQuestion" id="option{{ option.id }}">
-        <label class="form-check-label text-white fs-5 d-flex align-items-center" for="option{{ option.id }}">
+               id="option{{ option.id }}" 
+               [attr.disabled]="selectedAnswers[questions[currentQuestionIndex].id] !== undefined ? true : null">
+        <label class="form-check-label text-white fs-5 d-flex align-items-center" 
+               for="option{{ option.id }}">
           <span class="radio-circle me-2"></span>
           {{ option.text }}
           <i *ngIf="selectedAnswers[questions[currentQuestionIndex].id] === option.id && option.isCorrect" 
-              class="fa-solid fa-check text-success ms-2"></i>
+             class="fa-solid fa-check text-success ms-2"></i>
+          <i *ngIf="selectedAnswers[questions[currentQuestionIndex].id] === option.id && !option.isCorrect" 
+             class="fa-solid fa-xmark text-danger ms-2"></i>
         </label>
         <span class="underline"></span>
       </div>
     </div>
+    
     
     <!-- Navigation Buttons -->
     <div class="d-flex justify-content-center mt-4">

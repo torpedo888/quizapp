@@ -50,24 +50,36 @@
     transition: background-color 0.2s ease;
   }
   
-  .option-box:hover {
-    background-color: #e9ecef;
-  }
-  
-  .selected-option {
-    background-color: #cce5ff;
-    border-color: #007bff;
-  }
-  
-  .correct-answer {
-    background-color: #28a745 !important;
-    color: #fff !important;
-    border-color: #28a745 !important;
-  }
-  
-  .wrong-answer {
-    background-color: #ff6961 !important;
-    color: #fff !important;
-    border-color: #ff6961 !important;
-  }
-  
+.option-box:hover {
+  background-color: #e9ecef;
+}
+
+.selected-option {
+  background-color: #cce5ff;
+  border-color: #007bff;
+}
+
+.correct-answer {
+  background-color: #28a745 !important;
+  color: #fff !important;
+  border-color: #28a745 !important;
+}
+
+.wrong-answer {
+  background-color: #ff6961 !important;
+  color: #fff !important;
+  border-color: #ff6961 !important;
+}
+
+label.form-check-label {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  color: white !important; /* Ensure text color stays unchanged */
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  max-height: 300px; /* Adjust as needed */
+  border-radius: 10px;
+}

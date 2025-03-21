@@ -47,10 +47,17 @@ export class QuestionService {
     return this.http.post(`${this.apiQuestionUrl}/${quizId}/questions`, formData);
   }
 
-  deleteQuestions(ids: number[]): Observable<void> {
-    return this.http.post<void>(`${this.apiQuizUrl}/delete-multiple`, { ids });
+  saveQuestion2(quizId: number, questionData: FormData): Observable<any> {
+    return this.http.post(`${this.apiQuestionUrl}/${quizId}/questions`, questionData);
   }
   
+  updateQuestion(quizId: number, questionId: number, formData: FormData): Observable<any> {
+    return this.http.put(`${this.apiQuestionUrl}/${quizId}/questions/${questionId}`, formData);
+  }
+
+  deleteQuestions(ids: number[]): Observable<void> {
+    return this.http.post<void>(`${this.apiQuizUrl}/delete-multiple`, { ids });
+  }  
 }
 
 

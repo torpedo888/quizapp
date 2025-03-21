@@ -185,7 +185,9 @@ public class QuizController : ControllerBase
                 Id = o.Id,
                 Text = o.Text,
                 IsCorrect = o.IsCorrect == 1
-            }).ToList()
+            }).ToList(),
+            ImageUrl = q.ImageUrl,
+            AudioUrl = q.AudioUrl
         }).ToList();
 
         return Ok(questionDtos);

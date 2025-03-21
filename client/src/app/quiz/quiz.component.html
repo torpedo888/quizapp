@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-4" *ngFor="let quiz of quizzes">
         <div class="card">
-          <img [src]="quiz.imageUrl" class="card-img-top" alt="{{ quiz.title }}">
+          <img [src]="'https://localhost:5001' + quiz.imageUrl" class="card-img-top" alt="{{ quiz.title }}">
           <div class="card-body">
             <h5 class="card-title">{{ quiz.title }}</h5>
             <a class="btn btn-primary" [routerLink]="['/quiz', quiz.id]" [state]="{ quizTitle: quiz.title }">Start Quiz</a>

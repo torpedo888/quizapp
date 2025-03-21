@@ -1,0 +1,53 @@
+<div class="container p-4 shadow rounded bg-light">
+  <h3 class="text-center">Edit Question</h3>
+
+  <!-- Question Dropdown -->
+  <select (change)="onSelectQuestion($event)">
+    <option *ngFor="let q of questions; let i = index" [value]="i">
+      {{ q.text }}
+    </option>
+  </select>
+  
+  <form [formGroup]="questionForm" (ngSubmit)="submitForm()">
+    
+    <!-- Question Text -->
+    <div class="mb-3">
+      <label class="form-label">Question Text</label>
+      <input type="text" class="form-control" formControlName="text" required>
+    </div>
+
+    <!-- Image URL -->
+    <div class="mb-3">
+      <label class="form-label">Image URL</label>
+      <input type="text" class="form-control" formControlName="imageUrl">
+      <div class="text-center mt-2">
+        <img *ngIf="questionForm.value.imageUrl" 
+             [src]="questionForm.value.imageUrl" 
+             class="img-fluid rounded shadow" 
+             style="max-height: 200px;">
+      </div>
+    </div>
+
+    <!-- Options List -->
+    <div class="mb-3">
+      <label class="form-label">Options</label>
+      <div formArrayName="options">
+        <div *ngFor="let option of options.controls; let i = index" class="input-group mb-2">
+          <input type="text" class="form-control" [formControlName]="'text'" required>
+          <div class="input-group-text">
+            <input type="checkbox" [formControlName]="'isCorrect'"> Correct
+          </div>
+          <button type="button" class="btn btn-danger" (click)="removeOption(i)" *ngIf="options.length > 2">🗑️</button>
+        </div>
+      </div>
+      <button type="button" class="btn btn-secondary mt-2" (click)="addOption()">➕ Add Option</button>
+    </div>
+
+    <!-- Buttons -->
+    <div class="d-flex justify-content-between mt-3">
+      <button type="submit" class="btn btn-primary">💾 Save</button>
+      <button type="button" class="btn btn-warning" (click)="cancel.emit()">❌ Cancel</button>
+    </div>
+    
+  </form>
+</div>

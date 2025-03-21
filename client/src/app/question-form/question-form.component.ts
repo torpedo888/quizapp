@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { QuizService } from '../_services/quiz.service'; // Adjust the path as necessary
 import { QuestionService } from '../question.service'; // Ensure you have QuestionService imported
 import { FormBuilder, FormGroup, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CategoryService } from '../_services/category.service';
 import { Option } from '../_models/Option';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-question-form',
@@ -14,6 +15,8 @@ import { Option } from '../_models/Option';
   imports: [FormsModule, CommonModule] // Make sure FormsModule is here
 })
 export class QuestionFormComponent implements OnInit {
+  private toastr = inject(ToastrService);
+  
   selectedCategoryId: number | null = null;
   categoryName: string = ''; 
   questionText: string = ''; // Make sure this property exists
@@ -92,6 +95,7 @@ export class QuestionFormComponent implements OnInit {
     onSubmit() {
       // Ensure question text is not empty
       if (!this.questionText.trim()) {
+        this.toastr.error('Question text is required.', 'Error');
         console.error('Question text is required.');
         return;
       }
@@ -128,9 +132,15 @@ export class QuestionFormComponent implements OnInit {
       }
     
       // Submit the form data to the service
-      this.questionService.saveQuestion(this.quizId, formData).subscribe(
+      this.questionService.saveQuestion(this.selectedQuizId!, formData).subscribe(
         (response) => {
           console.log('Question saved!', response);
+          this.toastr.success('Question added successfully!', 'Success');
+          // ✅ Clear the form fields after successful submission
+          this.questionText = '';
+          this.options = [];
+          this.selectedImageFile = null;
+          this.selectedAudioFile = null;
         },
         (error) => {
           console.error('Error saving question', error);

@@ -1,15 +1,49 @@
-<div class="container">
-    <h2>Quiz Questions</h2>
-  
-    <ul class="list-group">
-      <li *ngFor="let question of questions" class="list-group-item">
-        <input type="checkbox" [(ngModel)]="question.selected" />
+<div class="container mt-3">
+  <h2>Edit Question</h2>
+
+  <!-- Question Dropdown -->
+  <div class="mb-3">
+    <label for="questionSelect" class="form-label">Select Question:</label>
+    <select id="questionSelect" class="form-select" (change)="onSelectQuestion($event)">
+      <option *ngFor="let question of questions; let i = index" [value]="i">
         {{ question.text }}
-      </li>
-    </ul>
-  
-    <button (click)="deleteSelectedQuestions()" class="btn btn-danger mt-3" [disabled]="!hasSelectedQuestions()">
-      Delete Selected
-    </button>
+      </option>
+    </select>
   </div>
-  
+
+  <!-- Question Form -->
+  <form [formGroup]="questionForm" (ngSubmit)="submitForm()">
+    <div class="mb-3">
+      <label class="form-label">Question Text</label>
+      <input type="text" class="form-control" formControlName="text">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Image URL</label>
+      <input type="text" class="form-control" formControlName="imageUrl">
+    </div>
+
+    <!-- Options List -->
+    <div class="mb-3">
+      <label class="form-label">Options</label>
+      <div *ngFor="let option of options.controls; let i = index" [formGroup]="getOptionFormGroup(i)" class="input-group mb-2">
+        <input type="text" class="form-control" formControlName="text">
+        <input type="checkbox" class="form-check-input ms-2" formControlName="isCorrect">
+        <button type="button" class="btn btn-danger ms-2" (click)="removeOption(i)">Remove</button>
+      </div>
+      <button type="button" class="btn btn-secondary" (click)="addOption()">Add Option</button>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-primary" [disabled]="!questionForm.valid">Save</button>
+  </form>
+
+  <!-- Bootstrap Toast Notification -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div class="toast show bg-success text-white" *ngIf="showToast">
+      <div class="toast-body">
+        Question saved successfully!
+      </div>
+    </div>
+  </div>
+</div>

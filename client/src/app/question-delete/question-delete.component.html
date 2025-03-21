@@ -1,0 +1,15 @@
+<div class="container">
+    <h2>Quiz Questions</h2>
+  
+    <ul class="list-group">
+      <li *ngFor="let question of questions" class="list-group-item">
+        <input type="checkbox" [(ngModel)]="question.selected" />
+        {{ question.text }}
+      </li>
+    </ul>
+  
+    <button (click)="deleteSelectedQuestions()" class="btn btn-danger mt-3" [disabled]="!hasSelectedQuestions()">
+      Delete Selected
+    </button>
+  </div>
+  
