@@ -46,10 +46,6 @@ export class QuestionService {
   saveQuestion(quizId: number, formData: FormData): Observable<any> {
     return this.http.post(`${this.apiQuestionUrl}/${quizId}/questions`, formData);
   }
-
-  saveQuestion2(quizId: number, questionData: FormData): Observable<any> {
-    return this.http.post(`${this.apiQuestionUrl}/${quizId}/questions`, questionData);
-  }
   
   updateQuestion(quizId: number, questionId: number, formData: FormData): Observable<any> {
     return this.http.put(`${this.apiQuestionUrl}/${quizId}/questions/${questionId}`, formData);
