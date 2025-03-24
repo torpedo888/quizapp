@@ -22,40 +22,61 @@
     </div>
 
     <!-- Question Text -->
-    <h2 class="text-white text-center fw-bold mt-5">{{ questions[currentQuestionIndex]?.text }}</h2>
-    
+    <h2 class="text-white text-center fw-bold mt-5">
+      {{ questions[currentQuestionIndex]?.text }}
+    </h2>
+
     <div class="mt-4 px-4">
       <div *ngFor="let option of questions[currentQuestionIndex]?.options" class="form-check quiz-option">
         <input class="form-check-input d-none" type="radio" 
-               name="question{{currentQuestionIndex}}" 
-               [value]="option.id" 
-               [checked]="selectedAnswers[questions[currentQuestionIndex].id] === option.id"
-               (change)="selectOption(questions[currentQuestionIndex].id, option.id)"
-               id="option{{ option.id }}" 
-               [attr.disabled]="selectedAnswers[questions[currentQuestionIndex].id] !== undefined ? true : null">
+              name="question{{currentQuestionIndex}}" 
+              [value]="option.id" 
+              [checked]="selectedAnswers[questions[currentQuestionIndex].id] === option.id"
+              (change)="selectOption(questions[currentQuestionIndex].id, option.id)"
+              id="option{{ option.id }}" 
+              [attr.disabled]="answerSubmitted ? true : null">
+        
         <label class="form-check-label text-white fs-5 d-flex align-items-center" 
-               for="option{{ option.id }}">
+              for="option{{ option.id }}">
           <span class="radio-circle me-2"></span>
           {{ option.text }}
-          <i *ngIf="selectedAnswers[questions[currentQuestionIndex].id] === option.id && option.isCorrect" 
-             class="fa-solid fa-check text-success ms-2"></i>
-          <i *ngIf="selectedAnswers[questions[currentQuestionIndex].id] === option.id && !option.isCorrect" 
-             class="fa-solid fa-xmark text-danger ms-2"></i>
+
+          <!-- Show checkmark if the user selected the correct answer -->
+          <i *ngIf="answerSubmitted && selectedAnswers[questions[currentQuestionIndex].id] === option.id && option.isCorrect" 
+            class="fa fa-check rounded-checkmark ms-5"></i>
+
+          <!-- Show X if the user selected the wrong answer -->
+          <i *ngIf="answerSubmitted && selectedAnswers[questions[currentQuestionIndex].id] === option.id && !option.isCorrect" 
+            class="fa-solid fa-xmark rounded-xmark ms-5"></i>
+
+          <!-- Highlight the correct answer even if the user got it wrong -->
+          <i *ngIf="answerSubmitted && option.isCorrect && selectedAnswers[questions[currentQuestionIndex].id] !== option.id" 
+            class="fa-solid fa-check rounded-checkmark ms-5"></i>
         </label>
         <span class="underline"></span>
       </div>
     </div>
-    
-    
-    <!-- Navigation Buttons -->
-    <div class="d-flex justify-content-center mt-4">
-      <button class="btn btn-light btn-lg px-5" 
-              (click)="handleNextOrSubmit()" 
-              [disabled]="isProcessingNext">
-        {{ currentQuestionIndex === questions.length - 1 ? 'See Results' : 'Next →' }}
-      </button>
+
+    <!-- Submit Button -->
+    <button class="btn btn-light btn-lg px-5"
+        (click)="submitCurrentAnswer()"
+        *ngIf="!answerSubmitted">
+        Submit
+    </button>
+
+    <!-- Next Button -->
+    <button class="btn btn-primary btn-lg px-5"
+        (click)="nextQuestion()"
+        *ngIf="answerSubmitted">
+        Next
+    </button>
+
+    <!-- Validation Message -->
+    <div *ngIf="errorMessage" class="text-danger mt-2">
+    {{ errorMessage }}
     </div>
-  </div>
+
+    
 </div>
 
 <!-- Styles -->

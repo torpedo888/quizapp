@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { QuizService } from '../_services/quiz.service'; // Adjust the path as necessary
-import { QuestionService } from '../question.service'; // Ensure you have QuestionService imported
+import { QuestionService } from '../_services/question.service'; // Ensure you have QuestionService imported
 import { FormBuilder, FormGroup, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CategoryService } from '../_services/category.service';

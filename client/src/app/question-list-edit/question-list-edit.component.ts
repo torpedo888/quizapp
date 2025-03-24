@@ -2,7 +2,7 @@ import { Component, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Option } from '../_models/Option';
-import { QuestionService } from '../question.service';
+import { QuestionService } from '../_services/question.service';
 import { Question } from '../_models/Question';
 import { Observable } from 'rxjs';
 

@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { QuizService } from '../_services/quiz.service';
-import { QuestionService } from '../question.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { QuestionService } from '../_services/question.service';
 
 @Component({
   selector: 'app-question-delete',

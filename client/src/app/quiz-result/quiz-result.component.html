@@ -1,7 +1,19 @@
 <div class="container text-center mt-5">
-  <h2>Quiz Results</h2>
-  <p>Total Questions: {{ totalQuestions }}</p>
-  <p>Correct Answers: {{ correctAnswers }}</p>
-  <p>Your Score: {{ score }}%</p>
-  <button (click)="retryQuiz()" class="btn btn-success mt-3">Retry Quiz</button>
+  <!-- Card with a background, rounded corners, and shadow -->
+  <div class="card shadow-lg rounded p-4" style="background-color: #f8f9fa;">
+    <!-- GIF with centering and rounded corners -->
+    <img src= {{this.scoreMessageUrl}} class="rounded mx-auto d-block"
+    style="max-width: 250px; height: auto; margin-bottom: 20px;" alt="GIF well done - animated GIF on GIFER">
+
+    <!-- Header with better spacing and font style -->
+    <h2 class="font-weight-bold text-primary mb-4">Your Results</h2>
+    
+    <!-- Info with spacing and font size adjustments -->
+    <p class="lead">Total Questions: <strong>{{ totalQuestions }}</strong></p>
+    <p class="lead">Correct Answers: <strong>{{ correctAnswers }}</strong></p>
+    <p class="lead">Your Score: <strong>{{ score }}%</strong></p>
+    
+    <!-- Retry button with a larger size and hover effect -->
+    <button (click)="retryQuiz()" class="btn btn-success btn-lg mt-4 px-4 py-2 rounded shadow-sm hover-shadow-lg">Retry Quiz</button>
+  </div>
 </div>

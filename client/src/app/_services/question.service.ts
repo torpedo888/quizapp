@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, Observable, tap } from 'rxjs';
-import { Option } from './_models/Option';
-import { Question } from './_models/Question';
+import { Option } from '../_models/Option';
+import { Question } from '../_models/Question';
 import { map } from 'rxjs/operators';
-import { Quiz } from './_models/Quiz';
+import { Quiz } from '../_models/Quiz';
 
 @Injectable({
   providedIn: 'root',

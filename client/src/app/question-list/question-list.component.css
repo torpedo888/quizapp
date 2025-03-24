@@ -83,3 +83,25 @@ img {
   max-height: 300px; /* Adjust as needed */
   border-radius: 10px;
 }
+
+.rounded-checkmark {
+  font-size: 24px; /* Adjust size as needed */
+  border-radius: 50%; /* This makes the icon rounded */
+  background-color: #4CAF50; /* Green background, or customize */
+  color: white; /* White checkmark color */
+  padding: 10px; /* Space around the checkmark */
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.rounded-xmark {
+  font-size: 24px; /* Adjust size as needed */
+  border-radius: 50%; /* This makes the icon rounded */
+  background-color: #f90000; /* Green background, or customize */
+  color: white; /* White checkmark color */
+  padding: 10px; /* Space around the checkmark */
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}

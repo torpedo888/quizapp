@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Component({
   standalone: true,
@@ -12,6 +13,12 @@ export class QuizResultComponent {
   correctAnswers: number = 0;
   score: number = 0;
 
+  quizMaxScoreUrl: String = environment.quizMaxScoreUrl;
+  quizMiddleScoreUrl: String = environment.quizMiddleScoreUrl;
+  quizLowScoreUrl: String = environment.quizLowScoreUrl;
+
+  scoreMessageUrl: String = "";
+
   constructor(private router: Router) {
     const state = this.router.getCurrentNavigation()?.extras.state as { 
       totalQuestions?: number; 
@@ -23,6 +30,21 @@ export class QuizResultComponent {
       this.totalQuestions = state.totalQuestions ?? 0;
       this.correctAnswers = state.correctAnswers ?? 0;
       this.score = state.score ?? 0;
+
+      switch (true) {
+        case (this.score >= 90):
+          this.scoreMessageUrl = this.quizMaxScoreUrl;
+          break;
+        case (this.score >= 60 && this.score < 90):
+          this.scoreMessageUrl = this.quizMiddleScoreUrl;
+          break;
+        case (this.score < 60):
+          this.scoreMessageUrl = this.quizLowScoreUrl;
+          break;
+        default:
+          this.scoreMessageUrl = '';
+      }
+      
     }
   }
 

@@ -1,11 +1,10 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Question } from '../_models/Question';
-import { QuestionService } from '../question.service';
+import { QuestionService } from '../_services/question.service';
 import { QuizResultComponent } from '../quiz-result/quiz-result.component';
 import { FormsModule } from '@angular/forms'; 
 import { ActivatedRoute, Router } from '@angular/router';
-import { Quiz } from '../_models/Quiz';
 
 @Component({
   selector: 'app-question-list',
@@ -14,27 +13,27 @@ import { Quiz } from '../_models/Quiz';
   styleUrls: ['./question-list.component.css'],
   imports: [CommonModule, FormsModule, QuizResultComponent]
 })
-export class QuestionListComponent implements OnInit, OnDestroy {
+export class QuestionListComponent implements OnInit {
   quizId: number | null = null;
   quizTitle: string = 'Default Quiz Title';
   categoryName: string = 'Basic Math';
   questions: Question[] = [];
   selectedAnswers: { [questionId: number]: number } = {};
   errorMessage: string = '';
-  validateSubmitted: boolean = false;
-  validateCurrentQuestion: boolean = false; // Flag for per-question validation
+  showValidation: boolean = false;  // Ensure this exists for validation handling
   isProcessingNext: boolean = false;
   incorrectAnswers: { [questionId: number]: number } = {};
+  validateCurrentQuestion: boolean = false; // Flag for per-question validation
+  answerSubmitted: boolean = false; // Controls when checkmarks are visible
+  correctAnswersCount: number = 0; // Track correct answers count
 
   // Quiz results
   correctAnswers: number = 0;
   score: number = 0;
   totalQuestions: number = 0;
 
-  // For one-question-at-a-time display and timer
+  // One-question-at-a-time display and timer
   currentQuestionIndex: number = 0;
-  timer: number = 30; // seconds per question
-  timerInterval: any;
 
   constructor(
     private questionService: QuestionService,
@@ -44,144 +43,97 @@ export class QuestionListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-
-    // Get quizId from route params
     this.quizId = Number(this.route.snapshot.paramMap.get('id'));
 
-    // Optionally retrieve quizTitle from navigation state:
     if (history.state && history.state.quizTitle) {
       this.quizTitle = history.state.quizTitle;
     }
-    this.loadQuestions();
-  }
 
-  ngOnDestroy(): void {
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval);
-    }
+    this.loadQuestions();
   }
 
   loadQuestions(): void {
     const quizId = Number(this.route.snapshot.paramMap.get('id'));
     if (!quizId) return;
-    
+
     this.questionService.getQuestionsByQuizId(quizId).subscribe({
       next: (data: Question[]) => {
-        console.log("Loaded questions:", data);
         this.questions = data;
         this.totalQuestions = data.length;
+
         if (data.length > 0 && data[0].categoryName) {
           this.categoryName = data[0].categoryName;
         }
+
         this.currentQuestionIndex = 0;
-        this.startTimer();
       },
       error: (err) => console.error('Error fetching questions:', err)
     });
   }
 
-  startTimer(): void {
-    this.timer = 30;
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval);
-    }
-    this.timerInterval = setInterval(() => {
-      this.timer--;
-      if (this.timer <= 0) {
-        this.timer = 0;
-        clearInterval(this.timerInterval);
-        this.nextQuestion(); // Auto advance when time's up
-      }
-    }, 500);
-  }
-
   selectOption(questionId: number, optionId: number): void {
-    if (!this.validateSubmitted && !this.validateCurrentQuestion) {
-      this.selectedAnswers[questionId] = optionId;
+    this.selectedAnswers[questionId] = optionId;
+    this.showValidation = false; // Hide validation when an option is selected
+  }
+
+  nextQuestion(): void {
+    this.validateCurrentQuestion = false; // Reset for the next question
+    this.errorMessage = '';
+
+    if (this.currentQuestionIndex < this.questions.length - 1) {
+      this.currentQuestionIndex++;
+      this.answerSubmitted = false; // Reset for next question
+    } else {
+
+      this.score = Math.round((this.correctAnswersCount / this.totalQuestions) * 100);
+
+      // Navigate to results when all questions are done
+      this.router.navigate(['/quiz-result'], {
+        state: {
+          quizId: this.quizId,
+          totalQuestions: this.totalQuestions,
+          correctAnswers: this.correctAnswersCount,
+          score: this.score
+        }
+      });
     }
   }
 
-  handleNextOrSubmit(): void {
-    if (this.isProcessingNext) {
+  submitCurrentAnswer(): void {
+    const currentQuestion = this.questions[this.currentQuestionIndex];
+  
+    if (!currentQuestion) return;
+  
+    // Ensure the user has selected an answer before allowing submit
+    if (this.selectedAnswers[currentQuestion.id] === undefined) {
+      this.showValidation = true;
       return;
     }
-    this.isProcessingNext = true;
-  
-    if (this.currentQuestionIndex === this.questions.length - 1) {
-      this.submitAnswers();
-    } else {
-      this.nextQuestion();
+
+    // Check if the selected answer is correct
+    const selectedOptionId = this.selectedAnswers[currentQuestion.id];
+    const selectedOption = currentQuestion.options.find(opt => opt.id === selectedOptionId);
+
+    if (selectedOption?.isCorrect) {
+      this.correctAnswersCount++; // Increment the score if correct
     }
+
+    this.answerSubmitted = true; // Lock choices and show feedback
+
+    // this.answerSubmitted = true; // Show checkmark/X and disable options
+  
+    // this.showValidation = false;
+    // this.validateCurrentQuestion = true;  // This triggers the "Next" button to appear
   }
   
-  nextQuestion(): void {
-    this.validateCurrentQuestion = true;
   
-    setTimeout(() => {
-      this.validateCurrentQuestion = false; // Reset validation state
-  
-      if (this.currentQuestionIndex < this.questions.length - 1) {
-        this.currentQuestionIndex++;
-        this.cdr.detectChanges(); // Force UI update
-      }
-  
-      this.isProcessingNext = false; // Ensure this flag resets properly
-    }, 300);
-  }
-  
-
-  submitAnswers(): void {
-  this.validateSubmitted = true;
-  this.errorMessage = '';
-
-  // Ensure all questions are answered before submission
-  if (this.questions.some(q => !this.selectedAnswers[q.id])) {
-    this.errorMessage = 'Please answer all questions before submitting.';
-    return;
-  }
-
-  this.correctAnswers = 0;
-  this.score = 0;
-  this.incorrectAnswers = {}; // Reset previous incorrect answers
-
-  for (let q of this.questions) {
-    const selected = this.selectedAnswers[q.id];
-    const correctOption = q.options.find(o => o.isCorrect);
-
-    if (selected === correctOption?.id) {
-      this.correctAnswers++;
-    } else {
-      this.incorrectAnswers[q.id] = selected; // Store incorrect answer
-    }
-  }
-
-  // Calculate final score
-  this.score = Math.round((this.correctAnswers / this.totalQuestions) * 100);
-
-  // Stop any active timer
-  if (this.timerInterval) {
-    clearInterval(this.timerInterval);
-  }
-
-  // Navigate to the quiz result component, passing data
-  this.router.navigate(['/quiz-result'], {
-    state: {
-      quizId: this.quizId,
-      totalQuestions: this.totalQuestions,
-      correctAnswers: this.correctAnswers,
-      score: this.score
-    }
-  });
-}
-
 
   resetQuiz(): void {
     this.selectedAnswers = {};
-    this.validateSubmitted = false;
-    this.correctAnswers = 0;
+    this.showValidation = false;
+    this.correctAnswersCount = 0;
     this.score = 0;
     this.errorMessage = '';
     this.currentQuestionIndex = 0;
-    this.startTimer();
   }
 }
