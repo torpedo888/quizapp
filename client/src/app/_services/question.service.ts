@@ -25,11 +25,13 @@ export class QuestionService {
       map((questions: Question[]) =>
         questions.map(q => ({
           ...q,
+          imageUrl: q.imageUrl ?? '',
           options: q.options.map(o => ({
             ...o,
             isCorrect: o.isCorrect
           })),
-          categoryName: q.categoryName ?? "Unknown Category"
+          categoryName: q.categoryName ?? "Unknown Category",
+          quizId: q.quizId
         }))
       )
     );
@@ -41,6 +43,13 @@ export class QuestionService {
 
   getQuestionsByQuizId(quizId: number): Observable<Question[]> {
     return this.http.get<Question[]>(`${this.apiQuizUrl}/${quizId}/questions`);
+  }
+
+  getQuestionById(quizId: number, questionId: number): Observable<Question> {
+    return this.http.get<{ result: Question }>(`${this.apiQuestionUrl}/${quizId}/questions/${questionId}`)
+      .pipe(
+        map(response => response.result) // Extract only the 'result' object
+      );
   }
 
   saveQuestion(quizId: number, formData: FormData): Observable<any> {

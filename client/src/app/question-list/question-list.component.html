@@ -43,15 +43,15 @@
 
           <!-- Show checkmark if the user selected the correct answer -->
           <i *ngIf="answerSubmitted && selectedAnswers[questions[currentQuestionIndex].id] === option.id && option.isCorrect" 
-            class="fa fa-check rounded-checkmark ms-5"></i>
+            class="fa fa-check rounded-checkmark ms-3"></i>
 
           <!-- Show X if the user selected the wrong answer -->
           <i *ngIf="answerSubmitted && selectedAnswers[questions[currentQuestionIndex].id] === option.id && !option.isCorrect" 
-            class="fa-solid fa-xmark rounded-xmark ms-5"></i>
+            class="fa-solid fa-xmark rounded-xmark ms-3"></i>
 
           <!-- Highlight the correct answer even if the user got it wrong -->
           <i *ngIf="answerSubmitted && option.isCorrect && selectedAnswers[questions[currentQuestionIndex].id] !== option.id" 
-            class="fa-solid fa-check rounded-checkmark ms-5"></i>
+            class="fa-solid fa-check rounded-checkmark ms-3"></i>
         </label>
         <span class="underline"></span>
       </div>

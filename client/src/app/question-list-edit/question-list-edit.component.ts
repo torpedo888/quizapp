@@ -21,7 +21,7 @@ export class QuestionListEditComponent {
   questions: Question[] = [];
   selectedQuestion: Question | null = null;
   showToast: boolean = false; // Controls Bootstrap toast visibility
-  quizId: number = 1; // Set quizId dynamically as needed
+  imageFile: File | null = null; // Store the selected image file
 
   constructor(private fb: FormBuilder, private questionService: QuestionService) {
     this.initForm();
@@ -49,7 +49,7 @@ export class QuestionListEditComponent {
     });
   }
 
-  updateForm(question: Question) {
+  updateFormold(question: Question) {
     if (!question) return;
 
     this.questionForm.reset();
@@ -65,10 +65,50 @@ export class QuestionListEditComponent {
     });
   }
 
+  updateForm(question: Question) {
+    console.log('Received question in updateForm:', question);
+  
+    if (!question) {
+      console.error('Question is null or undefined');
+      return;
+    }
+  
+    console.log('Text:', question.text);
+    console.log('Options:', question.options);
+  
+    this.questionForm.reset();
+    this.questionForm.patchValue({
+      text: question.text,
+      imageUrl: question.imageUrl
+    });
+  
+    const optionsArray = this.questionForm.get('options') as FormArray;
+    if (!optionsArray) {
+      console.error('FormArray "options" is missing!');
+      return;
+    }
+  
+    optionsArray.clear();
+  
+    if (question.options && Array.isArray(question.options)) {
+      question.options.forEach((option: Option) => {
+        console.log('Adding option:', option);
+        optionsArray.push(this.createOptionForm(option));
+      });
+    } else {
+      console.warn('Options array is missing or undefined', question);
+    }
+  }
+  
+  
+
   onSelectQuestion(event: Event) {
     const selectedIndex = parseInt((event.target as HTMLSelectElement).value, 10);
     if (!isNaN(selectedIndex) && selectedIndex >= 0 && selectedIndex < this.questions.length) {
       this.selectedQuestion = this.questions[selectedIndex];
+
+      console.log('quizid:' + this.questions[selectedIndex].quizId)
+
       this.updateForm(this.selectedQuestion);
     }
   }
@@ -97,6 +137,13 @@ export class QuestionListEditComponent {
     this.options.removeAt(index);
   }
 
+  onFileSelected(event: Event) {
+    const fileInput = event.target as HTMLInputElement;
+    if (fileInput.files && fileInput.files.length > 0) {
+      this.imageFile = fileInput.files[0]; // Save the file
+    }
+  }
+
   submitForm() {
     
     if (this.questionForm.valid && this.selectedQuestion) {
@@ -107,33 +154,45 @@ export class QuestionListEditComponent {
 
       console.log("optionsJson:", JSON.stringify(this.options.value, null, 2));
 
-  
-      const imageUrl = this.questionForm.get('imageUrl')?.value;
-      const audioUrl = this.questionForm.get('audioUrl')?.value;
-  
-      if (imageUrl) {
-        formData.append('imageFile', imageUrl);  // Add image if provided
-      }
-  
-      if (audioUrl) {
-        formData.append('audioFile', audioUrl);  // Add audio if provided
+      // If a new image is selected, attach it
+      if (this.imageFile) {
+        formData.append('imageFile', this.imageFile);
+      } else if (this.questionForm.get('imageUrl')?.value) {
+        formData.append('imageUrl', this.questionForm.get('imageUrl')?.value);
       }
 
-      // this.questionService.saveQuestion2(this.quizId, formData).subscribe({
-      //   next: () => {
-      //     this.showToast = true;
-      //     setTimeout(() => this.showToast = false, 3000);
-      //   },
-      //   error: (err) => console.error('Error saving question:', err)
-      // });
-      this.questionService.updateQuestion(this.quizId, this.selectedQuestion.id, formData).subscribe({
+      this.questionService.updateQuestion(this.selectedQuestion.quizId, this.selectedQuestion.id, formData).subscribe({
         next: (response) => { 
           this.showToast = true;
           setTimeout(() => this.showToast = false, 3000);
-         // this.loadQuestion(response.question); // Refresh UI with updated data
+
+          // Reload only the edited question
+          if(this.selectedQuestion){
+            this.reloadQuestion(this.selectedQuestion.quizId, this.selectedQuestion.id);
+          }
         },
         error: (err) => console.error('Error updating question:', err)
       });
     }
   }
+
+  reloadQuestion(quizId: number, questionId: number) {
+    this.questionService.getQuestionById(quizId, questionId).subscribe({
+      next: (updatedQuestion) => {
+        // Find the index of the updated question
+        const index = this.questions.findIndex(q => q.id === questionId);
+        
+        if (index !== -1) {
+          // Replace the updated question in the list
+          this.questions[index] = updatedQuestion;
+        }
+  
+        // Update the form with the new data
+        this.selectedQuestion = updatedQuestion;
+        this.updateForm(this.selectedQuestion);
+      },
+      error: (err) => console.error('Error reloading question:', err)
+    });
+  }
+  
 }

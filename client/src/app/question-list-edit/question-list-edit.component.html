@@ -19,9 +19,17 @@
     </div>
 
     <div class="mb-3">
-      <label class="form-label">Image URL</label>
-      <input type="text" class="form-control" formControlName="imageUrl">
+      <label class="form-label">Current Image</label>
+      <div *ngIf="questionForm.get('imageUrl')?.value">
+        <img [src]="questionForm.get('imageUrl')?.value" alt="Question Image" class="img-thumbnail" style="max-width: 200px;">
+      </div>
     </div>
+    
+    <div class="mb-3">
+      <label class="form-label">Upload New Image</label>
+      <input type="file" class="form-control" (change)="onFileSelected($event)">
+    </div>
+    
 
     <!-- Options List -->
     <div class="mb-3">

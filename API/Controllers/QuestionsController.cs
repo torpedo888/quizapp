@@ -102,6 +102,7 @@ public class QuestionsController(DataContext context) : ControllerBase
             var questions = await _context.Questions
                 .Include(q => q.Options)
                 .Include( c=> c.Category)
+                .Include( k => k.Quiz)
                 .ToListAsync();
 
             // Convert to DTOs
@@ -109,13 +110,15 @@ public class QuestionsController(DataContext context) : ControllerBase
             {
                 Id = q.Id,
                 Text = q.Text,
+                ImageUrl = q.ImageUrl != null ? $"{Request.Scheme}://{Request.Host}{q.ImageUrl}" : null,
                 Options = q.Options.Select(o => new OptionDto
                 {
                     Id = o.Id,
                     Text = o.Text,
                     IsCorrect = o.IsCorrect == 1
                 }).ToList(),
-                CategoryName = q.Category!=null ? q.Category.Name : "Unknown"
+                CategoryName = q.Category!=null ? q.Category.Name : "Unknown",
+                QuizId = q.QuizId
             }).ToList();
 
             return Ok(questionDtos);
@@ -354,6 +357,33 @@ public class QuestionsController(DataContext context) : ControllerBase
         await _context.SaveChangesAsync();
 
         return Ok(new { message = "Question updated successfully", question.Id });
+    }
+
+    [HttpGet("{quizId}/questions/{questionId}")]
+    public async Task<IActionResult> GetQuestion(int quizId, int questionId)
+    {
+        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+        var questionDto  = _context.Questions
+            .Where(q => q.Id == questionId && q.QuizId == quizId)
+            .Select(q => new QuestionDto
+            {
+                Id = q.Id,
+                Text = q.Text,
+                ImageUrl = string.IsNullOrEmpty(q.ImageUrl) ? null : $"{baseUrl}{q.ImageUrl}",
+                Options = q.Options.Select(o => new OptionDto
+                {
+                    Id = o.Id,
+                    Text = o.Text,
+                    IsCorrect = o.IsCorrect == 1
+                }).ToList(),
+                CategoryName = q.Category != null ? q.Category.Name : "Unknown",
+                QuizId= q.QuizId
+            }).FirstOrDefaultAsync();
+
+        if (questionDto == null)
+        return NotFound("Question not found");
+
+        return Ok(questionDto);
     }
 
 }
