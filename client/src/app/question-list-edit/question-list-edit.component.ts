@@ -139,10 +139,20 @@ export class QuestionListEditComponent {
 
   onFileSelected(event: Event) {
     const fileInput = event.target as HTMLInputElement;
+    
     if (fileInput.files && fileInput.files.length > 0) {
-      this.imageFile = fileInput.files[0]; // Save the file
+      const file = fileInput.files[0];
+      this.imageFile = file;
+  
+      // Create a preview URL for the selected file
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.questionForm.patchValue({ imageUrl: reader.result as string }); // Update the form value
+      };
+      reader.readAsDataURL(file);
     }
   }
+  
 
   submitForm() {
     

@@ -20,15 +20,19 @@
               <li class="nav-item">
                 <a class="nav-link" routerLink="/quiz-form" href="#">Edit Quiz</a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" routerLink="/addquestion" href="#">Add Questions</a>
+              <!-- Dropdown for Questions -->
+              <li class="nav-item dropdown" bsDropdown>
+                <a class="nav-link dropdown-toggle" id="questionsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" bsDropdownToggle>
+                  Questions
+                </a>
+                <ul *bsDropdownMenu class="dropdown-menu" aria-labelledby="questionsDropdown">
+                  <li><a class="dropdown-item" routerLink="/addquestion">Add Question</a></li>
+                  <li><a class="dropdown-item" routerLink="/editquestion">Edit Question</a></li>
+                  <li><a class="dropdown-item" routerLink="/deletequestion">Delete Question</a></li>
+                </ul>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" routerLink="/editquestion" href="#">Edit Questions</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" routerLink="/deletequestion" href="#">Delete Questions</a>
-              </li>
+              
+              
               <li class="nav-item">
                 <a class="nav-link" (click)="logout()" aria-disabled="true">Logout</a>
               </li>

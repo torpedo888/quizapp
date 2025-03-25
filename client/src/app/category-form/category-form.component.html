@@ -1,23 +1,39 @@
-<div class="form-container">
-    <h2>{{ categoryId ? 'Edit' : 'Add' }} Category</h2>
-  
-    <div *ngIf="errorMessage" class="error-message">
+<div class="container mt-4">
+  <div class="card shadow-lg p-4">
+    <h2 class="text-center mb-4">{{ categoryId ? 'Edit' : 'Add' }} Category</h2>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="alert alert-danger">
       {{ errorMessage }}
     </div>
-  
+
     <form (ngSubmit)="saveCategory()">
-      <label for="name">Category Name:</label>
-      <input type="text" id="name" [(ngModel)]="categoryName" name="categoryName" required>
-  
-      <label for="imageFile">Upload Image:</label>
-      <input type="file" id="imageFile" (change)="onFileSelected($event)" name="imageFile">
-  
-      <div *ngIf="previewImage">
-        <p>Preview:</p>
-        <img [src]="previewImage" alt="Category Image" class="preview-img">
+      <!-- Category Name -->
+      <div class="mb-3">
+        <label for="name" class="form-label">Category Name:</label>
+        <input type="text" id="name" [(ngModel)]="categoryName" name="categoryName"
+               class="form-control" placeholder="Enter category name" required>
       </div>
-  
-      <button type="submit">{{ categoryId ? 'Update' : 'Add' }} Category</button>
+
+      <!-- Upload Image -->
+      <div class="mb-3">
+        <label for="imageFile" class="form-label">Upload Image:</label>
+        <input type="file" id="imageFile" (change)="onFileSelected($event)" name="imageFile"
+               class="form-control">
+      </div>
+
+      <!-- Image Preview -->
+      <div *ngIf="previewImage" class="mb-3 text-center">
+        <p class="text-muted">Image Preview:</p>
+        <img [src]="previewImage" alt="Category Image" class="img-thumbnail shadow" style="max-width: 200px;">
+      </div>
+
+      <!-- Submit Button -->
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary px-4">
+          {{ categoryId ? 'Update' : 'Add' }} Category
+        </button>
+      </div>
     </form>
   </div>
-  
+</div>
