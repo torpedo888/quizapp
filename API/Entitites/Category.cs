@@ -18,6 +18,8 @@ public class Category
     [JsonPropertyName("imageUrl")]
     public string? ImageUrl { get; set; }
 
+    public bool IsActive { get; set; } = true;
+
     // Navigation Property
     public ICollection<Question> Questions { get; set; } = new List<Question>();
 }

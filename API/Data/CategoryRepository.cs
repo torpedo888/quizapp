@@ -26,7 +26,7 @@ public class CategoryRepository : ICategoryRepository
         return await _context.Categories.FindAsync(id);
     }
 
-    public async Task<IEnumerable<QuizDto>> GetQuizzesByCategoryAsync(int categoryId)
+    public async Task<IEnumerable<QuizDto>> GetQuizzesByCategoryAsync(int categoryId, string requestScheme, string host)
     {
         return await _context.Quizzes
             .Where(q => q.CategoryId == categoryId)
@@ -34,7 +34,7 @@ public class CategoryRepository : ICategoryRepository
             {
                 Id = q.Id,
                 Title = q.Title,
-                ImageUrl = q.ImageUrl
+                ImageUrl = q.ImageUrl != null ? $"{requestScheme}://{host}{q.ImageUrl}" : null,
             })
             .ToListAsync();
     }
@@ -55,14 +55,26 @@ public class CategoryRepository : ICategoryRepository
         }
     }
 
-    public Task UpdateAsync(Category category)
-    {
-        _context.Categories.Update(category); // Updates the category in the context
-        return Task.CompletedTask; // No async operation needed for Update, just mark it as completed
-    }
-
     public async Task SaveChangesAsync()
     {
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<Category?> GetByIdAsync(int id)
+    {
+        return await _context.Categories.FindAsync(id);
+    }
+
+    public async Task<List<Category>> GetActiveCategoriesAsync()
+    {
+        return await _context.Categories
+            .Where(c => c.IsActive)
+            .ToListAsync();
+    }
+
+    public async Task UpdateAsync(Category category)
+    {
+        _context.Categories.Update(category);
         await _context.SaveChangesAsync();
     }
 }

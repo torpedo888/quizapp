@@ -1,0 +1,68 @@
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>Image</th>
+      <th>Category Name</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let category of categories">
+      <!-- Display Thumbnail Image -->
+      <td>
+        <img 
+          *ngIf="category.imageUrl" 
+          [src]="category.imageUrl" 
+          alt="Category Image" 
+          class="img-thumbnail"
+          width="50" height="50"
+        />
+      </td>
+      
+      <!-- Editable Category Name -->
+      <td>
+        <span *ngIf="!category.editing">{{ category.name }}</span>
+        <input
+          *ngIf="category.editing"
+          [(ngModel)]="category.editedName"
+          class="form-control"
+        />
+        <input *ngIf="category.editing" type="file" (change)="onFileSelected($event, category)" />
+      </td>
+
+      <!-- Status -->
+      <td [ngClass]="{'bg-success text-white': category.isActive, 'bg-danger text-white': !category.isActive}">
+        {{ category.isActive ? 'Active' : 'Inactive' }}
+      </td>
+
+      <!-- Actions -->
+      <td>
+        <div class="d-flex gap-2">
+          <!-- Edit Button -->
+          <button *ngIf="!category.editing" (click)="editCategory(category)" class="btn btn-warning btn-sm flex-grow-1" style="min-width: 90px;">
+            Edit
+          </button>
+          <button *ngIf="category.editing" (click)="saveCategory(category)" class="btn btn-success btn-sm flex-grow-1" style="min-width: 90px;">
+            Save
+          </button>
+          <button *ngIf="category.editing" (click)="cancelEdit(category)" class="btn btn-secondary btn-sm flex-grow-1" style="min-width: 90px;">
+            Cancel
+          </button>
+      
+          <!-- Activate/Deactivate Buttons -->
+          <button *ngIf="!category.isActive" class="btn btn-success btn-sm flex-grow-1" (click)="activateCategory(category.id)" style="min-width: 90px;">
+            Activate
+          </button>
+          <button *ngIf="category.isActive" class="btn btn-danger btn-sm flex-grow-1" (click)="deactivateCategory(category.id)" style="min-width: 90px;">
+            Deactivate
+          </button>
+        </div>
+      </td>
+      
+      
+      
+      
+    </tr>
+  </tbody>
+</table>

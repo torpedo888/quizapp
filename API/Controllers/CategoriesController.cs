@@ -1,3 +1,4 @@
+using API.DTOs;
 using API.Entitites;
 using API.Interfaces;
 using Microsoft.AspNetCore.Hosting;
@@ -13,19 +14,44 @@ using System.Threading.Tasks;
 public class CategoriesController : ControllerBase
 {
     private readonly ICategoryRepository _categoryRepository;
+    private readonly ICategoryService _categoryService;
     private readonly IWebHostEnvironment _environment;
 
-    public CategoriesController(ICategoryRepository categoryRepository, IWebHostEnvironment environment)
+    public CategoriesController(ICategoryRepository categoryRepository, ICategoryService categoryService,
+     IWebHostEnvironment environment)
     {
         _categoryRepository = categoryRepository;
+        _categoryService = categoryService;
         _environment = environment;
     }
 
+    // [HttpGet]
+    // public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+    // {
+    //     return Ok(await _categoryRepository.GetAllCategoriesAsync());
+    // }
+
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+    public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories([FromQuery] bool onlyActive = false )
     {
-        return Ok(await _categoryRepository.GetAllCategoriesAsync());
+        var categories = await _categoryRepository.GetAllCategoriesAsync();
+
+        if (onlyActive)
+        {
+            categories = categories.Where(c=>c.IsActive).ToList();
+        }
+
+        var categoryDtos = categories.Select(c => new CategoryDto
+        {
+            Id = c.Id,
+            Name = c.Name,
+            IsActive = c.IsActive,
+            ImageUrl = c.ImageUrl != null ? $"{Request.Scheme}://{Request.Host}{c.ImageUrl}" : null,
+        }).ToList();
+
+        return Ok(categoryDtos);
     }
+
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Category>> GetCategory(int id)
@@ -145,7 +171,7 @@ public class CategoriesController : ControllerBase
     [HttpGet("{categoryId}/quizzes")]
     public async Task<IActionResult> GetQuizzesByCategory(int categoryId)
     {
-        var quizzes = await _categoryRepository.GetQuizzesByCategoryAsync(categoryId);
+        var quizzes = await _categoryRepository.GetQuizzesByCategoryAsync(categoryId, Request.Scheme, Request.Host.ToString());
 
         if (!quizzes.Any())
         {
@@ -153,5 +179,63 @@ public class CategoriesController : ControllerBase
         }
 
         return Ok(quizzes);
+    }
+
+    [HttpPut("{id}/deactivate")]
+    public async Task<IActionResult> DeactivateCategory(int id)
+    {
+        var success = await _categoryService.SetCategoryInactiveAsync(id);
+        if (!success) return NotFound();
+        
+        return NoContent();
+    }
+
+    [HttpPut("{id}/activate")]
+    public async Task<IActionResult> ActivateCategory(int id)
+    {
+        var success = await _categoryService.SetCategoryActiveAsync(id);
+        if (!success) return NotFound();
+        
+        return NoContent();
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateCategoryName(int id, [FromForm] CategoryUpdateDto model)
+    {
+        var category = await _categoryRepository.GetByIdAsync(id);
+        if (category == null)
+        {
+            return NotFound();
+        }
+
+        category.Name = model.Name;
+
+        // if(model.Image !=null)
+        // {
+        //     var filePath = Path.Combine("uploads", model.Image.FileName);
+        //     using(var stream = new FileStream(filePath, FileMode.Create))
+        //     {
+        //         await model.Image.CopyToAsync(stream);
+        //     }
+        //     category.ImageUrl = filePath;
+        // }
+
+        //ez menyen file servicebe mert a questioncontrollerben is van file feltoltes.
+        if (model.Image != null)
+        {
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+            Directory.CreateDirectory(uploadsFolder);
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(model.Image.FileName);
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await model.Image.CopyToAsync(fileStream);
+            }
+            category.ImageUrl = $"/images/{uniqueFileName}";
+        }
+
+        await _categoryRepository.UpdateAsync(category);
+
+        return NoContent(); // 204 No Content response
     }
 }

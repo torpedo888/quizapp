@@ -26,7 +26,7 @@ public class QuizController : ControllerBase
     {
         try
         {
-            var quizzes = await _context.Quizzes.ToListAsync();
+            var quizzes = await _context.Quizzes.Where(q => q.Category.IsActive).ToListAsync();
 
             var quizDtos = quizzes.Select(q => new QuizDto
             {

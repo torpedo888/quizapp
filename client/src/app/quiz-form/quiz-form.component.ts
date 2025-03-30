@@ -29,7 +29,7 @@ export class QuizFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadCategories();
+    this.loadCategories(false);
 
     this.route.paramMap.subscribe((params) => {
       const id = params.get('id');
@@ -40,8 +40,8 @@ export class QuizFormComponent implements OnInit {
     });
   }
 
-  loadCategories(): void {
-    this.categoryService.getCategories().subscribe({
+  loadCategories(onlyActive: boolean): void {
+    this.categoryService.getCategories(onlyActive).subscribe({
       next: (categories) => {
         this.categories = categories;
       },

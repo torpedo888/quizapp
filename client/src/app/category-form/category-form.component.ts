@@ -95,22 +95,12 @@ export class CategoryFormComponent implements OnInit {
       formData.append('imageFile', this.selectedFile);
     }
 
-    if (this.categoryId) {
-      this.categoryService.updateCategory(this.categoryId, formData).subscribe({
-        next: () => this.router.navigate(['/categories']),
-        error: (err) => {
-          console.error('Error updating category', err);
-          this.errorMessage = 'Failed to update category.';
-        }
-      });
-    } else {
-      this.categoryService.uploadCategory(formData).subscribe({
-        next: () => this.router.navigate(['/categories']),
-        error: (err) => {
-          console.error('Error adding category', err);
-          this.errorMessage = 'Failed to add category.';
-        }
-      });
-    }
+    this.categoryService.uploadCategory(formData).subscribe({
+      next: () => this.router.navigate(['/categories']),
+      error: (err) => {
+        console.error('Error adding category', err);
+        this.errorMessage = 'Failed to add category.';
+      }
+    });
   }
 }

@@ -4,7 +4,6 @@ using API.Entitites;
 using API.Extensions;
 using API.Interfaces;
 using API.Middleware;
-using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

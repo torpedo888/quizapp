@@ -17,11 +17,11 @@ export class CategoryListComponent implements OnInit {
   constructor(private categoryService: CategoryService, private router: Router) {}
 
   ngOnInit(): void {
-    this.loadCategories();
+    this.loadCategories(true);
   }
 
-  loadCategories(): void {
-    this.categoryService.getCategories().subscribe({
+  loadCategories(onlyActive: boolean): void {
+    this.categoryService.getCategories(onlyActive).subscribe({
       next: (data) => this.categories = data,
       error: (err) => console.error('Error fetching categories:', err)
     });

@@ -13,8 +13,8 @@ export class CategoryService {
 
   constructor(private http: HttpClient) {}
 
-  getCategories(): Observable<Category[]> {
-    return this.http.get<Category[]>(this.apiUrl);
+  getCategories(onlyActive: boolean): Observable<Category[]> {
+    return this.http.get<Category[]>(`${this.apiUrl}?onlyActive=${onlyActive}`);
   }
 
   getCategoryById(id: number): Observable<any> {
@@ -25,11 +25,30 @@ export class CategoryService {
     return this.http.post(`${this.apiUrl}/upload`, formData);
   }
 
-  updateCategory(id: number, formData: FormData): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, formData);
-  }
-
   getQuizzesByCategory(categoryId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/${categoryId}/quizzes`);
   }
+
+  deleteCategory(categoryId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${categoryId}`);
+  }
+
+  setCategoryInactive(categoryId: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${categoryId}/deactivate`, {})
+  }
+
+  setCategoryActive(categoryId: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${categoryId}/activate`, {})
+  }
+
+  updateCategory(categoryId: number, newName: string, imageFile?: File): Observable<void> {
+    const formData = new FormData();
+    formData.append("name", newName);
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
+  
+    return this.http.put<void>(`${this.apiUrl}/${categoryId}`, formData);
+  }
+  
 }

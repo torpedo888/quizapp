@@ -51,7 +51,7 @@ export class QuestionFormComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.categoryService.getCategories().subscribe((categories) => {
+    this.categoryService.getCategories(true).subscribe((categories) => {
       this.categories = categories;
     });
 
