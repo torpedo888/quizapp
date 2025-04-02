@@ -15,6 +15,8 @@ import { FormsModule } from '@angular/forms';
 export class CategoryEditComponent implements OnInit {
   categories: EditableCategory[] = [];
 
+  newCategory: { name: string; imageUrl: string | null; imageFile: File | null } | null = null;
+
   constructor(private categoryService: CategoryService) {}
 
   ngOnInit(): void {
@@ -31,6 +33,47 @@ export class CategoryEditComponent implements OnInit {
         imageUrl: category.imageUrl || 'assets/default-thumbnail.jpg' // Fallback if no image
       })) as EditableCategory[];
     });
+  }
+
+  addNewCategory(): void {
+    this.newCategory = { name: '', imageUrl: null, imageFile: null };
+  }
+  
+  onNewFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        if (this.newCategory) {
+          this.newCategory.imageUrl = e.target.result; // Show preview
+          this.newCategory.imageFile = file;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+  
+  saveNewCategory(): void {
+    if (!this.newCategory?.name.trim()) {
+      alert('Category name cannot be empty!');
+      return;
+    }
+  
+    // Prepare form data for API call
+    const formData = new FormData();
+    formData.append('name', this.newCategory.name);
+    if (this.newCategory.imageFile) {
+      formData.append('image', this.newCategory.imageFile);
+    }
+  
+    this.categoryService.addCategory(formData).subscribe((newCat) => {
+      this.loadCategories(false); // Reload categories after adding
+      this.newCategory = null; // Reset form
+    });
+  }
+  
+  cancelNewCategory(): void {
+    this.newCategory = null;
   }
 
   editCategory(category: EditableCategory): void {

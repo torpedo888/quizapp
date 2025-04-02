@@ -27,8 +27,8 @@ export class QuizService {
   }
 
   // Update an existing quiz
-  updateQuiz(id: number, formData: FormData): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${id}`, formData);
+  updateQuiz(quizId: number, updatedQuiz: FormData): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${quizId}`, updatedQuiz);
   }
 
   deleteQuestion(id: number): Observable<any> {

@@ -34,6 +34,8 @@ public class CategoryRepository : ICategoryRepository
             {
                 Id = q.Id,
                 Title = q.Title,
+                Description = q.Description,
+                IsActive = q.IsActive,
                 ImageUrl = q.ImageUrl != null ? $"{requestScheme}://{host}{q.ImageUrl}" : null,
             })
             .ToListAsync();

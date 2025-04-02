@@ -22,17 +22,20 @@ public class QuizController : ControllerBase
 
     // GET: api/quiz
     [HttpGet]
-    public async Task<IActionResult> GetQuizzes()
+    public async Task<ActionResult<IEnumerable<QuizDto>>> GetQuizzes()
     {
         try
         {
-            var quizzes = await _context.Quizzes.Where(q => q.Category.IsActive).ToListAsync();
+            var quizzes = await _context.Quizzes.ToListAsync();
 
             var quizDtos = quizzes.Select(q => new QuizDto
             {
                 Id = q.Id,
                 Title = q.Title,
-                ImageUrl = q.ImageUrl
+                Description = q.Description,
+                IsActive = q.IsActive,
+                CategoryId = q.CategoryId,
+                ImageUrl = q.ImageUrl!=null ? $"{Request.Scheme}://{Request.Host}{q.ImageUrl}" : null
             }).ToList();
 
             return Ok(quizDtos);
@@ -76,31 +79,34 @@ public class QuizController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateQuiz([FromForm] string title, [FromForm] IFormFile imageFile, [FromForm] int categoryId)
+    //public async Task<IActionResult> CreateQuiz([FromForm] string title, [FromForm] IFormFile imageFile, [FromForm] int categoryId)
+    public async Task<IActionResult> CreateQuiz([FromForm] CreateQuizDto quizDto)
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(title) || imageFile == null)
+            if (string.IsNullOrWhiteSpace(quizDto.Title) || quizDto.Image == null)
             {
                 return BadRequest("Title and Image are required.");
             }
 
             // Generate unique file name
-            var fileName = $"{Guid.NewGuid()}_{imageFile.FileName}";
+            var fileName = $"{Guid.NewGuid()}_{quizDto.Image.FileName}";
             var filePath = Path.Combine(_environment.WebRootPath, "uploads", fileName);
 
             // Save file
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                await imageFile.CopyToAsync(stream);
+                await quizDto.Image.CopyToAsync(stream);
             }
 
             // Create new Quiz
             var quiz = new Quiz
             {
-                Title = title,
+                Title = quizDto.Title,
+                Description = quizDto.Description,
+                IsActive = quizDto.IsActive,
                 ImageUrl = "/uploads/" + fileName,
-                CategoryId = categoryId
+                CategoryId = quizDto.CategoryId
             };
 
             _context.Quizzes.Add(quiz);
@@ -121,48 +127,38 @@ public class QuizController : ControllerBase
 
     // PUT: api/quiz/{id} (Update)
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateQuiz(int id, [FromForm] string title, [FromForm] IFormFile? imageFile)
+    public async Task<IActionResult> UpdateQuiz(int id, [FromForm] UpdateQuizDto quizDto)
     {
         var quiz = await _context.Quizzes.FindAsync(id);
         if (quiz == null) return NotFound();
 
-        quiz.Title = title;
+        quiz.Title = quizDto.Title;
+        quiz.IsActive = quizDto.IsActive;
+        quiz.CategoryId = quizDto.CategoryId;
 
-        if (imageFile != null)
+        if (quizDto.ImageFile != null)
         {
-            // Ensure the uploads directory exists
-            string uploadDir = Path.Combine(_environment.WebRootPath, "uploads");
-            if (!Directory.Exists(uploadDir))
-            {
-                Directory.CreateDirectory(uploadDir);
-            }
-
-            // Save the new image
-            string fileName = $"{Guid.NewGuid()}_{imageFile.FileName}";
-            string filePath = Path.Combine(uploadDir, fileName);
-            string imageUrl = $"/uploads/{fileName}";
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await imageFile.CopyToAsync(stream);
-            }
-
-            // Remove old image (optional)
+            // Delete the old image if it exists
             if (!string.IsNullOrEmpty(quiz.ImageUrl))
             {
-                string oldImagePath = Path.Combine(_environment.WebRootPath, quiz.ImageUrl.TrimStart('/'));
+                var oldImagePath = Path.Combine("wwwroot", "uploads", Path.GetFileName(quiz.ImageUrl));
                 if (System.IO.File.Exists(oldImagePath))
                 {
                     System.IO.File.Delete(oldImagePath);
                 }
             }
 
-            quiz.ImageUrl = imageUrl;
+            // Save the new image
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(quizDto.ImageFile.FileName)}";
+            var filePath = Path.Combine("wwwroot/uploads", fileName);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await quizDto.ImageFile.CopyToAsync(stream);
+            }
+            quiz.ImageUrl = $"/uploads/{fileName}";
         }
 
-        _context.Quizzes.Update(quiz);
         await _context.SaveChangesAsync();
-
         return NoContent();
     }
 

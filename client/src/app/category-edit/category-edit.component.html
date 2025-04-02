@@ -1,3 +1,10 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4>Categories</h4>
+  <button class="btn btn-primary" (click)="addNewCategory()">
+    ➕ Add Category
+  </button>
+</div>
+
 <table class="table table-bordered table-striped">
   <thead>
     <tr>
@@ -8,6 +15,26 @@
     </tr>
   </thead>
   <tbody>
+    <!-- New Category Row -->
+    <tr *ngIf="newCategory">
+      <td>
+        <img *ngIf="newCategory.imageUrl" [src]="newCategory.imageUrl" alt="Preview" class="img-thumbnail" width="50" height="50" />
+      </td>
+      <td>
+        <input type="text" [(ngModel)]="newCategory.name" class="form-control" placeholder="Enter category name" />
+        <input type="file" (change)="onNewFileSelected($event)" class="form-control mt-2" />
+      </td>
+      <td>
+        <span class="badge bg-secondary">New</span>
+      </td>
+      <td>
+        <div class="d-flex gap-2">
+          <button class="btn btn-success btn-sm" (click)="saveNewCategory()">Save</button>
+          <button class="btn btn-secondary btn-sm" (click)="cancelNewCategory()">Cancel</button>
+        </div>
+      </td>
+    </tr>
+    
     <tr *ngFor="let category of categories">
       <!-- Display Thumbnail Image -->
       <td>

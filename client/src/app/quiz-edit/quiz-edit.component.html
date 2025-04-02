@@ -1,0 +1,100 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>Categories</h4>
+    <button class="btn btn-primary" (click)="addNewQuiz()">
+      ➕ Add Quiz
+    </button>
+  </div>
+  
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Image</th>
+        <th>Quiz Title</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- New Category Row -->
+      <tr *ngIf="newQuiz">
+        <td>
+          <img *ngIf="newQuiz.imageUrl" [src]="newQuiz.imageUrl" alt="Preview" class="img-thumbnail" width="50" height="50" />
+        </td>
+        <td>    
+          <input type="text" [(ngModel)]="newQuiz.title" class="form-control" placeholder="Enter quiz title" />
+          <textarea [(ngModel)]="newQuiz.description" class="form-control mt-2" placeholder="Enter description"></textarea>
+          <input type="file" (change)="onNewFileSelected($event)" class="form-control mt-2" />
+        </td>
+        <td>
+            <select class="form-control" [(ngModel)]="newQuiz.categoryId" aria-placeholder="select category">
+              <option *ngFor="let category of categories" [value]="category.id">
+                {{ category.name }}
+              </option>
+            </select>
+          </td>
+        <td>
+          <span class="badge bg-secondary">New</span>
+        </td>
+        <td>
+          <div class="d-flex gap-2">
+            <button class="btn btn-success btn-sm" (click)="saveNewQuiz()">Save</button>
+            <button class="btn btn-secondary btn-sm" (click)="cancelNewQuiz()">Cancel</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr *ngFor="let quiz of quizes">
+        <!-- Display Thumbnail Image -->
+        <td>
+          <img 
+            *ngIf="quiz.imageUrl" 
+            [src]="quiz.imageUrl" 
+            alt="Quiz Image" 
+            class="img-thumbnail"
+            width="50" height="50"
+          />
+        </td>
+        
+        <!-- Editable Category Name -->
+        <td>
+          <span *ngIf="!quiz.editing">{{ quiz.title }}</span>
+          <input
+            *ngIf="quiz.editing"
+            [(ngModel)]="quiz.editedTitle"
+            class="form-control"
+          />
+          <input *ngIf="quiz.editing" type="file" (change)="onFileSelected($event, quiz)" />
+        </td>
+  
+        <!-- Status -->
+        <td [ngClass]="{'bg-success text-white': quiz.isActive, 'bg-danger text-white': !quiz.isActive}">
+          {{ quiz.isActive ? 'Active' : 'Inactive' }}
+        </td>
+  
+        <!-- Actions -->
+        <td>
+          <div class="d-flex gap-2">
+            <!-- Edit Button -->
+            <button *ngIf="!quiz.editing" (click)="editCategory(quiz)" class="btn btn-warning btn-sm flex-grow-1" style="min-width: 90px;">
+              Edit
+            </button>
+            <button *ngIf="quiz.editing" (click)="saveCategory(quiz)" class="btn btn-success btn-sm flex-grow-1" style="min-width: 90px;">
+              Save
+            </button>
+            <button *ngIf="quiz.editing" (click)="cancelEdit(quiz)" class="btn btn-secondary btn-sm flex-grow-1" style="min-width: 90px;">
+              Cancel
+            </button>
+        
+            <!-- Activate/Deactivate Buttons -->
+            <button *ngIf="!quiz.isActive" class="btn btn-success btn-sm flex-grow-1" (click)="activateCategory(quiz.id)" style="min-width: 90px;">
+              Activate
+            </button>
+            <button *ngIf="quiz.isActive" class="btn btn-danger btn-sm flex-grow-1" (click)="deactivateCategory(quiz.id)" style="min-width: 90px;">
+              Deactivate
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  

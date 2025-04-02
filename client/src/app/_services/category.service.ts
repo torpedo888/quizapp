@@ -50,5 +50,9 @@ export class CategoryService {
   
     return this.http.put<void>(`${this.apiUrl}/${categoryId}`, formData);
   }
+
+  addCategory(formData: FormData): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/add`, formData);
+  }
   
 }

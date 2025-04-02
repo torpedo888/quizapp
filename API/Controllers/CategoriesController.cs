@@ -71,6 +71,33 @@ public class CategoriesController : ControllerBase
         return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
     }
 
+    [HttpPost("add")]
+    public async Task<IActionResult> AddCategory([FromForm] CategoryCreateDto categoryDto)
+    {
+        var category = new Category
+        {
+            Name = categoryDto.Name,
+            IsActive = true // Default active
+        };
+
+        if (categoryDto.Image != null)
+        {
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(categoryDto.Image.FileName)}";
+            var filePath = Path.Combine("wwwroot/uploads", fileName);
+            
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await categoryDto.Image.CopyToAsync(stream);
+            }
+
+            category.ImageUrl = $"/uploads/{fileName}";
+        }
+
+        await _categoryRepository.AddCategoryAsync(category);
+        return Ok();
+    }
+
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCategory(int id)
     {

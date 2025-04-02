@@ -9,6 +9,12 @@ public class Quiz
     [JsonPropertyName("title")]
     public string Title { get; set; }
 
+    [JsonPropertyName("description")]
+    public string Description { get; set; }
+
+    [JsonPropertyName("isActive")]
+    public bool IsActive { get; set; }
+
     [JsonPropertyName("imageUrl")]
     public string? ImageUrl { get; set; }
 
