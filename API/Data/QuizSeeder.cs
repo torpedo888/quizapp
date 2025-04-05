@@ -54,7 +54,6 @@ public static class QuizSeeder
                 var question = new Question
                 {
                     Text = questionData.Text,
-                    CorrectOptionId = questionData.CorrectOptionId,
                     QuizId = quiz.Id,
                     CategoryId = category.Id
                 };

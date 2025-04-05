@@ -9,7 +9,6 @@ public class Question
     [JsonPropertyName("text")]
     public string Text { get; set; }
 
-    public int CorrectOptionId { get; set; }
     public int QuizId { get; set; }
     public int CategoryId { get; set; }
 

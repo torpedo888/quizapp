@@ -52,7 +52,7 @@ public class QuestionsController(DataContext context) : ControllerBase
         var question = new Question
         {
             Text = request.Text,
-            CorrectOptionId = request.CorrectOptionId,
+           // CorrectOptionId = request.CorrectOptionId,
             QuizId = request.QuizId,
             CategoryId = request.CategoryId
         };
@@ -140,35 +140,35 @@ public class QuestionsController(DataContext context) : ControllerBase
         public int SelectedOptionId { get; set; }
     }
 
-    [HttpPost("submit")]
-    public async Task<IActionResult> SubmitQuiz([FromBody] SubmitQuizDto submission)
-    {
-        if (submission == null || submission.Answers == null || submission.Answers.Count == 0)
-        {
-            return BadRequest("Invalid submission.");
-        }
+    // [HttpPost("submit")]
+    // public async Task<IActionResult> SubmitQuiz([FromBody] SubmitQuizDto submission)
+    // {
+    //     if (submission == null || submission.Answers == null || submission.Answers.Count == 0)
+    //     {
+    //         return BadRequest("Invalid submission.");
+    //     }
 
-        int correctCount = 0;
-        int totalQuestions = submission.Answers.Count;
+    //     int correctCount = 0;
+    //     int totalQuestions = submission.Answers.Count;
 
-        foreach (var answer in submission.Answers)
-        {
-            var question = await _context.Questions.FindAsync(answer.QuestionId);
-            if (question != null && question.CorrectOptionId == answer.SelectedOptionId)
-            {
-                correctCount++;
-            }
-        }
+    //     foreach (var answer in submission.Answers)
+    //     {
+    //         var question = await _context.Questions.FindAsync(answer.QuestionId);
+    //         if (question != null && question.CorrectOptionId == answer.SelectedOptionId)
+    //         {
+    //             correctCount++;
+    //         }
+    //     }
 
-        var result = new
-        {
-            TotalQuestions = totalQuestions,
-            CorrectAnswers = correctCount,
-            Score = (double)correctCount / totalQuestions * 100
-        };
+    //     var result = new
+    //     {
+    //         TotalQuestions = totalQuestions,
+    //         CorrectAnswers = correctCount,
+    //         Score = (double)correctCount / totalQuestions * 100
+    //     };
 
-        return Ok(result);
-    }
+    //     return Ok(result);
+    // }
 
     [HttpGet("{quizId}/questions")]
     public async Task<IActionResult> GetQuestionsByQuizId(int quizId)
@@ -201,60 +201,54 @@ public class QuestionsController(DataContext context) : ControllerBase
 
     [HttpPost("{quizId}/questions")]
     public async Task<IActionResult> CreateQuestion(int quizId, 
-        [FromForm] IFormFile? imageFile, 
-        [FromForm] IFormFile? audioFile,
-        [FromForm] string text, 
-        [FromForm] int correctOptionId, 
-        [FromForm] string optionsJson,
-        [FromForm] int categoryId)
+        [FromForm] CreateQuestionDto dto)
     {
         var quiz = await _context.Quizzes.FindAsync(quizId);
         if (quiz == null) return NotFound("Quiz not found");
 
         // Validate Category ID
-        var category = await _context.Categories.FindAsync(categoryId);
+        var category = await _context.Categories.FindAsync(dto.CategoryId);
         if (category == null) return NotFound("Category not found");
 
         string? imageUrl = null;
         string? audioUrl = null;
 
-        // ✅ Handle Image Upload
-        if (imageFile != null)
+        //Handle Image Upload
+        if (dto.ImageFile != null)
         {
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
             Directory.CreateDirectory(uploadsFolder);
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(dto.ImageFile.FileName);
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
-                await imageFile.CopyToAsync(fileStream);
+                await dto.ImageFile.CopyToAsync(fileStream);
             }
             imageUrl = $"/images/{uniqueFileName}";
         }
 
         // ✅ Handle Audio Upload
-        if (audioFile != null)
+        if (dto.AudioFile != null)
         {
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/audio");
             Directory.CreateDirectory(uploadsFolder);
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(audioFile.FileName);
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(dto.AudioFile.FileName);
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
-                await audioFile.CopyToAsync(fileStream);
+                await dto.AudioFile.CopyToAsync(fileStream);
             }
             audioUrl = $"/audio/{uniqueFileName}";
         }
 
         // ✅ Deserialize options
-        var options = System.Text.Json.JsonSerializer.Deserialize<List<OptionDto>>(optionsJson);
+        var options = System.Text.Json.JsonSerializer.Deserialize<List<OptionDto>>(dto.OptionsJson);
         
         var question = new Question
         {
-            CategoryId = categoryId,
+            CategoryId = dto.CategoryId,
             QuizId = quizId,
-            Text = text,
-            CorrectOptionId = correctOptionId,
+            Text = dto.Text,
             ImageUrl = imageUrl, // Store the image URL
             AudioUrl = audioUrl // Store the audio URL
         };
@@ -332,7 +326,7 @@ public class QuestionsController(DataContext context) : ControllerBase
         // ✅ Update Question Fields
         question.Text = text;
         question.CategoryId = categoryId;
-        question.CorrectOptionId = correctOptionId;
+       // question.CorrectOptionId = correctOptionId;
         question.ImageUrl = imageUrl;
         question.AudioUrl = audioUrl;
 

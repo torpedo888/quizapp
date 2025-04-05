@@ -84,19 +84,19 @@ public class QuizController : ControllerBase
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(quizDto.Title) || quizDto.Image == null)
+            if (string.IsNullOrWhiteSpace(quizDto.Title) || quizDto.ImageFile == null)
             {
                 return BadRequest("Title and Image are required.");
             }
 
             // Generate unique file name
-            var fileName = $"{Guid.NewGuid()}_{quizDto.Image.FileName}";
+            var fileName = $"{Guid.NewGuid()}_{quizDto.ImageFile.FileName}";
             var filePath = Path.Combine(_environment.WebRootPath, "uploads", fileName);
 
             // Save file
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                await quizDto.Image.CopyToAsync(stream);
+                await quizDto.ImageFile.CopyToAsync(stream);
             }
 
             // Create new Quiz
@@ -149,8 +149,9 @@ public class QuizController : ControllerBase
             }
 
             // Save the new image
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(quizDto.ImageFile.FileName)}";
-            var filePath = Path.Combine("wwwroot/uploads", fileName);
+            var fileName = $"{Guid.NewGuid()}_{quizDto.ImageFile.FileName}";
+            var filePath = Path.Combine(_environment.WebRootPath, "uploads", fileName);
+
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await quizDto.ImageFile.CopyToAsync(stream);

@@ -1,5 +1,5 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4>Categories</h4>
+    <h4>Quizes</h4>
     <button class="btn btn-primary" (click)="addNewQuiz()">
       ➕ Add Quiz
     </button>
@@ -21,17 +21,23 @@
           <img *ngIf="newQuiz.imageUrl" [src]="newQuiz.imageUrl" alt="Preview" class="img-thumbnail" width="50" height="50" />
         </td>
         <td>    
-          <input type="text" [(ngModel)]="newQuiz.title" class="form-control" placeholder="Enter quiz title" />
-          <textarea [(ngModel)]="newQuiz.description" class="form-control mt-2" placeholder="Enter description"></textarea>
-          <input type="file" (change)="onNewFileSelected($event)" class="form-control mt-2" />
+          <input type="text" [(ngModel)]="newQuiz.title" class="form-control" placeholder="Enter quiz title"
+            [ngClass]="{'is-invalid': saveAttempted && !newQuiz.title?.trim()}" />
+          <textarea [(ngModel)]="newQuiz.description" class="form-control mt-2" placeholder="Enter description"
+            [ngClass]="{'is-invalid': saveAttempted && !newQuiz.description.trim()}"></textarea>
+          <input type="file" (change)="onNewFileSelected($event)" class="form-control mt-2"
+            [ngClass]="{'is-invalid': saveAttempted && !newQuiz.imageFile}" />
         </td>
         <td>
-            <select class="form-control" [(ngModel)]="newQuiz.categoryId" aria-placeholder="select category">
+            <select class="form-select" [(ngModel)]="newQuiz.categoryId" 
+                [ngClass]="{'is-invalid': saveAttempted && !newQuiz.categoryId}">
+              <option [ngValue]="null" disabled>Select category</option>
               <option *ngFor="let category of categories" [value]="category.id">
                 {{ category.name }}
               </option>
             </select>
           </td>
+          
         <td>
           <span class="badge bg-secondary">New</span>
         </td>

@@ -11,5 +11,5 @@ public class CreateQuizDto
     public string Description { get; set; }
     public bool IsActive { get; set; }
     public int CategoryId { get; set; }
-    public IFormFile Image { get; set; }
+    public IFormFile ImageFile { get; set; }
 }

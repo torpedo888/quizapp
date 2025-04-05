@@ -42,7 +42,6 @@ export class QuestionFormComponent implements OnInit {
       questionText: [''],
       selectedQuizId: [null], // Add this to hold the quizId
       categoryId: [null],
-      correctOptionId: [null],
       optionsJson: [''],
       selectedImageFile: [null],
       selectedAudioFile: [null],
@@ -109,14 +108,6 @@ export class QuestionFormComponent implements OnInit {
       // Append categoryId and correctOptionId (make sure these are valid)
       //formData.append('categoryId', this.categoryId.toString());
       formData.append('categoryId', String(this.categoryId)); 
-
-
-      // if (this.correctOptionIndex !== null) {
-      //   formData.append('correctOptionId', this.correctOptionIndex.toString());
-      // } else {
-      //   console.error('Correct option is required.');
-      //   return;
-      // }
     
       // Serialize the options array as JSON and append it
       const optionsJson = JSON.stringify(this.options.map(option => 

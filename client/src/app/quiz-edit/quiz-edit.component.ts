@@ -19,7 +19,9 @@ export class QuizEditComponent implements OnInit {
   
   quizes: EditableQuiz[] = [];
 
-  newQuiz: { title: string; description: string; imageUrl: string | null; imageFile: File | null; categoryId: number } | null = null;
+  newQuiz: { title: string; description: string; imageUrl: string | null; imageFile: File | null; categoryId: number | null } | null = null;
+
+  saveAttempted = false;
 
   ngOnInit(): void {
     this.loadCategories(true);
@@ -55,7 +57,7 @@ export class QuizEditComponent implements OnInit {
     }
 
     addNewQuiz(): void {
-      this.newQuiz = { title: '', description: '', imageUrl: null, imageFile: null, categoryId: 0 };
+      this.newQuiz = { title: '', description: '', imageUrl: null, imageFile: null, categoryId: null };
     }
     
     onNewFileSelected(event: any): void {
@@ -73,6 +75,19 @@ export class QuizEditComponent implements OnInit {
     }
     
     saveNewQuiz(): void {
+
+      this.saveAttempted = true;
+
+      if (
+        !this.newQuiz?.title?.trim() ||
+        !this.newQuiz.description?.trim() ||
+        !this.newQuiz.categoryId ||
+        !this.newQuiz.imageFile
+      ) {
+        // Validation failed; don't proceed
+        return;
+      }
+
       if (!this.newQuiz?.title.trim()) {
         alert('quiz name cannot be empty!');
         return;
@@ -83,13 +98,22 @@ export class QuizEditComponent implements OnInit {
       formData.append('title', this.newQuiz.title);
       formData.append('description', this.newQuiz.description);
       if (this.newQuiz.imageFile) {
-        formData.append('image', this.newQuiz.imageFile);
+        formData.append('imageFile', this.newQuiz.imageFile);
+      } else {
+        alert('Please select an image.');
       }
+
+      if(this.newQuiz.categoryId == null){
+        alert('Please select category.');
+        return;
+      }
+
       formData.append('categoryId', this.newQuiz.categoryId.toString());
     
       this.quizService.createQuiz(formData).subscribe((newCat) => {
         this.loadQuizzes(false); // Reload categories after adding
         this.newQuiz = null; // Reset form
+        this.saveAttempted = false;
       });
     }
     
@@ -101,26 +125,42 @@ export class QuizEditComponent implements OnInit {
       quiz.editing = true;
     }
   
-    onFileSelected(event: Event, category: any): void {
-      const input = event.target as HTMLInputElement;
-      if (input.files?.length) {
-        category.editedImage = input.files[0];
+    // onFileSelected(event: Event, category: any): void {
+    //   const input = event.target as HTMLInputElement;
+    //   if (input.files?.length) {
+    //     category.editedImage = input.files[0];
+    //   }
+    // }
+
+    onFileSelected(event: Event, quiz: any) {
+      const target = event.target as HTMLInputElement;
+      if (target.files && target.files.length > 0) {
+        const file = target.files[0];
+        quiz.editedImage = file;
+    
+        // Optional: show preview
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          quiz.imageUrl = e.target.result; // this lets you preview
+        };
+        reader.readAsDataURL(file);
       }
     }
+    
   
     saveCategory(quiz: any): void {
-      if (!quiz.editedName.trim()) {
+      if (!quiz.editedTitle.trim()) {
         alert("quiz title cannot be empty!");
         return;
       }
 
       const formData = new FormData();
-      formData.append('title', quiz.title);
-      formData.append('description', quiz.description);
+      formData.append('title', quiz.editedTitle);
+      formData.append('description', quiz.editedDescription);
       formData.append('categoryId', quiz.categoryId.toString());
 
       if (quiz.editedImage) {
-        formData.append('image', quiz.editedImage);
+        formData.append('imageFile', quiz.editedImage);
       }
     
     this.quizService.updateQuiz(quiz.id, formData)
