@@ -111,7 +111,7 @@ export class QuestionFormComponent implements OnInit {
     
       // Serialize the options array as JSON and append it
       const optionsJson = JSON.stringify(this.options.map(option => 
-        ({ text: option.text, isCorrect: option.isCorrect ? 1 : 0 })));
+        ({ text: option.text, isCorrect: option.isCorrect })));
       formData.append('optionsJson', optionsJson);
     
       // Append image and audio files if selected
