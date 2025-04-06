@@ -60,8 +60,12 @@ export class QuestionService {
     return this.http.put(`${this.apiQuestionUrl}/${quizId}/questions/${questionId}`, formData);
   }
 
+  deleteQuestion(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
   deleteQuestions(ids: number[]): Observable<void> {
-    return this.http.post<void>(`${this.apiQuizUrl}/delete-multiple`, { ids });
+    return this.http.post<void>(`${this.apiQuestionUrl}/delete-multiple`, { ids });
   }  
 }
 

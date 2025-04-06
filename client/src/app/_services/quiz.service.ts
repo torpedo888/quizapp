@@ -31,7 +31,11 @@ export class QuizService {
     return this.http.put<any>(`${this.apiUrl}/${quizId}`, updatedQuiz);
   }
 
-  deleteQuestion(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  setCategoryInactive(quizId: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${quizId}/deactivate`, {});
+  }
+
+  setCategoryActive(quizId: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${quizId}/activate`, {});
   }
 }

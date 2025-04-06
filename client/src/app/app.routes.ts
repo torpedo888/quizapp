@@ -42,10 +42,8 @@ export const routes: Routes = [
       { path: 'deletequestion', component: QuestionDeleteComponent },
       { path: '', component: CategoryListComponent }, // Homepage
       { path: 'categories', component: CategoryListComponent },
-      { path: 'category-form', component: CategoryFormComponent }, // Add category
       { path: 'category-form/:id', component: CategoryFormComponent }, // Edit category
       { path: 'edit-categories', component: CategoryEditComponent },
-      { path: 'quiz-form', component: QuizFormComponent }, // 👈 Add new route for creating a quiz
       { path: 'quiz-form/:id', component: QuizFormComponent }, // 👈 Add new route for editing a quiz
       { path: 'quiz-list/:categoryId', component: QuizListComponent },
       { path: 'quiz-edit', component: QuizEditComponent},

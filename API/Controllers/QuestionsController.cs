@@ -380,6 +380,41 @@ public class QuestionsController(DataContext context) : ControllerBase
         return Ok(questionDto);
     }
 
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteQuestion(int id)
+    {
+        var question = await _context.Questions
+            .Include(q => q.Options) // Ensure related options are also loaded
+            .FirstOrDefaultAsync(q => q.Id == id);
+
+        if (question == null)
+        {
+            return NotFound(new { message = "Question not found" });
+        }
+
+        _context.Options.RemoveRange(question.Options); // Delete associated options
+        _context.Questions.Remove(question); // Delete the question itself
+        await _context.SaveChangesAsync(); // Save changes to the database
+
+        return Ok(new { message = "Question deleted successfully" });
+    }
+
+    [HttpPost("delete-multiple")]
+    public async Task<IActionResult> DeleteMultiple([FromBody] DeleteQuestionsRequestDto request)
+    {
+        if (request.Ids == null || request.Ids.Count == 0)
+            return BadRequest("No questions selected for deletion.");
+
+        var questionsToDelete = await _context.Questions.Where(q => request.Ids.Contains(q.Id)).ToListAsync();
+        if (!questionsToDelete.Any())
+            return NotFound("No questions found to delete.");
+
+        _context.Questions.RemoveRange(questionsToDelete);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
 }
 
 public class QuestionCreateRequest

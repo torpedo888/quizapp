@@ -4,6 +4,7 @@ using API.Entitites;
 using API.DTOs;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using API.Interfaces;
 
 namespace API.Controllers;
 
@@ -11,12 +12,12 @@ namespace API.Controllers;
 [ApiController]
 public class QuizController : ControllerBase
 {
-    private readonly DataContext _context;
+    private readonly IQuizRepository _quizRepository;
     private readonly IWebHostEnvironment _environment;
 
-    public QuizController(DataContext context, IWebHostEnvironment environment)
+    public QuizController(IQuizRepository quizRepository, IWebHostEnvironment environment)
     {
-        _context = context;
+        _quizRepository = quizRepository;
         _environment = environment;
     }
 
@@ -26,7 +27,8 @@ public class QuizController : ControllerBase
     {
         try
         {
-            var quizzes = await _context.Quizzes.ToListAsync();
+           // var quizzes = await _context.Quizzes.ToListAsync();
+            var quizzes = await _quizRepository.GetAllQuizesAsync();
 
             var quizDtos = quizzes.Select(q => new QuizDto
             {
@@ -50,10 +52,12 @@ public class QuizController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<QuizDto>> GetQuizById(int id)
     {
-        var quiz = await _context.Quizzes
-            .Include(q => q.Questions)
-            .ThenInclude(q => q.Options)
-            .FirstOrDefaultAsync(q => q.Id == id);
+        // var quiz = await _context.Quizzes
+        //     .Include(q => q.Questions)
+        //     .ThenInclude(q => q.Options)
+        //     .FirstOrDefaultAsync(q => q.Id == id);
+
+        var quiz = await _quizRepository.GetQuizWithQuestionsAndOptionsAsync(id);
 
         if (quiz == null) return NotFound();
 
@@ -109,8 +113,10 @@ public class QuizController : ControllerBase
                 CategoryId = quizDto.CategoryId
             };
 
-            _context.Quizzes.Add(quiz);
-            await _context.SaveChangesAsync();
+            // _context.Quizzes.Add(quiz);
+            // await _context.SaveChangesAsync();
+
+            await _quizRepository.AddQuizAsync(quiz);
 
             return Ok(quiz);
         }
@@ -129,7 +135,8 @@ public class QuizController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateQuiz(int id, [FromForm] UpdateQuizDto quizDto)
     {
-        var quiz = await _context.Quizzes.FindAsync(id);
+        //var quiz = await _context.Quizzes.FindAsync(id);
+        var quiz = await _quizRepository.GetByIdAsync(id);
         if (quiz == null) return NotFound();
 
         quiz.Title = quizDto.Title;
@@ -159,17 +166,24 @@ public class QuizController : ControllerBase
             quiz.ImageUrl = $"/uploads/{fileName}";
         }
 
-        await _context.SaveChangesAsync();
+        // _context.Quizzes.Update(quiz);
+
+        // await _context.SaveChangesAsync();
+
+        await _quizRepository.UpdateAsync(quiz);
+
         return NoContent();
     }
 
     [HttpGet("{quizId}/questions")]
     public async Task<IActionResult> GetQuestionsByQuizId(int quizId)
     {
-        var questions = await _context.Questions
-            .Where(q => q.QuizId == quizId)
-            .Include(q => q.Options)
-            .ToListAsync();
+        // var questions = await _context.Questions
+        //     .Where(q => q.QuizId == quizId)
+        //     .Include(q => q.Options)
+        //     .ToListAsync();
+
+        var questions = await _quizRepository.GetQuestionsWithOptionsByQuizIdAsync(quizId);
 
         if (!questions.Any()) return NotFound();
 
@@ -190,44 +204,24 @@ public class QuizController : ControllerBase
         return Ok(questionDtos);
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteQuestion(int id)
+
+    [HttpPut("{id}/deactivate")]
+    public async Task<IActionResult> DeactivateCategory(int id)
     {
-        var question = await _context.Questions
-            .Include(q => q.Options) // Ensure related options are also loaded
-            .FirstOrDefaultAsync(q => q.Id == id);
-
-        if (question == null)
-        {
-            return NotFound(new { message = "Question not found" });
-        }
-
-        _context.Options.RemoveRange(question.Options); // Delete associated options
-        _context.Questions.Remove(question); // Delete the question itself
-        await _context.SaveChangesAsync(); // Save changes to the database
-
-        return Ok(new { message = "Question deleted successfully" });
+        // var success = await _categoryService.SetCategoryInactiveAsync(id);
+        // if (!success) return NotFound();
+        
+         return NoContent();
     }
 
-    [HttpPost("delete-multiple")]
-    public async Task<IActionResult> DeleteMultiple([FromBody] DeleteQuestionsRequest request)
+    [HttpPut("{id}/activate")]
+    public async Task<IActionResult> ActivateCategory(int id)
     {
-        if (request.Ids == null || request.Ids.Count == 0)
-            return BadRequest("No questions selected for deletion.");
-
-        var questionsToDelete = await _context.Questions.Where(q => request.Ids.Contains(q.Id)).ToListAsync();
-        if (!questionsToDelete.Any())
-            return NotFound("No questions found to delete.");
-
-        _context.Questions.RemoveRange(questionsToDelete);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
+        // var success = await _categoryService.SetCategoryActiveAsync(id);
+        // if (!success) return NotFound();
+        
+         return NoContent();
     }
 
 }
 
-public class DeleteQuestionsRequest
-{
-    public List<int> Ids { get; set; }
-}

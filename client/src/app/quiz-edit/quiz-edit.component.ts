@@ -180,22 +180,22 @@ export class QuizEditComponent implements OnInit {
   
     deactivateCategory(quizId: number): void {
       if (confirm('Are you sure you want to deactivate this category?')) {
-        // this.quizService.setCategoryInactive(quizId).subscribe(() => {
-        //   const quiz = this.quizes.find(c => c.id === quizId);
-        //   if (quiz) {
-        //     quiz.isActive = false; // UI updates instantly
-        //   }
-        // });
+        this.quizService.setCategoryInactive(quizId).subscribe(() => {
+          const quiz = this.quizes.find(c => c.id === quizId);
+          if (quiz) {
+            quiz.isActive = false; // UI updates instantly
+          }
+        });
       }
     }
   
     activateCategory(quizId: number): void {
-      // this.quizService.setCategoryActive(quizId).subscribe(() => {
-      //   const quiz = this.quizes.find(c => c.id === quizId);
-      //   if (quiz) {
-      //     quiz.isActive = true; // UI updates instantly
-      //   }
-      // });
+      this.quizService.setCategoryActive(quizId).subscribe(() => {
+        const quiz = this.quizes.find(c => c.id === quizId);
+        if (quiz) {
+          quiz.isActive = true; // UI updates instantly
+        }
+      });
     }
 
 }
