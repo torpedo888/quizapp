@@ -25,14 +25,12 @@
             [ngClass]="{'is-invalid': saveAttempted && !newQuiz.title?.trim()}" />
           <textarea [(ngModel)]="newQuiz.description" class="form-control mt-2" placeholder="Enter description"
             [ngClass]="{'is-invalid': saveAttempted && !newQuiz.description.trim()}"></textarea>
-          <!-- <input type="file" (change)="onNewFileSelected($event)" class="form-control mt-2"
-            [ngClass]="{'is-invalid': saveAttempted && !newQuiz.imageFile}" /> -->
 
-            <div class="mb-3">
-              <label for="formFile" class="form-label">Choose image</label>
-              <input class="form-control" type="file" id="formFile" (change)="onNewFileSelected($event)"
-              [ngClass]="{'is-invalid': saveAttempted && !newQuiz.imageFile}" />
-            </div>
+          <div class="mb-3">
+            <label for="formFile" class="form-label">Choose image</label>
+            <input class="form-control" type="file" id="formFile" (change)="onNewFileSelected($event)"
+            [ngClass]="{'is-invalid': saveAttempted && !newQuiz.imageFile}" />
+          </div>
         </td>
         <td>
             <select class="form-select" [(ngModel)]="newQuiz.categoryId" 
