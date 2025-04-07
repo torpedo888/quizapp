@@ -25,6 +25,7 @@ namespace API.Extensions
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IQuizRepository, QuizRepository>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

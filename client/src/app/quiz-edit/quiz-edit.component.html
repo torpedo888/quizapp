@@ -18,15 +18,21 @@
       <!-- New Category Row -->
       <tr *ngIf="newQuiz">
         <td>
-          <img *ngIf="newQuiz.imageUrl" [src]="newQuiz.imageUrl" alt="Preview" class="img-thumbnail" width="50" height="50" />
+          <img *ngIf="newQuiz.imageUrl" [src]="newQuiz.imageUrl" alt="Preview" class="img-thumbnail preview-img" />
         </td>
         <td>    
           <input type="text" [(ngModel)]="newQuiz.title" class="form-control" placeholder="Enter quiz title"
             [ngClass]="{'is-invalid': saveAttempted && !newQuiz.title?.trim()}" />
           <textarea [(ngModel)]="newQuiz.description" class="form-control mt-2" placeholder="Enter description"
             [ngClass]="{'is-invalid': saveAttempted && !newQuiz.description.trim()}"></textarea>
-          <input type="file" (change)="onNewFileSelected($event)" class="form-control mt-2"
-            [ngClass]="{'is-invalid': saveAttempted && !newQuiz.imageFile}" />
+          <!-- <input type="file" (change)="onNewFileSelected($event)" class="form-control mt-2"
+            [ngClass]="{'is-invalid': saveAttempted && !newQuiz.imageFile}" /> -->
+
+            <div class="mb-3">
+              <label for="formFile" class="form-label">Choose image</label>
+              <input class="form-control" type="file" id="formFile" (change)="onNewFileSelected($event)"
+              [ngClass]="{'is-invalid': saveAttempted && !newQuiz.imageFile}" />
+            </div>
         </td>
         <td>
             <select class="form-select" [(ngModel)]="newQuiz.categoryId" 
@@ -56,8 +62,7 @@
             *ngIf="quiz.imageUrl" 
             [src]="quiz.imageUrl" 
             alt="Quiz Image" 
-            class="img-thumbnail"
-            width="50" height="50"
+            class="preview-img"
           />
         </td>
         
