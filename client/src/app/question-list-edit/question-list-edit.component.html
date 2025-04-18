@@ -1,27 +1,14 @@
 <div class="container mt-3">
   <h2>Edit Question</h2>
 
-  <!-- Quiz Dropdown -->
+  <!-- Question Dropdown -->
   <div class="mb-3">
-    <label for="quizSelect" class="form-label">Select Quiz:</label>
-    <select id="quizSelect" class="form-select" (change)="onSelectQuiz($event)">
-      <option *ngFor="let quiz of quizzes" [value]="quiz.id">{{ quiz.title }}</option>
-    </select>
-  </div>
-
-  <!-- Question Dropdown (filtered by quiz) -->
-  <div class="mb-3" *ngIf="filteredQuestions.length > 0">
     <label for="questionSelect" class="form-label">Select Question:</label>
     <select id="questionSelect" class="form-select" (change)="onSelectQuestion($event)">
-      <option *ngFor="let question of filteredQuestions; let i = index" [value]="i">
+      <option *ngFor="let question of questions; let i = index" [value]="i">
         {{ question.text }}
       </option>
     </select>
-  </div>
-
-  <!-- Message if no questions -->
-  <div *ngIf="selectedQuizId && filteredQuestions.length === 0" class="alert alert-info">
-    No questions available for this quiz.
   </div>
 
   <!-- Question Form -->

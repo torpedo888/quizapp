@@ -124,9 +124,7 @@ export class QuestionListEditComponent {
     } else {
       this.selectedQuestion = null;
       this.questionForm.reset(); // Reset form when quiz changes
-    }
-
-    
+    }    
   }
   
   onSelectQuestion(event: Event) {

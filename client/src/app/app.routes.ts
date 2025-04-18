@@ -22,6 +22,7 @@ import { QuestionListEditComponent } from './question-list-edit/question-list-ed
 import { QuestionDeleteComponent } from './question-delete/question-delete.component';
 import { CategoryEditComponent } from './category-edit/category-edit.component';
 import { QuizEditComponent } from './quiz-edit/quiz-edit.component';
+import { QuestionEditFormComponent } from './question-edit-form/question-edit-form.component';
 
 export const routes: Routes = [
   { path: '', component: CategoryListComponent },
@@ -47,6 +48,7 @@ export const routes: Routes = [
       { path: 'quiz-form/:id', component: QuizFormComponent }, // 👈 Add new route for editing a quiz
       { path: 'quiz-list/:categoryId', component: QuizListComponent },
       { path: 'quiz-edit', component: QuizEditComponent},
+      { path: 'question-list-edit', component: QuestionEditFormComponent},
       { path: 'admin', component: AdminPanelComponent, canActivate: [adminGuard]}
     ],
   },

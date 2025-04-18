@@ -1,0 +1,95 @@
+<div class="container mt-4">
+    <h2>Questions</h2>
+  
+    <button class="btn btn-danger float-end mb-2" (click)="openAddModal()">
+      <i class="bi bi-plus-lg"></i> Add Question
+    </button>
+  
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Text</th>
+          <th>Image</th>
+          <th>Quiz</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let question of questions">
+          <td>{{ question.text }}</td>
+          <td>
+            <img *ngIf="question.imageUrl" [src]="question.imageUrl" alt="Question Image" style="max-width: 80px; max-height: 80px;">
+          </td>
+          <td>{{ getQuizTitle(question.quizId) }}</td>
+          <!-- <td [ngClass]="{'bg-success text-white': question.isActive, 'bg-danger text-white': !question.isActive}">
+            {{ question.isActive ? 'Active' : 'Inactive' }}
+          </td> -->
+          <td>
+            <button class="btn btn-warning me-2" (click)="editQuestion(question)">Edit</button>
+            <!-- <button class="btn btn-danger" (click)="toggleStatus(question)">
+              {{ question.isActive ? 'Deactivate' : 'Activate' }}
+            </button> -->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Modal -->
+  <div class="modal fade" tabindex="-1" [ngClass]="{'show d-block': showModal}" style="background: rgba(0,0,0,0.5);" *ngIf="showModal">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form [formGroup]="questionForm" (ngSubmit)="saveQuestion()">
+          <div class="modal-header">
+            <h5 class="modal-title">{{ isEditMode ? 'Edit' : 'Add' }} Question</h5>
+            <button type="button" class="btn-close" (click)="closeModal()"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Form Fields -->
+            <div class="mb-3">
+              <label class="form-label">Text</label>
+              <input formControlName="text" class="form-control" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Quiz</label>
+              <select formControlName="quizId" class="form-select">
+                <option *ngFor="let quiz of quizzes" [value]="quiz.id">{{ quiz.title }}</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Upload Image</label>
+              <input type="file" class="form-control" (change)="onFileSelected($event)">
+            </div>
+            <div *ngIf="questionForm.get('imageUrl')?.value">
+              <img [src]="questionForm.get('imageUrl')?.value" class="img-thumbnail" style="max-width: 150px;">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Options</label>
+                <div *ngFor="let option of options.controls; let i = index" [formGroup]="option" class="input-group mb-2">
+                    <input formControlName="text" class="form-control" placeholder="Option text" />
+                    
+                    <div class="form-check ms-2">
+                        <input type="checkbox" formControlName="isCorrect" class="form-check-input" />
+                        <label class="form-check-label">Correct</label>
+                      </div>
+
+                    <button type="button" class="btn btn-outline-danger" (click)="removeOption(i)" *ngIf="options.length > 1">
+                      &times;
+                    </button>
+                  </div>
+                  
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="addOption()">Add Option</button>
+              </div>
+              
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Update' : 'Save' }}</button>
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
