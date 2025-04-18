@@ -199,8 +199,19 @@ export class QuizEditComponent implements OnInit {
       });
     }
 
-    deleteQuiz(quizId: number): void {
-      this.quizService.deleteQuiz(quizId)
+    // deleteQuiz(quizId: number): void {
+    //   this.quizService.deleteQuiz(quizId)
+    // }
+
+    deleteQuiz(id: number): void {
+      if (confirm('Are you sure you want to delete this quiz?')) {
+        this.quizService.deleteQuiz(id).subscribe({
+          next: () => {
+            this.quizes = this.quizes.filter(q => q.id !== id);
+          },
+          error: (err) => console.error('Delete failed', err)
+        });
+      }
     }
 
 }

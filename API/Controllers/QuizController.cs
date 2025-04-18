@@ -213,7 +213,7 @@ public class QuizController : ControllerBase
     {
         var result = await _quizRepository.DeleteQuizAsync(id);
 
-        if (result){
+        if (!result){
             return NotFound("Quiz with this id not found");
         }
 

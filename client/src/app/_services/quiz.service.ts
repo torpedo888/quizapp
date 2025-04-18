@@ -40,6 +40,8 @@ export class QuizService {
   }
 
   deleteQuiz(quizId: number): Observable<void> {
+    console.log(`${this.apiUrl}/${quizId}`)
+
     return this.http.delete<void>(`${this.apiUrl}/${quizId}`);
   }
 }
