@@ -3,6 +3,8 @@ import { QuizService } from '../_services/quiz.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { QuestionService } from '../_services/question.service';
+import { Quiz } from '../_models/Quiz';
+import { Question } from '../_models/Question';
 
 @Component({
   selector: 'app-question-delete',
@@ -14,11 +16,23 @@ import { QuestionService } from '../_services/question.service';
 export class QuestionDeleteComponent {
 
   questions: any[] = [];
+
+  quizzes: Quiz[] = [];
+  filteredQuestions: any[] = [];
+  selectedQuizId: number | null = null;
   
   constructor(private quizService: QuizService, private questionService: QuestionService) {}
 
   ngOnInit(): void {
+    this.loadQuizzes();
     this.loadQuestions();
+  }
+
+  loadQuizzes() {
+    this.quizService.getQuizzes().subscribe({
+      next: data => this.quizzes = data,
+      error: err => console.error('Error loading quizzes', err)
+    })
   }
 
   loadQuestions() {
@@ -27,12 +41,26 @@ export class QuestionDeleteComponent {
     });
   }
 
+  onSelectQuiz(event: Event) {
+    const quizId = +(event.target as HTMLSelectElement).value;
+    this.selectedQuizId = quizId;
+    this.filteredQuestions = this.questions.filter(q => q.quizId === quizId);
+
+    // if(this.filteredQuestions.length > 0){
+    //   this.selectedQuestion = this.filteredQuestions[0];
+    //   this.updateForm(this.selectedQuestion);
+    // } else {
+    //   this.selectedQuestion = null;
+    //   this.questionForm.reset(); // Reset form when quiz changes
+    // }    
+  }
+
   hasSelectedQuestions(): boolean {
-    return this.questions.some(q => q.selected);
+    return this.filteredQuestions.some(q => q.selected);
   }
 
   deleteSelectedQuestions() {
-    const selectedIds = this.questions.filter(q => q.selected).map(q => q.id);
+    const selectedIds = this.filteredQuestions.filter(q => q.selected).map(q => q.id);
 
     if (selectedIds.length > 0) {
       this.questionService.deleteQuestions(selectedIds).subscribe(() => {

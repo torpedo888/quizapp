@@ -1,8 +1,18 @@
 <div class="container">
     <h2>Quiz Questions</h2>
+
+    <!-- Quiz Dropdown -->
+    <div class="mb-3">
+      <label for="quizSelect" class="form-label">Select Quiz:</label>
+
+      <select id="quizSelect" class="form-select" (change)="onSelectQuiz($event)">
+        <option value="" disabled selected>Please select</option>
+        <option *ngFor="let quiz of quizzes" [value]="quiz.id">{{ quiz.title }}</option>
+      </select>
+    </div>
   
     <ul class="list-group">
-      <li *ngFor="let question of questions" class="list-group-item">
+      <li *ngFor="let question of filteredQuestions" class="list-group-item">
         <input type="checkbox" [(ngModel)]="question.selected" />
         {{ question.text }}
       </li>
