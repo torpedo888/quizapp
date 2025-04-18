@@ -9,7 +9,7 @@ public interface ICategoryRepository
     Task<Category?> GetCategoryByIdAsync(int id);
     Task<IEnumerable<QuizDto>> GetQuizzesByCategoryAsync(int categoryId, string requestScheme, string host);
     Task AddCategoryAsync(Category category);
-    Task DeleteCategoryAsync(int id);
+    Task<bool> DeleteCategoryAsync(int id);
     Task SaveChangesAsync();
     Task<Category?> GetByIdAsync(int id);
     Task<List<Category>> GetActiveCategoriesAsync();

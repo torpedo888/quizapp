@@ -30,6 +30,17 @@ namespace API.Data
                 .HasForeignKey(ur => ur.RoleId) // RoleId in UserRoles is the foreign key
                 .IsRequired();
 
+            builder.Entity<Category>()
+                .HasMany(c => c.Quizzes)
+                .WithOne(q => q.Category)
+                .HasForeignKey(q => q.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Quiz>()
+                .HasMany(q => q.Questions)
+                .WithOne(qs => qs.Quiz)
+                .HasForeignKey(qs => qs.QuizId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -4,5 +4,7 @@ export interface Quiz {
     description: string;
     isActive: boolean;
     imageUrl: string;
+    categoryName: string;
+    questionCount: number;
   }
   

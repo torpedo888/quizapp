@@ -30,8 +30,11 @@ export class QuizListComponent implements OnInit {
 
   getQuizzes() {
     this.categoryService.getQuizzesByCategory(this.categoryId).subscribe({
-      next: (data) => this.quizzes = data,
-      error: (err) => console.error('Error fetching quizzes:', err)
+      next: (data) => this.quizzes = Array.isArray(data) ? data : [],
+      error: (err) => {
+          console.error('Error fetching quizzes:', err);
+          this.quizzes = [];
+      }
     });
   }
 }

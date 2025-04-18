@@ -11,7 +11,7 @@ public interface IQuizRepository
 {
     Task<IEnumerable<Quiz>> GetAllQuizesAsync();
     Task AddQuizAsync(Quiz Quiz);
-    Task DeleteQuizAsync(int id);
+    Task<bool> DeleteQuizAsync(int id);
     Task<bool> DeleteMultipleQuestionsAsync(DeleteQuestionsRequestDto dto);
     Task SaveChangesAsync();
     Task<Quiz?> GetByIdAsync(int id);

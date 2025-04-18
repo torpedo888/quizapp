@@ -21,5 +21,6 @@ public class Category
     public bool IsActive { get; set; } = true;
 
     // Navigation Property
-    public ICollection<Question> Questions { get; set; } = new List<Question>();
+    //public ICollection<Question> Questions { get; set; } = new List<Question>();
+    public ICollection<Quiz> Quizzes { get; set; } = new List<Quiz>();
 }

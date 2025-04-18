@@ -53,4 +53,8 @@ export class QuizResultComponent {
     const quizId = history.state.quizId ?? 1; // Default to 1 if missing
     this.router.navigate([`/quiz/${quizId}`]);
   }
+
+  goToCategories() {
+    this.router.navigate([`/categories`]);
+  }
 }

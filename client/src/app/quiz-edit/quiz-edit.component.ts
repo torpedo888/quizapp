@@ -51,7 +51,8 @@ export class QuizEditComponent implements OnInit {
           editedTitle: quiz.title,
           editedDescription: quiz.description,
           editedImage: null,
-          imageUrl: quiz.imageUrl || 'assets/default-thumbnail.jpg' // Fallback if no image
+          imageUrl: quiz.imageUrl || 'assets/default-thumbnail.jpg', // Fallback if no image
+          questionCount: quiz.questionCount
         })) as EditableQuiz[];
       });
     }
@@ -178,7 +179,7 @@ export class QuizEditComponent implements OnInit {
       category.editedTitle = category.title;
     }
   
-    deactivateCategory(quizId: number): void {
+    deactivateQuiz(quizId: number): void {
       if (confirm('Are you sure you want to deactivate this category?')) {
         this.quizService.setCategoryInactive(quizId).subscribe(() => {
           const quiz = this.quizes.find(c => c.id === quizId);
@@ -189,13 +190,17 @@ export class QuizEditComponent implements OnInit {
       }
     }
   
-    activateCategory(quizId: number): void {
+    activateQuiz(quizId: number): void {
       this.quizService.setCategoryActive(quizId).subscribe(() => {
         const quiz = this.quizes.find(c => c.id === quizId);
         if (quiz) {
           quiz.isActive = true; // UI updates instantly
         }
       });
+    }
+
+    deleteQuiz(quizId: number): void {
+      this.quizService.deleteQuiz(quizId)
     }
 
 }

@@ -18,7 +18,7 @@
     <!-- New Category Row -->
     <tr *ngIf="newCategory">
       <td>
-        <img *ngIf="newCategory.imageUrl" [src]="newCategory.imageUrl" alt="Preview" class="img-thumbnail" width="50" height="50" />
+        <img *ngIf="newCategory.imageUrl" [src]="newCategory.imageUrl" alt="Preview" class="img-thumbnail preview-img" />
       </td>
       <td>
         <input type="text" [(ngModel)]="newCategory.name" class="form-control" placeholder="Enter category name" />
@@ -42,8 +42,7 @@
           *ngIf="category.imageUrl" 
           [src]="category.imageUrl" 
           alt="Category Image" 
-          class="img-thumbnail"
-          width="50" height="50"
+          class="img-thumbnail preview-img"
         />
       </td>
       
@@ -84,6 +83,7 @@
           <button *ngIf="category.isActive" class="btn btn-danger btn-sm flex-grow-1" (click)="deactivateCategory(category.id)" style="min-width: 90px;">
             Deactivate
           </button>
+          <button class="btn btn-outline-danger" (click)="deleteCategory(category.id)">Delete</button>
         </div>
       </td>
       

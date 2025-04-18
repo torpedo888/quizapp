@@ -127,6 +127,19 @@ export class CategoryEditComponent implements OnInit {
       }
     });
   }
+
+  deleteCategory(id: number) {
+    if (confirm("Are you sure you want to delete this category?")) {
+      this.categoryService.deleteCategory(id).subscribe({
+        next: () => {
+          this.categories = this.categories.filter(c => c.id !== id);
+        },
+        error: err => {
+          console.error("Error deleting category", err);
+        }
+      })
+    }
+  }
 }
 
 interface EditableCategory extends Category {

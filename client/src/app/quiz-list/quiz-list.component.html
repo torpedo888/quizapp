@@ -1,5 +1,12 @@
 <div class="container mt-4">
     <h2 class="text-center text-primary mb-4">Available Quizzes</h2>
+
+     <!-- No quizzes available -->
+    <div *ngIf="quizzes && quizzes.length === 0" class="text-center text-muted fs-5">
+      <p class="fs-4 text-muted">No quizzes available in this category.</p>
+      <a routerLink="/categories" class="btn btn-outline-primary mt-3">← Back to Categories</a>
+    </div>
+
     <div class="row">
       <div class="col-md-4" *ngFor="let quiz of quizzes">
         <div class="card">

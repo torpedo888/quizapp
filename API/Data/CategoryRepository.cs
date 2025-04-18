@@ -29,7 +29,8 @@ public class CategoryRepository : ICategoryRepository
     public async Task<IEnumerable<QuizDto>> GetQuizzesByCategoryAsync(int categoryId, string requestScheme, string host)
     {
         return await _context.Quizzes
-            .Where(q => q.CategoryId == categoryId)
+            .Where(c => c.CategoryId == categoryId)
+            .Where(q => q.IsActive)
             .Select(q => new QuizDto
             {
                 Id = q.Id,
@@ -47,14 +48,17 @@ public class CategoryRepository : ICategoryRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteCategoryAsync(int id)
+    public async Task<bool> DeleteCategoryAsync(int id)
     {
         var category = await _context.Categories.FindAsync(id);
-        if (category != null)
-        {
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
-        }
+
+        if (category == null)
+            return false;
+
+        _context.Categories.Remove(category);
+        await _context.SaveChangesAsync();
+        
+        return true;
     }
 
     public async Task SaveChangesAsync()

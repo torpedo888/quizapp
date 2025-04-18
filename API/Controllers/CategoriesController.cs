@@ -97,11 +97,16 @@ public class CategoriesController : ControllerBase
         return Ok();
     }
 
-
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCategory(int id)
     {
-        await _categoryRepository.DeleteCategoryAsync(id);
+        var result = await _categoryRepository.DeleteCategoryAsync(id);
+
+        if(!result)
+        {
+            return NotFound($"Category with {id} not found");
+        }
+
         return NoContent();
     }
 
@@ -198,13 +203,10 @@ public class CategoriesController : ControllerBase
     [HttpGet("{categoryId}/quizzes")]
     public async Task<IActionResult> GetQuizzesByCategory(int categoryId)
     {
-        var quizzes = await _categoryRepository.GetQuizzesByCategoryAsync(categoryId, Request.Scheme, Request.Host.ToString());
+        var quizzes = await _categoryRepository.GetQuizzesByCategoryAsync(
+        categoryId, Request.Scheme, Request.Host.ToString());
 
-        if (!quizzes.Any())
-        {
-            return NotFound("No quizzes found for this category.");
-        }
-
+        // Always return 200, even if empty
         return Ok(quizzes);
     }
 
@@ -236,16 +238,6 @@ public class CategoriesController : ControllerBase
         }
 
         category.Name = model.Name;
-
-        // if(model.Image !=null)
-        // {
-        //     var filePath = Path.Combine("uploads", model.Image.FileName);
-        //     using(var stream = new FileStream(filePath, FileMode.Create))
-        //     {
-        //         await model.Image.CopyToAsync(stream);
-        //     }
-        //     category.ImageUrl = filePath;
-        // }
 
         //ez menyen file servicebe mert a questioncontrollerben is van file feltoltes.
         if (model.Image != null)

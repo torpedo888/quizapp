@@ -36,14 +36,18 @@ public class QuizRepository : IQuizRepository
         return true;
     }
 
-    public async Task DeleteQuizAsync(int id)
+    public async Task<bool> DeleteQuizAsync(int id)
     {
         var quiz = await _context.Quizzes.FindAsync(id);
-        if (quiz != null)
+
+        if (quiz == null)
         {
-            _context.Quizzes.Remove(quiz);
-            await _context.SaveChangesAsync();
+            return false;
         }
+        _context.Quizzes.Remove(quiz);
+        await _context.SaveChangesAsync();
+        
+        return true;
     }
 
     public Task<List<Quiz>> GetActiveQuizesAsync()
@@ -53,7 +57,10 @@ public class QuizRepository : IQuizRepository
 
     public async Task<IEnumerable<Quiz>> GetAllQuizesAsync()
     {
-        return await _context.Quizzes.ToListAsync();
+        return await _context.Quizzes
+                    .Include(q => q.Questions)
+                    .Include(q => q.Category)
+                    .ToListAsync();
     }
 
     public async Task<Quiz?> GetByIdAsync(int id)

@@ -13,11 +13,13 @@ namespace API.Controllers;
 public class QuizController : ControllerBase
 {
     private readonly IQuizRepository _quizRepository;
+    private readonly IQuizService _quizService;
     private readonly IWebHostEnvironment _environment;
 
-    public QuizController(IQuizRepository quizRepository, IWebHostEnvironment environment)
+    public QuizController(IQuizRepository quizRepository, IQuizService quizService, IWebHostEnvironment environment)
     {
         _quizRepository = quizRepository;
+        _quizService = quizService;
         _environment = environment;
     }
 
@@ -37,7 +39,9 @@ public class QuizController : ControllerBase
                 Description = q.Description,
                 IsActive = q.IsActive,
                 CategoryId = q.CategoryId,
-                ImageUrl = q.ImageUrl!=null ? $"{Request.Scheme}://{Request.Host}{q.ImageUrl}" : null
+                CategoryName = q.Category.Name,
+                ImageUrl = q.ImageUrl!=null ? $"{Request.Scheme}://{Request.Host}{q.ImageUrl}" : null,
+                QuestionCount = q.Questions?.Count ?? 0
             }).ToList();
 
             return Ok(quizDtos);
@@ -52,11 +56,6 @@ public class QuizController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<QuizDto>> GetQuizById(int id)
     {
-        // var quiz = await _context.Quizzes
-        //     .Include(q => q.Questions)
-        //     .ThenInclude(q => q.Options)
-        //     .FirstOrDefaultAsync(q => q.Id == id);
-
         var quiz = await _quizRepository.GetQuizWithQuestionsAndOptionsAsync(id);
 
         if (quiz == null) return NotFound();
@@ -83,7 +82,6 @@ public class QuizController : ControllerBase
     }
 
     [HttpPost]
-    //public async Task<IActionResult> CreateQuiz([FromForm] string title, [FromForm] IFormFile imageFile, [FromForm] int categoryId)
     public async Task<IActionResult> CreateQuiz([FromForm] CreateQuizDto quizDto)
     {
         try
@@ -113,9 +111,6 @@ public class QuizController : ControllerBase
                 CategoryId = quizDto.CategoryId
             };
 
-            // _context.Quizzes.Add(quiz);
-            // await _context.SaveChangesAsync();
-
             await _quizRepository.AddQuizAsync(quiz);
 
             return Ok(quiz);
@@ -135,7 +130,6 @@ public class QuizController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateQuiz(int id, [FromForm] UpdateQuizDto quizDto)
     {
-        //var quiz = await _context.Quizzes.FindAsync(id);
         var quiz = await _quizRepository.GetByIdAsync(id);
         if (quiz == null) return NotFound();
 
@@ -166,10 +160,6 @@ public class QuizController : ControllerBase
             quiz.ImageUrl = $"/uploads/{fileName}";
         }
 
-        // _context.Quizzes.Update(quiz);
-
-        // await _context.SaveChangesAsync();
-
         await _quizRepository.UpdateAsync(quiz);
 
         return NoContent();
@@ -178,11 +168,6 @@ public class QuizController : ControllerBase
     [HttpGet("{quizId}/questions")]
     public async Task<IActionResult> GetQuestionsByQuizId(int quizId)
     {
-        // var questions = await _context.Questions
-        //     .Where(q => q.QuizId == quizId)
-        //     .Include(q => q.Options)
-        //     .ToListAsync();
-
         var questions = await _quizRepository.GetQuestionsWithOptionsByQuizIdAsync(quizId);
 
         if (!questions.Any()) return NotFound();
@@ -208,8 +193,8 @@ public class QuizController : ControllerBase
     [HttpPut("{id}/deactivate")]
     public async Task<IActionResult> DeactivateCategory(int id)
     {
-        // var success = await _categoryService.SetCategoryInactiveAsync(id);
-        // if (!success) return NotFound();
+        var success = await _quizService.SetCategoryInactiveAsync(id);
+        if (!success) return NotFound();
         
          return NoContent();
     }
@@ -217,10 +202,22 @@ public class QuizController : ControllerBase
     [HttpPut("{id}/activate")]
     public async Task<IActionResult> ActivateCategory(int id)
     {
-        // var success = await _categoryService.SetCategoryActiveAsync(id);
-        // if (!success) return NotFound();
+        var success = await _quizService.SetCategoryActiveAsync(id);
+        if (!success) return NotFound();
         
          return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteQuiz(int id)
+    {
+        var result = await _quizRepository.DeleteQuizAsync(id);
+
+        if (result){
+            return NotFound("Quiz with this id not found");
+        }
+
+        return NoContent();
     }
 
 }

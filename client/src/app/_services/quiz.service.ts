@@ -38,4 +38,8 @@ export class QuizService {
   setCategoryActive(quizId: number): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/${quizId}/activate`, {});
   }
+
+  deleteQuiz(quizId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${quizId}`);
+  }
 }
