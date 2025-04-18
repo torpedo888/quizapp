@@ -5,6 +5,8 @@ import { Option } from '../_models/Option';
 import { QuestionService } from '../_services/question.service';
 import { Question } from '../_models/Question';
 import { Observable } from 'rxjs';
+import { Quiz } from '../_models/Quiz';
+import { QuizService } from '../_services/quiz.service';
 
 @Component({
   selector: 'app-question-list-edit',
@@ -22,12 +24,16 @@ export class QuestionListEditComponent {
   selectedQuestion: Question | null = null;
   showToast: boolean = false; // Controls Bootstrap toast visibility
   imageFile: File | null = null; // Store the selected image file
-
-  constructor(private fb: FormBuilder, private questionService: QuestionService) {
+  quizzes: Quiz[] = [];
+  filteredQuestions: Question[] = [];
+  selectedQuizId: number | null = null;
+  
+  constructor(private fb: FormBuilder, private questionService: QuestionService, private quizService: QuizService) {
     this.initForm();
   }
 
   ngOnInit() {
+    this.loadQuizzes();
     this.loadQuestions();
   }
 
@@ -37,6 +43,13 @@ export class QuestionListEditComponent {
       imageUrl: [''],
       options: this.fb.array([])
     });
+  }
+
+  loadQuizzes() {
+    this.quizService.getQuizzes().subscribe({
+      next: data => this.quizzes = data,
+      error: err => console.error('Error loading quizzes', err)
+    })
   }
 
   loadQuestions() {
@@ -99,13 +112,29 @@ export class QuestionListEditComponent {
       console.warn('Options array is missing or undefined', question);
     }
   }
-  
-  
 
+  onSelectQuiz(event: Event) {
+    const quizId = +(event.target as HTMLSelectElement).value;
+    this.selectedQuizId = quizId;
+    this.filteredQuestions = this.questions.filter(q => q.quizId === quizId);
+
+    if(this.filteredQuestions.length > 0){
+      this.selectedQuestion = this.filteredQuestions[0];
+      this.updateForm(this.selectedQuestion);
+    } else {
+      this.selectedQuestion = null;
+      this.questionForm.reset(); // Reset form when quiz changes
+    }
+
+    
+  }
+  
   onSelectQuestion(event: Event) {
     const selectedIndex = parseInt((event.target as HTMLSelectElement).value, 10);
     if (!isNaN(selectedIndex) && selectedIndex >= 0 && selectedIndex < this.questions.length) {
-      this.selectedQuestion = this.questions[selectedIndex];
+      //this.selectedQuestion = this.questions[selectedIndex];
+
+      this.selectedQuestion = this.filteredQuestions[selectedIndex];
 
       console.log('quizid:' + this.questions[selectedIndex].quizId)
 
