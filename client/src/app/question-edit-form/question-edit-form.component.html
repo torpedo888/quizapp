@@ -1,5 +1,13 @@
 <div class="container mt-4">
     <h2>Questions</h2>
+
+    <div class="mb-3">
+      <label for="quizSelect" class="form-label">Select Quiz</label>
+      <select id="quizSelect" class="form-select" [(ngModel)]="selectedQuizId" (change)="onQuizSelected()">
+        <option [ngValue]="null" disabled selected>Select a quiz</option>
+        <option *ngFor="let quiz of quizzes" [ngValue]="quiz.id">{{ quiz.title }}</option>
+      </select>
+    </div>
   
     <button class="btn btn-danger float-end mb-2" (click)="openAddModal()">
       <i class="bi bi-plus-lg"></i> Add Question
@@ -11,7 +19,6 @@
           <th>Text</th>
           <th>Image</th>
           <th>Quiz</th>
-          <th>Status</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -30,6 +37,7 @@
             <!-- <button class="btn btn-danger" (click)="toggleStatus(question)">
               {{ question.isActive ? 'Deactivate' : 'Activate' }}
             </button> -->
+            <button class="btn btn-outline-danger" (click)="deleteQuestion(question.id)">Delete</button>
           </td>
         </tr>
       </tbody>
@@ -51,12 +59,12 @@
               <label class="form-label">Text</label>
               <input formControlName="text" class="form-control" />
             </div>
-            <div class="mb-3">
+            <!-- <div class="mb-3">
               <label class="form-label">Quiz</label>
               <select formControlName="quizId" class="form-select">
                 <option *ngFor="let quiz of quizzes" [value]="quiz.id">{{ quiz.title }}</option>
               </select>
-            </div>
+            </div> -->
             <div class="mb-3">
               <label class="form-label">Upload Image</label>
               <input type="file" class="form-control" (change)="onFileSelected($event)">

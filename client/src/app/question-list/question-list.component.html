@@ -1,4 +1,4 @@
-<div class="container d-flex justify-content-center align-items-center vh-100">
+<div class="container d-flex justify-content-center align-items-center mt-5">
   <div class="quiz-card w-75 p-5 shadow-lg rounded-3 position-relative">
     
     <!-- Progress Bar -->
@@ -16,9 +16,10 @@
     <!-- Question Image -->
     <div class="text-center mt-4">
       <img *ngIf="questions[currentQuestionIndex]?.imageUrl" 
-          [src]="'https://localhost:5001' + questions[currentQuestionIndex]?.imageUrl" 
+          [src]="questions[currentQuestionIndex]?.imageUrl" 
           alt="Question Image" 
-          class="img-fluid rounded shadow-lg">
+          class="rounded mx-auto d-block"
+          style="max-width: 500px; height: auto; margin-bottom: 20px;" />
     </div>
 
     <!-- Question Text -->

@@ -182,8 +182,9 @@ public class QuizController : ControllerBase
                 Text = o.Text,
                 IsCorrect = o.IsCorrect == 1
             }).ToList(),
-            ImageUrl = q.ImageUrl,
-            AudioUrl = q.AudioUrl
+            ImageUrl = q.ImageUrl != null ? $"{Request.Scheme}://{Request.Host}{q.ImageUrl}" : null,
+            AudioUrl = q.AudioUrl,
+            QuizId = q.QuizId
         }).ToList();
 
         return Ok(questionDtos);

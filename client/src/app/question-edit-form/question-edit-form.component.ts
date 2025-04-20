@@ -9,11 +9,13 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-question-edit-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule ],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule ],
   templateUrl: './question-edit-form.component.html',
   styleUrl: './question-edit-form.component.css'
 })
 export class QuestionEditFormComponent implements OnInit {
+
+  selectedQuizId: number | null = null;
 
   questions: Question[] = [];
   quizzes: Quiz[] = [];
@@ -32,7 +34,7 @@ export class QuestionEditFormComponent implements OnInit {
   constructor(private fb: FormBuilder, private questionService: QuestionService, private quizService: QuizService) {
     this.questionForm = this.fb.group({
       text: ['', Validators.required],
-      quizId: [null, Validators.required],
+     // quizId: [null, Validators.required],
       imageUrl: [''],
       options: this.fb.array([
         this.fb.group({
@@ -46,7 +48,14 @@ export class QuestionEditFormComponent implements OnInit {
 
   ngOnInit() {
     this.loadQuizzes();
-    this.loadQuestions();
+  }
+
+  onQuizSelected() {
+    if (this.selectedQuizId !== null) {
+      this.questionService.getQuestionsByQuizId(this.selectedQuizId).subscribe((questions) => {
+        this.questions = questions;
+      });
+    }
   }
 
   loadQuestions() {
@@ -98,8 +107,6 @@ export class QuestionEditFormComponent implements OnInit {
     this.showModal = true;
 
     this.editingQuestionId = question.id;
-
-    this.quizId = question.quizId;
   
     this.questionForm.patchValue({
       text: question.text,
@@ -140,11 +147,17 @@ export class QuestionEditFormComponent implements OnInit {
       formData.append('audioFile', this.audioFile);
     }
     
-  
+    //const selectedQuizId = this.questionForm.get('quizId')?.value;
+
+    if (this.selectedQuizId===null) {
+      console.log('selectedQuizId is null. error.');
+      return;
+    }
+
     if (this.isEditMode && this.editingQuestionId !== null) {
-      this.questionService.updateQuestion(this.quizId, this.editingQuestionId, formData)
+      this.questionService.updateQuestion(this.selectedQuizId, this.editingQuestionId, formData)
       .subscribe(() => {
-        this.questionService.getQuestionById(this.quizId, this.editingQuestionId!)
+        this.questionService.getQuestionById(this.selectedQuizId!, this.editingQuestionId!)
           .subscribe((updatedQuestion) => {
             const index = this.questions.findIndex(q => q.id === this.editingQuestionId);
             if (index !== -1) {
@@ -155,7 +168,12 @@ export class QuestionEditFormComponent implements OnInit {
           });
       });
     } else {
-      //this.questionService.addQuestion(question).subscribe(() => this.closeModal());
+      this.questionService.addQuestion(this.selectedQuizId, formData).subscribe(() => { 
+        this.questionService.getQuestionsByQuizId(this.selectedQuizId!).subscribe((questions) => {
+          this.questions = questions;
+          this.closeModal();
+        })
+      });
     }
   
   }
@@ -180,6 +198,17 @@ export class QuestionEditFormComponent implements OnInit {
         this.questionForm.patchValue({ imageUrl: reader.result as string });
       };
       reader.readAsDataURL(file);
+    }
+  }
+
+  deleteQuestion(id: number): void {
+    if (confirm('Are you sure you want to delete this question?')) {
+      this.questionService.deleteQuestion(id).subscribe({
+        next: () => {
+          this.questions = this.questions.filter(q => q.id !== id);
+        },
+        error: (err) => console.error('Delete failed', err)
+      });
     }
   }
 

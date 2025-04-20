@@ -136,36 +136,6 @@ public class QuestionsController(DataContext context) : ControllerBase
         public int SelectedOptionId { get; set; }
     }
 
-    // [HttpPost("submit")]
-    // public async Task<IActionResult> SubmitQuiz([FromBody] SubmitQuizDto submission)
-    // {
-    //     if (submission == null || submission.Answers == null || submission.Answers.Count == 0)
-    //     {
-    //         return BadRequest("Invalid submission.");
-    //     }
-
-    //     int correctCount = 0;
-    //     int totalQuestions = submission.Answers.Count;
-
-    //     foreach (var answer in submission.Answers)
-    //     {
-    //         var question = await _context.Questions.FindAsync(answer.QuestionId);
-    //         if (question != null && question.CorrectOptionId == answer.SelectedOptionId)
-    //         {
-    //             correctCount++;
-    //         }
-    //     }
-
-    //     var result = new
-    //     {
-    //         TotalQuestions = totalQuestions,
-    //         CorrectAnswers = correctCount,
-    //         Score = (double)correctCount / totalQuestions * 100
-    //     };
-
-    //     return Ok(result);
-    // }
-
     [HttpGet("{quizId}/questions")]
     public async Task<IActionResult> GetQuestionsByQuizId(int quizId)
     {
