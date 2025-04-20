@@ -1,6 +1,12 @@
-.card {
-    margin-bottom: 20px;
-  }
+.quiz-card {
+  max-width: 350px;
+  margin: 0 auto;
+}
+
+.quiz-img {
+  max-height: 180px;
+  object-fit: cover;
+}
   
   .card-img-top {
     width: 100%;
