@@ -9,7 +9,7 @@
       </select>
     </div>
   
-    <button class="btn btn-danger float-end mb-2" (click)="openAddModal()">
+    <button class="btn btn-danger float-end mb-2" [disabled]="!selectedQuizId" (click)="openAddModal()">
       <i class="bi bi-plus-lg"></i> Add Question
     </button>
   
@@ -18,7 +18,7 @@
         <tr>
           <th>Text</th>
           <th>Image</th>
-          <th>Quiz</th>
+          <!-- <th>Quiz</th> -->
           <th>Actions</th>
         </tr>
       </thead>
@@ -28,16 +28,12 @@
           <td>
             <img *ngIf="question.imageUrl" [src]="question.imageUrl" alt="Question Image" style="max-width: 80px; max-height: 80px;">
           </td>
-          <td>{{ getQuizTitle(question.quizId) }}</td>
-          <!-- <td [ngClass]="{'bg-success text-white': question.isActive, 'bg-danger text-white': !question.isActive}">
-            {{ question.isActive ? 'Active' : 'Inactive' }}
-          </td> -->
+          <!-- <td>{{ getQuizTitle(question.quizId) }}</td> -->
           <td>
-            <button class="btn btn-warning me-2" (click)="editQuestion(question)">Edit</button>
-            <!-- <button class="btn btn-danger" (click)="toggleStatus(question)">
-              {{ question.isActive ? 'Deactivate' : 'Activate' }}
-            </button> -->
-            <button class="btn btn-outline-danger" (click)="deleteQuestion(question.id)">Delete</button>
+            <div class="d-flex gap-2">
+              <button class="btn btn-warning me-2" (click)="editQuestion(question)">Edit</button>
+              <button class="btn btn-outline-danger" (click)="deleteQuestion(question.id)">Delete</button>
+            </div>
           </td>
         </tr>
       </tbody>
