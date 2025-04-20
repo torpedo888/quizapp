@@ -52,9 +52,7 @@ public class QuestionsController(DataContext context) : ControllerBase
         var question = new Question
         {
             Text = request.Text,
-           // CorrectOptionId = request.CorrectOptionId,
             QuizId = request.QuizId,
-            CategoryId = request.CategoryId
         };
 
         // Add the question to the context
@@ -101,7 +99,6 @@ public class QuestionsController(DataContext context) : ControllerBase
         {
             var questions = await _context.Questions
                 .Include(q => q.Options)
-                .Include( c=> c.Category)
                 .Include( k => k.Quiz)
                 .ToListAsync();
 
@@ -117,7 +114,6 @@ public class QuestionsController(DataContext context) : ControllerBase
                     Text = o.Text,
                     IsCorrect = o.IsCorrect == 1
                 }).ToList(),
-                CategoryName = q.Category!=null ? q.Category.Name : "Unknown",
                 QuizId = q.QuizId
             }).ToList();
 
@@ -176,7 +172,6 @@ public class QuestionsController(DataContext context) : ControllerBase
         var questions = await _context.Questions
             .Where(q => q.QuizId == quizId)
             .Include(q => q.Options)
-            .Include(q => q.Category) // Ensure category is included
             .ToListAsync();
 
         if (!questions.Any()) return NotFound();
@@ -186,7 +181,6 @@ public class QuestionsController(DataContext context) : ControllerBase
             Id = q.Id,
             Text = q.Text,
             ImageUrl = q.ImageUrl, // Include ImageUrl field
-            CategoryName = q.Category != null ? q.Category.Name : "Unknown",
             Options = q.Options.Select(o => new OptionDto
             {
                 Id = o.Id,
@@ -205,10 +199,6 @@ public class QuestionsController(DataContext context) : ControllerBase
     {
         var quiz = await _context.Quizzes.FindAsync(quizId);
         if (quiz == null) return NotFound("Quiz not found");
-
-        // Validate Category ID
-        var category = await _context.Categories.FindAsync(dto.CategoryId);
-        if (category == null) return NotFound("Category not found");
 
         string? imageUrl = null;
         string? audioUrl = null;
@@ -246,7 +236,6 @@ public class QuestionsController(DataContext context) : ControllerBase
         
         var question = new Question
         {
-            CategoryId = dto.CategoryId,
             QuizId = quizId,
             Text = dto.Text,
             ImageUrl = imageUrl, // Store the image URL
@@ -275,18 +264,12 @@ public class QuestionsController(DataContext context) : ControllerBase
         [FromForm] IFormFile? imageFile,
         [FromForm] IFormFile? audioFile,
         [FromForm] string text,
-        [FromForm] int correctOptionId,
-        [FromForm] string optionsJson,
-        [FromForm] int categoryId)
+        [FromForm] string optionsJson)
     {
         var question = await _context.Questions.FindAsync(questionId);
         if (question == null) return NotFound("Question not found");
 
         if (question.QuizId != quizId) return BadRequest("Question does not belong to this quiz");
-
-        // Validate Category ID
-        var category = await _context.Categories.FindAsync(categoryId);
-        if (category == null) return NotFound("Category not found");
 
         string? imageUrl = question.ImageUrl; // Keep existing image
         string? audioUrl = question.AudioUrl; // Keep existing audio
@@ -325,8 +308,6 @@ public class QuestionsController(DataContext context) : ControllerBase
 
         // ✅ Update Question Fields
         question.Text = text;
-        question.CategoryId = categoryId;
-       // question.CorrectOptionId = correctOptionId;
         question.ImageUrl = imageUrl;
         question.AudioUrl = audioUrl;
 
@@ -370,7 +351,6 @@ public class QuestionsController(DataContext context) : ControllerBase
                     Text = o.Text,
                     IsCorrect = o.IsCorrect == 1
                 }).ToList(),
-                CategoryName = q.Category != null ? q.Category.Name : "Unknown",
                 QuizId= q.QuizId
             }).FirstOrDefaultAsync();
 
@@ -423,7 +403,6 @@ public class QuestionCreateRequest
     public int CorrectOptionId { get; set; }
     public List<OptionCreateRequest> Options { get; set; } = [];
     public int QuizId { get; set; }
-    public int CategoryId { get; set; }
 }
 
 public class OptionCreateRequest

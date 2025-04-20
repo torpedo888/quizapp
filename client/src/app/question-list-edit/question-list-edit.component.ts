@@ -198,7 +198,7 @@ export class QuestionListEditComponent {
         formData.append('imageUrl', this.questionForm.get('imageUrl')?.value);
       }
 
-      this.questionService.updateQuestion(this.selectedQuestion.quizId, this.selectedQuestion.id, formData).subscribe({
+      this.questionService.updateQuestion1(this.selectedQuestion.quizId, this.selectedQuestion.id, formData).subscribe({
         next: (response) => { 
           this.showToast = true;
           setTimeout(() => this.showToast = false, 3000);

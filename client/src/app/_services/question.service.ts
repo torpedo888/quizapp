@@ -56,7 +56,7 @@ export class QuestionService {
     return this.http.post(`${this.apiQuestionUrl}/${quizId}/questions`, formData);
   }
   
-  updateQuestion(quizId: number, questionId: number, formData: FormData): Observable<any> {
+  updateQuestion1(quizId: number, questionId: number, formData: FormData): Observable<any> {
     return this.http.put(`${this.apiQuestionUrl}/${quizId}/questions/${questionId}`, formData);
   }
 
@@ -67,6 +67,14 @@ export class QuestionService {
   deleteQuestions(ids: number[]): Observable<void> {
     return this.http.post<void>(`${this.apiQuestionUrl}/delete-multiple`, { ids });
   }  
+
+  addQuestion(quizId: number, formData: FormData): Observable<any> {
+    return this.http.post(`${this.apiQuestionUrl}/${quizId}/questions`, formData);
+  }
+
+  updateQuestion(quizId: number, questionId: number, formData: FormData): Observable<any> {
+    return this.http.put(`${this.apiQuestionUrl}/${quizId}/questions/${questionId}`, formData);
+  }
 }
 
 

@@ -54,8 +54,7 @@ public static class QuizSeeder
                 var question = new Question
                 {
                     Text = questionData.Text,
-                    QuizId = quiz.Id,
-                    CategoryId = category.Id
+                    QuizId = quiz.Id
                 };
                 context.Questions.Add(question);
                 await context.SaveChangesAsync();
@@ -124,9 +123,6 @@ public class QuizSeedData
     {
         [JsonPropertyName("text")]
         public string Text { get; set; }
-
-        [JsonPropertyName("correctOptionId")]
-        public int CorrectOptionId { get; set; }
 
         [JsonPropertyName("options")]
         public List<OptionData> Options { get; set; }
