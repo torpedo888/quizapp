@@ -1,49 +1,6 @@
-/* .readonly-radio {
-    pointer-events: none; /* Disables interaction with the radio button */
-   /* opacity: 0.5; /* Dims the radio button to indicate it is "readonly" 
-  }
-
-.option-box {
-    display: block;
-    padding: 10px 15px;
-    margin: 5px 0;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    text-align: center;
-    background-color: #f8f9fa;
+.quiz-option label:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
-
-.option-box:hover {
-    background-color: #e9ecef;
-}
-
-.selected-option {
-    border-color: #007bff;
-    background-color: #cce5ff;
-}
-
-.correct-answer {
-    background-color: #28a745;
-    color: white;
-    border-color: #28a745;
-}
-
-.wrong-answer {
-    background-color: #ff6961;
-    color: white;
-    border-color: #ff6961;
-}
-*/
-
-/*
-/* youranswers 
-.your-answers h3 {
-    text-decoration: underline;
-}
-
-*/
 
 .option-box {
     cursor: pointer;
@@ -77,6 +34,11 @@ label.form-check-label {
   color: white !important; /* Ensure text color stays unchanged */
 }
 
+label.form-check-label.selected-option {
+  background-color: #fff9db;
+  color: #005dc7 !important; /* override the !important from the default */
+}
+
 img {
   max-width: 100%;
   height: auto;
@@ -104,4 +66,12 @@ img {
   display: inline-flex;
   justify-content: center;
   align-items: center;
+}
+
+.radio-circle {
+  visibility: hidden;
+}
+
+.selected-option {
+  background-color: #fff9db; /* soft yellow */
 }
