@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Quiz } from '../_models/Quiz';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { QuizService } from '../_services/quiz.service';
 
 @Component({

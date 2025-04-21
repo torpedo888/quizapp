@@ -30,4 +30,10 @@ export class CategoryListComponent implements OnInit {
   selectCategory(categoryId: number): void {
     this.router.navigate(['/quizzes', categoryId]);
   }
+
+  goToQuizList(category: any) {
+    this.router.navigate(['/quiz-list', category.id], {
+      state: { categoryName: category.name }
+    });
+  }
 }

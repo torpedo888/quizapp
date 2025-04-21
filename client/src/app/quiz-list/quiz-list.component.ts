@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CategoryService } from '../_services/category.service';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -15,7 +15,7 @@ export class QuizListComponent implements OnInit {
   quizzes: any[] = [];
   categoryId!: number;
 
-  constructor(private categoryService: CategoryService,
+  constructor(private categoryService: CategoryService, private router: Router,
     private route: ActivatedRoute  ) {}
 
   ngOnInit(): void {
@@ -35,6 +35,12 @@ export class QuizListComponent implements OnInit {
           console.error('Error fetching quizzes:', err);
           this.quizzes = [];
       }
+    });
+  }
+
+  goToQuiz(quiz: any) {
+    this.router.navigate(['/quiz', quiz.id], {
+      state: { quizTitle: quiz.title }
     });
   }
 }

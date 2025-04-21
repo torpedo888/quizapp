@@ -1,0 +1,14 @@
+.quiz-card {
+    max-width: 350px;
+    margin: 0 auto;
+    transition: transform 0.2s ease;
+  }
+
+.quiz-card:hover {
+    transform: scale(1.03);
+  }
+  
+  .quiz-img {
+    max-height: 180px;
+    object-fit: cover;
+  }
