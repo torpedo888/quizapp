@@ -12,8 +12,8 @@
 }
 
 .selected-option {
-  background-color: #cce5ff;
-  border-color: #007bff;
+  background-color: #ffbb99 !important; /* warm peach to match E4865C */
+  color: #222 !important; /* readable dark text */
 }
 
 .correct-answer {
@@ -74,4 +74,8 @@ img {
 
 .selected-option {
   background-color: #fff9db; /* soft yellow */
+}
+
+.quiz-card {
+  background-color: #E4865C !important;
 }

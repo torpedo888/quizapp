@@ -1,19 +1,21 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Question } from '../_models/Question';
 import { QuestionService } from '../_services/question.service';
 import { QuizResultComponent } from '../quiz-result/quiz-result.component';
 import { FormsModule } from '@angular/forms'; 
 import { ActivatedRoute, Router } from '@angular/router';
+import { QuizTimerComponent } from '../quiz-timer/quiz-timer.component';
 
 @Component({
   selector: 'app-question-list',
   standalone: true,
   templateUrl: './question-list.component.html',
   styleUrls: ['./question-list.component.css'],
-  imports: [CommonModule, FormsModule, QuizResultComponent]
+  imports: [CommonModule, FormsModule, QuizResultComponent, QuizTimerComponent]
 })
 export class QuestionListComponent implements OnInit {
+  @ViewChild(QuizTimerComponent) timerComponent!: QuizTimerComponent;
   quizId: number | null = null;
   quizTitle: string = 'Default Quiz Title';
   categoryName: string = 'Basic Math';
@@ -34,6 +36,8 @@ export class QuestionListComponent implements OnInit {
 
   // One-question-at-a-time display and timer
   currentQuestionIndex: number = 0;
+
+  userScore = 0;
 
   constructor(
     private questionService: QuestionService,
@@ -74,6 +78,11 @@ export class QuestionListComponent implements OnInit {
   selectOption(questionId: number, optionId: number): void {
     this.selectedAnswers[questionId] = optionId;
     this.showValidation = false; // Hide validation when an option is selected
+
+    // Stop the timer immediately when an option is selected
+    if (this.timerComponent) {
+      this.timerComponent.stopTimer();
+    }
   }
 
   nextQuestion(): void {
@@ -83,6 +92,7 @@ export class QuestionListComponent implements OnInit {
     if (this.currentQuestionIndex < this.questions.length - 1) {
       this.currentQuestionIndex++;
       this.answerSubmitted = false; // Reset for next question
+
     } else {
 
       this.score = Math.round((this.correctAnswersCount / this.totalQuestions) * 100);
@@ -119,15 +129,8 @@ export class QuestionListComponent implements OnInit {
     }
 
     this.answerSubmitted = true; // Lock choices and show feedback
-
-    // this.answerSubmitted = true; // Show checkmark/X and disable options
-  
-    // this.showValidation = false;
-    // this.validateCurrentQuestion = true;  // This triggers the "Next" button to appear
   }
   
-  
-
   resetQuiz(): void {
     this.selectedAnswers = {};
     this.showValidation = false;
@@ -135,5 +138,34 @@ export class QuestionListComponent implements OnInit {
     this.score = 0;
     this.errorMessage = '';
     this.currentQuestionIndex = 0;
+  }
+
+  onTimeUp() {
+
+    const currentQuestion = this.questions[this.currentQuestionIndex];
+    const userAnswer = this.selectedAnswers[currentQuestion.id];
+
+    // Only auto-select the correct answer if the user didn't answer in time
+    if (!userAnswer) {
+      const correctOption = currentQuestion.options.find(o => o.isCorrect);
+      if (correctOption) {
+        this.selectedAnswers[currentQuestion.id] = correctOption.id;
+      }
+
+      this.answerSubmitted = true;
+      this.playTimerSound(); // Play sound ONLY if user didn’t answer
+    }
+  }
+
+  playTimerSound(): void {
+    try {
+      const audio = new Audio('../assets/sounds/negative_beeps-6008.mp3');
+      audio.load();
+      audio.play().catch(error => {
+        console.error('Audio playback failed:', error);
+      });
+    } catch (error) {
+      console.error('Error initializing audio:', error);
+    }
   }
 }
