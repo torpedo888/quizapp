@@ -15,12 +15,19 @@
     </div> -->
 
     <div>
+      <button (click)="toggleSound()" class="btn btn-light sound-toggle-btn" title="Toggle sound">
+        <i [class]="soundService.isSoundEnabled ? 'fa fa-volume-up' : 'fa fa-volume-mute'"></i>
+      </button>
+      
+    </div>
+
+    <div>
       <app-quiz-timer 
       [totalTime]="3"
       [currentQuestion]="currentQuestionIndex + 1"
       [totalQuestions]="questions.length"
       [score]="userScore"
-      [pointsPerQuestion]="500"
+      [pointsPerQuestion]="pointsPerQuestion"
       (timeExpired)="onTimeUp()">
     </app-quiz-timer>
     </div>

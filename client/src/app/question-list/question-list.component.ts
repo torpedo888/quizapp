@@ -6,6 +6,9 @@ import { QuizResultComponent } from '../quiz-result/quiz-result.component';
 import { FormsModule } from '@angular/forms'; 
 import { ActivatedRoute, Router } from '@angular/router';
 import { QuizTimerComponent } from '../quiz-timer/quiz-timer.component';
+import { SoundService } from '../_services/sound-service';
+import { SoundType } from '../Enums/SoundType';
+
 
 @Component({
   selector: 'app-question-list',
@@ -38,13 +41,19 @@ export class QuestionListComponent implements OnInit {
   currentQuestionIndex: number = 0;
 
   userScore = 0;
+  pointsPerQuestion = 500;
 
   constructor(
     private questionService: QuestionService,
     private route: ActivatedRoute,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public soundService: SoundService
   ) {}
+
+  get isSoundEnabled(): boolean {
+    return this.soundService.isSoundEnabled;
+  }
 
   ngOnInit(): void {
     this.quizId = Number(this.route.snapshot.paramMap.get('id'));
@@ -126,6 +135,10 @@ export class QuestionListComponent implements OnInit {
 
     if (selectedOption?.isCorrect) {
       this.correctAnswersCount++; // Increment the score if correct
+
+      this.userScore += this.pointsPerQuestion;
+
+      this.soundService.playSound(SoundType.Success);
     }
 
     this.answerSubmitted = true; // Lock choices and show feedback
@@ -153,19 +166,40 @@ export class QuestionListComponent implements OnInit {
       }
 
       this.answerSubmitted = true;
-      this.playTimerSound(); // Play sound ONLY if user didn’t answer
+
+      if (this.isSoundEnabled)
+      {
+        //this.playTimerSound(); // Play sound ONLY if user didn’t answer
+        this.soundService.playSound(SoundType.Error);
+      }
     }
   }
 
-  playTimerSound(): void {
-    try {
-      const audio = new Audio('../assets/sounds/negative_beeps-6008.mp3');
-      audio.load();
-      audio.play().catch(error => {
-        console.error('Audio playback failed:', error);
-      });
-    } catch (error) {
-      console.error('Error initializing audio:', error);
-    }
+  // playTimerSound(): void {
+  //   try {
+  //     const audio = new Audio('../assets/sounds/negative_beeps-6008.mp3');
+  //     audio.load();
+  //     audio.play().catch(error => {
+  //       console.error('Audio playback failed:', error);
+  //     });
+  //   } catch (error) {
+  //     console.error('Error initializing audio:', error);
+  //   }
+  // }
+
+  // playSuccessSound(): void {
+  //   try {
+  //     const audio = new Audio('../assets/sounds/success_bell.mp3');
+  //     audio.load();
+  //     audio.play().catch(error => {
+  //       console.error('Success sound playback failed:', error);
+  //     });
+  //   } catch (error) {
+  //     console.error('Error playing success sound:', error);
+  //   }
+  // }
+
+  toggleSound(): void {
+   this.soundService.toggleSound();
   }
 }

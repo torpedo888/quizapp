@@ -1,4 +1,17 @@
-.rounded-circle {
-    background-color: white;
-    font-size: 1.1rem;
-  }
+.quiz-timer-info {
+  font-size: 1.2rem; /* base size for everything */
+  color: white;
+}
+
+.quiz-timer-info strong {
+  font-size: 1.5rem; /* larger for key info */
+}
+
+.quiz-timer-info .rounded-circle {
+  font-size: 1.4rem;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.quiz-timer-info span {
+  font-size: 1.3rem;
+}

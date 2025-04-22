@@ -79,3 +79,17 @@ img {
 .quiz-card {
   background-color: #E4865C !important;
 }
+
+.sound-toggle-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
