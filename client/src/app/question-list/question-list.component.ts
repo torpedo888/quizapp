@@ -175,30 +175,6 @@ export class QuestionListComponent implements OnInit {
     }
   }
 
-  // playTimerSound(): void {
-  //   try {
-  //     const audio = new Audio('../assets/sounds/negative_beeps-6008.mp3');
-  //     audio.load();
-  //     audio.play().catch(error => {
-  //       console.error('Audio playback failed:', error);
-  //     });
-  //   } catch (error) {
-  //     console.error('Error initializing audio:', error);
-  //   }
-  // }
-
-  // playSuccessSound(): void {
-  //   try {
-  //     const audio = new Audio('../assets/sounds/success_bell.mp3');
-  //     audio.load();
-  //     audio.play().catch(error => {
-  //       console.error('Success sound playback failed:', error);
-  //     });
-  //   } catch (error) {
-  //     console.error('Error playing success sound:', error);
-  //   }
-  // }
-
   toggleSound(): void {
    this.soundService.toggleSound();
   }

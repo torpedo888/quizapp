@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { SoundService } from '../_services/sound-service';
+import { SoundType } from '../Enums/SoundType';
 
 @Component({
   standalone: true,
@@ -19,7 +21,7 @@ export class QuizResultComponent {
 
   scoreMessageUrl: String = "";
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private soundService: SoundService) {
     const state = this.router.getCurrentNavigation()?.extras.state as { 
       totalQuestions?: number; 
       correctAnswers?: number; 
@@ -34,12 +36,15 @@ export class QuizResultComponent {
       switch (true) {
         case (this.score >= 90):
           this.scoreMessageUrl = this.quizMaxScoreUrl;
+          this.soundService.playSound(SoundType.Applause);
           break;
         case (this.score >= 60 && this.score < 90):
           this.scoreMessageUrl = this.quizMiddleScoreUrl;
+          this.soundService.playSound(SoundType.Applause);
           break;
         case (this.score < 60):
           this.scoreMessageUrl = this.quizLowScoreUrl;
+          this.soundService.playSound(SoundType.Applause);
           break;
         default:
           this.scoreMessageUrl = '';

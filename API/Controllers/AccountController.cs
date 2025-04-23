@@ -11,14 +11,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController(UserManager<AppUser> userManager, ITokenService tokenService, IMapper mapper) : ControllerBase
+    public class AccountController(UserManager<AppUser> userManager, ITokenService tokenService, IMapper mapper,
+                                    ILogger<AccountController> logger) : ControllerBase
     {
 
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
+            if (!ModelState.IsValid)
+            {
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    logger.LogError("Validation error: {ErrorMessage}", error.ErrorMessage);
+                }
+
+                return ValidationProblem();
+            }
+
             if (await UserExist(registerDto.UserName)) return BadRequest("username is taken");
 
             try
@@ -72,7 +84,8 @@ namespace API.Controllers
 
         private async Task<bool> UserExist(string userName)
         {
-            return await userManager.Users.AnyAsync(x => x.NormalizedUserName.Equals(userName, StringComparison.CurrentCultureIgnoreCase));
+           var user = await userManager.FindByNameAsync(userName);
+            return user != null;
         }
     }
 }

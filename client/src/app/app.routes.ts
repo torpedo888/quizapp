@@ -26,6 +26,10 @@ import { QuestionEditFormComponent } from './question-edit-form/question-edit-fo
 
 export const routes: Routes = [
   { path: '', component: CategoryListComponent },
+  { path: 'quiz', component: CategoryListComponent },
+  { path: 'quiz-list/:categoryId', component: QuizListComponent },
+  { path: 'quiz/:id', component: QuestionListComponent },
+  { path: 'quiz-result', component: QuizResultComponent },
   {
     path: '',
     runGuardsAndResolvers: 'always',
@@ -35,9 +39,7 @@ export const routes: Routes = [
       { path: 'members/:id', component: MemberDetailComponent },
       { path: 'lists', component: ListsComponent },
       { path: 'messages', component: MessagesComponent },
-      { path: 'quiz', component: CategoryListComponent },
-      { path: 'quiz/:id', component: QuestionListComponent },
-      { path: 'quiz-result', component: QuizResultComponent },
+
       { path: 'addquestion', component: QuestionFormComponent },
       { path: 'editquestion', component: QuestionListEditComponent },
       { path: 'deletequestion', component: QuestionDeleteComponent },
@@ -46,7 +48,6 @@ export const routes: Routes = [
       { path: 'category-form/:id', component: CategoryFormComponent }, // Edit category
       { path: 'edit-categories', component: CategoryEditComponent },
       { path: 'quiz-form/:id', component: QuizFormComponent }, // 👈 Add new route for editing a quiz
-      { path: 'quiz-list/:categoryId', component: QuizListComponent },
       { path: 'quiz-edit', component: QuizEditComponent},
       { path: 'question-list-edit', component: QuestionEditFormComponent},
       { path: 'admin', component: AdminPanelComponent, canActivate: [adminGuard]}

@@ -9,7 +9,7 @@ export class SoundService {
   private soundPaths: Record<SoundType, string> = {
     [SoundType.Success]: '../assets/sounds/success_bell.mp3',
     [SoundType.Error]: '../assets/sounds/negative_beeps-6008.mp3',
-    [SoundType.Click]: '../assets/sounds/click.mp3'
+    [SoundType.Applause]: '../assets/sounds/small-applause.mp3'
   };
 
   private isSoundEnabledInternal = true;

@@ -48,7 +48,7 @@ export class RegisterComponent implements OnInit {
       gender: ['male'],
       userName: ['', Validators.required],
       knownAs: ['', Validators.required],
-      dateOfBirth: ['', Validators.required],
+      //dateOfBirth: ['', Validators.required],
       city: ['', Validators.required],
       country: ['', Validators.required],
       password: [
@@ -75,14 +75,17 @@ export class RegisterComponent implements OnInit {
   }
 
   register() {
-    // this.accountService.register(this.model).subscribe({
-    //   next: (response) => {
-    //     console.log(response);
-    //     this.cancel();
-    //   },
-    //   error: (error) => this.toastr.error(error.error),
-    // });
-    console.log(this.registerForm.value);
+    if (this.registerForm.invalid) return;
+
+    this.accountService.register(this.registerForm.value).subscribe({
+      next: (response) => {
+        console.log(response);
+        this.cancel();
+      },
+      error: (error) => this.toastr.error(error.error),
+    });
+  
+    console.log(this.registerForm.value); // This actually has the filled form data
   }
 
   cancel() {
