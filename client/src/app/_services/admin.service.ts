@@ -26,4 +26,10 @@ export class AdminService {
     });
   }
 
+  updateUser(user: any) {
+    return this.http.put(this.baseUrl + 'admin/users/' + user.username, user, {
+      responseType: 'text' // so toastr.success doesn't complain
+    });
+  }
+
 }

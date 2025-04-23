@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { QuestionFormComponent } from './question-form/question-form.component';
 import { QuestionListComponent } from './question-list/question-list.component';
 import { NavComponent } from './nav/nav.component';
 import { AccountService } from './_services/account.service';
@@ -17,7 +16,6 @@ import { FlashcardComponent } from './flashcard/flashcard.component';
   imports: [
     RouterOutlet,
     CommonModule,
-    QuestionFormComponent,
     QuestionListComponent,
     NavComponent,
     HomeComponent,

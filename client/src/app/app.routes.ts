@@ -9,7 +9,6 @@ import { TestErrorsComponent } from './errors/test-errors/test-errors.component'
 import { NotFoundComponent } from './errors/not-found/not-found.component';
 import { ServerErrorComponent } from './errors/server-error/server-error.component';
 import { QuestionListComponent } from './question-list/question-list.component';
-import { QuestionFormComponent } from './question-form/question-form.component';
 import { AdminPanelComponent } from './admin/admin-panel/admin-panel.component';
 import { adminGuard } from './_guards/admin.guard';
 import { QuizComponent } from './quiz/quiz.component';
@@ -18,8 +17,6 @@ import { CategoryListComponent } from './category-list/category-list.component';
 import { CategoryFormComponent } from './category-form/category-form.component';
 import { QuizFormComponent } from './quiz-form/quiz-form.component'; 
 import { QuizListComponent } from './quiz-list/quiz-list.component';
-import { QuestionListEditComponent } from './question-list-edit/question-list-edit.component';
-import { QuestionDeleteComponent } from './question-delete/question-delete.component';
 import { CategoryEditComponent } from './category-edit/category-edit.component';
 import { QuizEditComponent } from './quiz-edit/quiz-edit.component';
 import { QuestionEditFormComponent } from './question-edit-form/question-edit-form.component';
@@ -39,10 +36,6 @@ export const routes: Routes = [
       { path: 'members/:id', component: MemberDetailComponent },
       { path: 'lists', component: ListsComponent },
       { path: 'messages', component: MessagesComponent },
-
-      { path: 'addquestion', component: QuestionFormComponent },
-      { path: 'editquestion', component: QuestionListEditComponent },
-      { path: 'deletequestion', component: QuestionDeleteComponent },
       { path: '', component: CategoryListComponent }, // Homepage
       { path: 'categories', component: CategoryListComponent },
       { path: 'category-form/:id', component: CategoryFormComponent }, // Edit category

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.DTOs;
 using API.Entitites;
 using API.Helpers;
 using Microsoft.AspNetCore.Authorization;
@@ -79,6 +80,41 @@ namespace API.Controllers
             if (!result.Succeeded) return BadRequest("Failed to delete user");
 
             return Ok("User deleted successfully");
+        }
+
+        [HttpPut("users/{username}")]
+        public async Task<ActionResult> UpdateUser(string username, UpdateUserDto dto)
+        {
+            var user = await userManager.FindByNameAsync(username);
+            if (user == null) return NotFound("User not found");
+
+            user.UserName = dto.UserName;
+            // user.City = dto.City;
+            // user.Country = dto.Country;
+            // other fields...
+
+            var result = await userManager.UpdateAsync(user);
+            if (!result.Succeeded) return BadRequest("Update failed");
+
+            var validCurrentPassword = await userManager.CheckPasswordAsync(user, dto.CurrentPassword);
+
+            if(!validCurrentPassword)
+            {
+                return BadRequest("Current password wrong");
+            }
+
+            if (!string.IsNullOrEmpty(dto.NewPassword))
+    {
+            var removePassResult = await userManager.RemovePasswordAsync(user);
+            if (!removePassResult.Succeeded)
+                return BadRequest("Failed to remove old password");
+
+            var addPassResult = await userManager.AddPasswordAsync(user, dto.NewPassword);
+            if (!addPassResult.Succeeded)
+                return BadRequest("Failed to set new password");
+        }
+
+            return Ok("User updated successfully");
         }
     }
 }

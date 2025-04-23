@@ -173,7 +173,7 @@ public class QuizController : ControllerBase
     {
         var questions = await _quizRepository.GetQuestionsWithOptionsByQuizIdAsync(quizId);
 
-        if (!questions.Any()) return NotFound();
+      //  if (!questions.Any()) return NotFound();
 
         var questionDtos = questions.Select(q => new QuestionDto
         {

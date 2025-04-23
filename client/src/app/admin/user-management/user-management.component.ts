@@ -5,11 +5,12 @@ import { User } from '../../_models/User';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { RolesModalComponent } from '../../modals/roles-modal/roles-modal.component';
 import { ToastrService } from 'ngx-toastr';
+import { FormsModule, NgModel } from '@angular/forms';
 
 @Component({
   selector: 'app-user-management',
   standalone: true,
-  imports: [CommonModule, NgFor], // Ensure NgFor is imported
+  imports: [CommonModule, NgFor, FormsModule], // Ensure NgFor is imported
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.css'] // Corrected "styleUrl" to "styleUrls"
 })
@@ -19,6 +20,8 @@ export class UserManagementComponent implements OnInit {
   private toastr = inject(ToastrService);
   users: User[] = [];
   bsModalRef: BsModalRef<RolesModalComponent> = new BsModalRef<RolesModalComponent>();
+
+  selectedUser: User | null = null;
 
   ngOnInit(): void {
     this.getUsersWithRoles();
@@ -73,4 +76,30 @@ export class UserManagementComponent implements OnInit {
       })
     }
   }
+
+  editUser(user: any) {
+    // Open a modal or route to a form
+    // Or just set a `selectedUser` variable to populate a form in the same view
+    this.selectedUser = { ...user }; // copy to avoid modifying the original directly
+  }
+
+  updateUser() {
+    console.log(this.selectedUser)
+
+    this.adminService.updateUser(this.selectedUser).subscribe({
+      next: (response) => {
+        this.toastr.success(response);
+        const index = this.users.findIndex(u => u.username === this.selectedUser!.username);
+        if (index !== -1) {
+          //this.users[index] = { ...this.selectedUser }; // update the local list
+        }
+        this.selectedUser = null;
+      },
+      error: (err) => {
+        console.error(err);
+        this.toastr.error(err?.error || 'Failed to update user');
+      }
+    });
+  }
+  
 }

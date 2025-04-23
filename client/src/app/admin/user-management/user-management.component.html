@@ -13,9 +13,42 @@
                 <td>{{ user.roles.join(', ') }}</td> <!-- Join roles as a string -->
                 <td>
                     <button (click)="openRolesModal(user)" class="btn btn-info">Edit Roles</button>
+
+                    <button (click)="editUser(user)" class="btn btn-primary mx-2">Update</button>
+
                     <button (click)="deleteUser(user)" class="btn btn-danger">Delete User</button>
                 </td>
             </tr>
+
+            <tr *ngIf="selectedUser">
+                <td colspan="3">
+                  <div class="card p-3 mt-2 shadow">
+                    <h5>Edit User: {{ selectedUser.username }}</h5>
+                    <div class="form-group mb-2">
+                      <input class="form-control" [(ngModel)]="selectedUser.username" placeholder="Username" name="username" />
+                    </div>
+                    <!-- <div class="form-group mb-2">
+                      <input class="form-control" [(ngModel)]="selectedUser.city" placeholder="City" name="city" />
+                    </div>
+                    <div class="form-group mb-2">
+                      <input class="form-control" [(ngModel)]="selectedUser.country" placeholder="Country" name="country" />
+                    </div> -->
+                    <div class="form-group mb-2">
+                        <input class="form-control" [(ngModel)]="selectedUser.currentPassword" placeholder="Current Password" name="currentPassword" type="password" />
+                      </div>
+                    <div class="form-group mb-2">
+                      <input class="form-control" [(ngModel)]="selectedUser.newPassword" placeholder="New Password" name="password" type="password" />
+                    </div>
+                    <div class="form-group mb-2">
+                        <input class="form-control" [(ngModel)]="selectedUser.confirmNewPassword" placeholder="Confirm New Password" name="confirmNewPassword" type="password" />
+                      </div>
+                    <div class="d-flex gap-2">
+                      <button (click)="updateUser()" class="btn btn-success">Update</button>
+                      <button (click)="selectedUser = null" class="btn btn-secondary">Cancel</button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
         </tbody>
     </table>
 </div>
