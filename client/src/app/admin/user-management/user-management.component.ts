@@ -4,6 +4,7 @@ import { AdminService } from '../../_services/admin.service';
 import { User } from '../../_models/User';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { RolesModalComponent } from '../../modals/roles-modal/roles-modal.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-user-management',
@@ -15,6 +16,7 @@ import { RolesModalComponent } from '../../modals/roles-modal/roles-modal.compon
 export class UserManagementComponent implements OnInit {
   private adminService = inject(AdminService);
   private modalService = inject(BsModalService);
+  private toastr = inject(ToastrService);
   users: User[] = [];
   bsModalRef: BsModalRef<RolesModalComponent> = new BsModalRef<RolesModalComponent>();
 
@@ -54,5 +56,21 @@ export class UserManagementComponent implements OnInit {
     this.adminService.getUserWithRoles().subscribe({
       next: users => this.users = users
     });
+  }
+
+  deleteUser(user: any) {
+    if(confirm(`Are you sure you want to delete ${user.username} ?`)) {
+      this.adminService.deleteUser(user.username).subscribe({
+        next: (response) => {
+          console.log(response);
+          this.toastr.success(response);
+          this.users = this.users.filter(u => u.username !== user.username);
+        },
+        error: err => {
+          console.error(err);
+          this.toastr.error('failed to delete user');
+        }
+      })
+    }
   }
 }

@@ -61,5 +61,24 @@ namespace API.Controllers
         {
             return Ok("Admins or Moderators can see this");
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("delete-user/{username}")]
+        public async Task<ActionResult> DeleteUser(string username)
+        {
+            var user = await userManager.FindByNameAsync(username);
+            if (user == null) return NotFound("User not found");
+
+            var roles = await userManager.GetRolesAsync(user);
+            if (roles.Any(role => role.Equals("Admin", StringComparison.OrdinalIgnoreCase)))
+            {
+                return BadRequest("Cannot delete an Admin user");
+            }
+
+            var result = await userManager.DeleteAsync(user);
+            if (!result.Succeeded) return BadRequest("Failed to delete user");
+
+            return Ok("User deleted successfully");
+        }
     }
 }

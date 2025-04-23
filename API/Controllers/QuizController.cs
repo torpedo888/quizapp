@@ -5,9 +5,11 @@ using API.DTOs;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using API.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
 
+[Authorize(Roles = "Admin, Moderator")]
 [Route("api/[controller]")]
 [ApiController]
 public class QuizController : ControllerBase
@@ -23,7 +25,7 @@ public class QuizController : ControllerBase
         _environment = environment;
     }
 
-    // GET: api/quiz
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<QuizDto>>> GetQuizzes()
     {
@@ -165,6 +167,7 @@ public class QuizController : ControllerBase
         return NoContent();
     }
 
+    [AllowAnonymous]
     [HttpGet("{quizId}/questions")]
     public async Task<IActionResult> GetQuestionsByQuizId(int quizId)
     {

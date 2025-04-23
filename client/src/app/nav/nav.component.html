@@ -11,13 +11,13 @@
               <a class="nav-link active" routerLink="/quiz" routerLinkActive="active" aria-current="page" href="#">Quiz</a>
             </li>
             @if(this.accountService.currentUser()){
-              <li *appHasRole="['Admin','Moderator']" class="nav-item">
+              <li *appHasRole="['Admin']" class="nav-item">
                 <a routerLink="/admin" routerLinkActive="active" class="nav-link" aria-current="page" href="#">Admin</a>
               </li>
-              <li class="nav-item">
+              <li *appHasRole="['Moderator']" class="nav-item">
                 <a class="nav-link" routerLink="/edit-categories" href="#">Edit Categories</a>
               </li>
-              <li class="nav-item">
+              <li *appHasRole="['Moderator']" class="nav-item">
                 <a class="nav-link" routerLink="/quiz-edit" href="#">Edit Quizes</a>
               </li>
               <!-- Dropdown for Questions -->

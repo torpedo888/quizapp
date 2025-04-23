@@ -1,6 +1,7 @@
 using API.DTOs;
 using API.Entitites;
 using API.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +9,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-
+[Authorize(Roles = "Admin, Moderator")]
 [Route("api/[controller]")]
 [ApiController]
 public class CategoriesController : ControllerBase
@@ -31,6 +32,7 @@ public class CategoriesController : ControllerBase
     //     return Ok(await _categoryRepository.GetAllCategoriesAsync());
     // }
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories([FromQuery] bool onlyActive = false )
     {
@@ -200,6 +202,7 @@ public class CategoriesController : ControllerBase
         return NoContent();
     }
 
+    [AllowAnonymous]
     [HttpGet("{categoryId}/quizzes")]
     public async Task<IActionResult> GetQuizzesByCategory(int categoryId)
     {
