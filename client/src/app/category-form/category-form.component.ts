@@ -3,6 +3,7 @@ import { CategoryService } from '../_services/category.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-category-form',
@@ -12,6 +13,7 @@ import { CommonModule } from '@angular/common';
   imports: [FormsModule, CommonModule]
 })
 export class CategoryFormComponent implements OnInit {
+  baseUrl = environment.apiUrl;
   categoryId: number | null = null;
   categoryName: string = '';
   selectedFile: File | null = null;
@@ -38,7 +40,7 @@ export class CategoryFormComponent implements OnInit {
     this.categoryService.getCategoryById(id).subscribe({
       next: (category) => {
         this.categoryName = category.name;
-        this.previewImage = `https://localhost:5001${category.imageUrl}`;
+        this.previewImage = `${this.baseUrl}${category.imageUrl}`;
       },
       error: (err) => {
         console.error('Error loading category', err);

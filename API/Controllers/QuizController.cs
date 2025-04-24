@@ -66,7 +66,7 @@ public class QuizController : ControllerBase
         {
             Id = quiz.Id,
             Title = quiz.Title,
-            ImageUrl = quiz.ImageUrl,
+            ImageUrl = quiz.ImageUrl!=null ? $"{Request.Scheme}://{Request.Host}{quiz.ImageUrl}" : null,
             Questions = quiz.Questions.Select(q => new QuestionDto
             {
                 Id = q.Id,

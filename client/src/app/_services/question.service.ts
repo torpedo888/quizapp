@@ -5,13 +5,14 @@ import { Option } from '../_models/Option';
 import { Question } from '../_models/Question';
 import { map } from 'rxjs/operators';
 import { Quiz } from '../_models/Quiz';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class QuestionService {
 
-  private apiUrl = 'https://localhost:5001/api/';
+  private apiUrl = environment.apiUrl;
 
   private apiQuestionUrl = this.apiUrl + 'questions';
   private apiQuizUrl = this.apiUrl + 'quiz';

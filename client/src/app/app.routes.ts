@@ -40,7 +40,7 @@ export const routes: Routes = [
       { path: 'categories', component: CategoryListComponent },
       { path: 'category-form/:id', component: CategoryFormComponent }, // Edit category
       { path: 'edit-categories', component: CategoryEditComponent },
-      { path: 'quiz-form/:id', component: QuizFormComponent }, // 👈 Add new route for editing a quiz
+      //{ path: 'quiz-form/:id', component: QuizFormComponent }, // 👈 Add new route for editing a quiz
       { path: 'quiz-edit', component: QuizEditComponent},
       { path: 'question-list-edit', component: QuestionEditFormComponent},
       { path: 'admin', component: AdminPanelComponent, canActivate: [adminGuard]}

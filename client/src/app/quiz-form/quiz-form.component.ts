@@ -54,7 +54,7 @@ export class QuizFormComponent implements OnInit {
       next: (quiz) => {
         this.title = quiz.title;
         this.categoryId = quiz.categoryId;
-        this.previewImage = `https://localhost:5001${quiz.imageUrl}`;
+        this.previewImage = quiz.imageUrl;
       },
       error: (err) => console.error('Error loading quiz', err)
     });
