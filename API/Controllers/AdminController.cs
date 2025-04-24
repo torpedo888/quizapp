@@ -88,7 +88,7 @@ namespace API.Controllers
             var user = await userManager.FindByNameAsync(username);
             if (user == null) return NotFound("User not found");
 
-            user.UserName = dto.UserName;
+            //user.UserName = dto.UserName;
             // user.City = dto.City;
             // user.Country = dto.Country;
             // other fields...
@@ -104,15 +104,15 @@ namespace API.Controllers
             }
 
             if (!string.IsNullOrEmpty(dto.NewPassword))
-    {
-            var removePassResult = await userManager.RemovePasswordAsync(user);
-            if (!removePassResult.Succeeded)
-                return BadRequest("Failed to remove old password");
+            {
+                var removePassResult = await userManager.RemovePasswordAsync(user);
+                if (!removePassResult.Succeeded)
+                    return BadRequest("Failed to remove old password");
 
-            var addPassResult = await userManager.AddPasswordAsync(user, dto.NewPassword);
-            if (!addPassResult.Succeeded)
-                return BadRequest("Failed to set new password");
-        }
+                var addPassResult = await userManager.AddPasswordAsync(user, dto.NewPassword);
+                if (!addPassResult.Succeeded)
+                    return BadRequest("Failed to set new password");
+            }
 
             return Ok("User updated successfully");
         }

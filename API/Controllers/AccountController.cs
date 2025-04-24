@@ -3,7 +3,9 @@ using System.Text;
 using API.Data;
 using API.DTOs;
 using API.Entitites;
+using API.Helpers;
 using API.Interfaces;
+using API.Validators;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -30,6 +32,13 @@ namespace API.Controllers
                 }
 
                 return ValidationProblem();
+            }
+
+            var (isValid, errorMessage) = RegisterDtoValidator.Validate(registerDto);
+
+            if(!isValid)
+            {
+                return BadRequest(errorMessage);
             }
 
             if (await UserExist(registerDto.UserName)) return BadRequest("username is taken");
@@ -64,6 +73,13 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
+            if (InputSanitizer.AnyContainsInvalidChars(
+                loginDto.UserName,
+                loginDto.Password))
+            {
+                return BadRequest("dto contains invalid characters.");
+            }
+
             var user = await userManager.Users
                 .Include(p => p.Photos)
                 .FirstOrDefaultAsync(x => x.NormalizedUserName.ToUpper() == loginDto.UserName.ToUpper());
