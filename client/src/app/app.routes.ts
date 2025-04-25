@@ -13,13 +13,11 @@ import { AdminPanelComponent } from './admin/admin-panel/admin-panel.component';
 import { adminGuard } from './_guards/admin.guard';
 import { QuizComponent } from './quiz/quiz.component';
 import { QuizResultComponent } from './quiz-result/quiz-result.component';
-import { CategoryListComponent } from './category-list/category-list.component';
-import { CategoryFormComponent } from './category-form/category-form.component';
-import { QuizFormComponent } from './quiz-form/quiz-form.component'; 
 import { QuizListComponent } from './quiz-list/quiz-list.component';
 import { CategoryEditComponent } from './category-edit/category-edit.component';
 import { QuizEditComponent } from './quiz-edit/quiz-edit.component';
 import { QuestionEditFormComponent } from './question-edit-form/question-edit-form.component';
+import { CategoryListComponent } from './category-list/category-list.component';
 
 export const routes: Routes = [
   { path: '', component: CategoryListComponent },
@@ -37,10 +35,7 @@ export const routes: Routes = [
       { path: 'lists', component: ListsComponent },
       { path: 'messages', component: MessagesComponent },
       { path: '', component: CategoryListComponent }, // Homepage
-      { path: 'categories', component: CategoryListComponent },
-      { path: 'category-form/:id', component: CategoryFormComponent }, // Edit category
       { path: 'edit-categories', component: CategoryEditComponent },
-      //{ path: 'quiz-form/:id', component: QuizFormComponent }, // 👈 Add new route for editing a quiz
       { path: 'quiz-edit', component: QuizEditComponent},
       { path: 'question-list-edit', component: QuestionEditFormComponent},
       { path: 'admin', component: AdminPanelComponent, canActivate: [adminGuard]}
