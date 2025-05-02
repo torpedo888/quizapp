@@ -80,10 +80,25 @@ export class CategoryEditComponent implements OnInit {
     category.editing = true;
   }
 
-  onFileSelected(event: Event, category: any): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files?.length) {
-      category.editedImage = input.files[0];
+  // onFileSelected(event: Event, category: any): void {
+  //   const input = event.target as HTMLInputElement;
+  //   if (input.files?.length) {
+  //     category.imageUrl = event.target.result; // Show preview
+  //     category.editedImage = input.files[0];
+  //   }
+  // }
+
+  onFileSelected(event: any, category: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        if (category) {
+          category.imageUrl = e.target.result; // Show preview
+          category.editedImage = file;
+        }
+      };
+      reader.readAsDataURL(file);
     }
   }
 

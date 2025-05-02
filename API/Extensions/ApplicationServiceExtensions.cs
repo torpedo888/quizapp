@@ -28,6 +28,7 @@ namespace API.Extensions
             services.AddScoped<IQuizRepository, QuizRepository>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IQuizService, QuizService>();
+            services.AddScoped<IBlobService, BlobService>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             return services;

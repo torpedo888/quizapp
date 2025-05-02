@@ -14,23 +14,21 @@ using System.Threading.Tasks;
 [ApiController]
 public class CategoriesController : ControllerBase
 {
+    private const string uploadFolder = "categories";
+
     private readonly ICategoryRepository _categoryRepository;
     private readonly ICategoryService _categoryService;
+    private readonly IBlobService _blobService;
     private readonly IWebHostEnvironment _environment;
 
-    public CategoriesController(ICategoryRepository categoryRepository, ICategoryService categoryService,
-     IWebHostEnvironment environment)
+    public CategoriesController(ICategoryRepository categoryRepository, ICategoryService categoryService, 
+                                IBlobService blobService, IWebHostEnvironment environment)
     {
         _categoryRepository = categoryRepository;
         _categoryService = categoryService;
+        _blobService = blobService;
         _environment = environment;
     }
-
-    // [HttpGet]
-    // public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
-    // {
-    //     return Ok(await _categoryRepository.GetAllCategoriesAsync());
-    // }
 
     [AllowAnonymous]
     [HttpGet]
@@ -48,7 +46,8 @@ public class CategoriesController : ControllerBase
             Id = c.Id,
             Name = c.Name,
             IsActive = c.IsActive,
-            ImageUrl = c.ImageUrl != null ? $"{Request.Scheme}://{Request.Host}{c.ImageUrl}" : null,
+            //ImageUrl = c.ImageUrl != null ? $"{Request.Scheme}://{Request.Host}{c.ImageUrl}" : null,
+            ImageUrl = c.ImageUrl
         }).ToList();
 
         return Ok(categoryDtos);
@@ -84,15 +83,28 @@ public class CategoriesController : ControllerBase
 
         if (categoryDto.Image != null)
         {
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(categoryDto.Image.FileName)}";
-            var filePath = Path.Combine("wwwroot/uploads", fileName);
+            // var fileName = $"{Guid.NewGuid()}{Path.GetExtension(categoryDto.Image.FileName)}";
+            // var filePath = Path.Combine("wwwroot/uploads", fileName);
             
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await categoryDto.Image.CopyToAsync(stream);
-            }
+            // using (var stream = new FileStream(filePath, FileMode.Create))
+            // {
+            //     await categoryDto.Image.CopyToAsync(stream);
+            // }
 
-            category.ImageUrl = $"/uploads/{fileName}";
+            // category.ImageUrl = $"/uploads/{fileName}";
+
+           // _blobService.UploadImageAsync()
+
+            var imageUrl = await UploadImage(categoryDto.Image);
+
+            if (imageUrl != null) 
+            {
+                category.ImageUrl = imageUrl;
+            }
+            else
+            {
+                return BadRequest("invalid file");
+            }
         }
 
         await _categoryRepository.AddCategoryAsync(category);
@@ -113,57 +125,59 @@ public class CategoriesController : ControllerBase
     }
 
     // POST: api/categories/upload
-    [HttpPost("upload")]
-    public async Task<IActionResult> UploadCategory([FromForm] string name, [FromForm] IFormFile imageFile)
-    {
-        if (string.IsNullOrWhiteSpace(name) || imageFile == null)
-        {
-            return BadRequest("Category name and image are required.");
-        }
+    // [HttpPost("upload")]
+    // public async Task<IActionResult> UploadCategory([FromForm] string name, [FromForm] IFormFile imageFile)
+    // {
+    //     if (string.IsNullOrWhiteSpace(name) || imageFile == null)
+    //     {
+    //         return BadRequest("Category name and image are required.");
+    //     }
 
-        try
-        {
-            // Explicitly point to 'wwwroot/uploads' directory
-            string uploadDir = Path.Combine(_environment.WebRootPath, "uploads");
+    //     try
+    //     {
+    //     //     // Explicitly point to 'wwwroot/uploads' directory
+    //     //     string uploadDir = Path.Combine(_environment.WebRootPath, "uploads");
 
-            // Create the directory if it doesn't exist
-            if (!Directory.Exists(uploadDir))
-            {
-                Directory.CreateDirectory(uploadDir);
-            }
+    //     //     // Create the directory if it doesn't exist
+    //     //     if (!Directory.Exists(uploadDir))
+    //     //     {
+    //     //         Directory.CreateDirectory(uploadDir);
+    //     //     }
 
 
-            // Use a custom directory for file uploads
-           // string uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+    //     //     // Use a custom directory for file uploads
+    //     //    // string uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
 
-            // Ensure the directory exists, if not, create it
-            if (!Directory.Exists(uploadDir))
-            {
-                Directory.CreateDirectory(uploadDir);
-            }
+    //     //     // Ensure the directory exists, if not, create it
+    //     //     if (!Directory.Exists(uploadDir))
+    //     //     {
+    //     //         Directory.CreateDirectory(uploadDir);
+    //     //     }
 
-            // Generate unique file name
-            string fileName = $"{Guid.NewGuid()}_{imageFile.FileName}";
-            string filePath = Path.Combine(uploadDir, fileName);
-            string imageUrl = $"/uploads/{fileName}"; // Public path
+    //     //     // Generate unique file name
+    //     //     string fileName = $"{Guid.NewGuid()}_{imageFile.FileName}";
+    //     //     string filePath = Path.Combine(uploadDir, fileName);
+    //     //     string imageUrl = $"/uploads/{fileName}"; // Public path
 
-            // Save image
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await imageFile.CopyToAsync(stream);
-            }
+    //     //     // Save image
+    //     //     using (var stream = new FileStream(filePath, FileMode.Create))
+    //     //     {
+    //     //         await imageFile.CopyToAsync(stream);
+    //     //     }
 
-            // Save category to database
-            var category = new Category { Name = name, ImageUrl = imageUrl };
-            await _categoryRepository.AddCategoryAsync(category);
+    //         _blobService.UpdateImageAsync(
 
-            return CreatedAtAction(nameof(GetCategories), new { id = category.Id }, category);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
-    }
+    //         // Save category to database
+    //         var category = new Category { Name = name, ImageUrl = "imageUrl" };
+    //         await _categoryRepository.AddCategoryAsync(category);
+
+    //         return CreatedAtAction(nameof(GetCategories), new { id = category.Id }, category);
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         return StatusCode(500, $"Internal server error: {ex.Message}");
+    //     }
+    // }
 
     // Update category
     public async Task<IActionResult> UpdateCategory(int id, [FromForm] string name, [FromForm] IFormFile? imageFile)
@@ -178,22 +192,16 @@ public class CategoriesController : ControllerBase
 
         if (imageFile != null)
         {
-            string uploadDir = Path.Combine(_environment.WebRootPath, "uploads");
-            if (!Directory.Exists(uploadDir))
+            var imageUrl = await UpdateImage(category.ImageUrl, imageFile);
+
+            if (imageUrl != null) 
             {
-                Directory.CreateDirectory(uploadDir);
+                category.ImageUrl = imageUrl;
             }
-
-            string fileName = $"{Guid.NewGuid()}_{Path.GetFileName(imageFile.FileName)}";
-            string filePath = Path.Combine(uploadDir, fileName);
-            string imageUrl = $"/uploads/{fileName}";
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            else
             {
-                await imageFile.CopyToAsync(stream);
+                return BadRequest("invalid image file");
             }
-
-            category.ImageUrl = imageUrl;
         }
 
         await _categoryRepository.UpdateAsync(category); // Use repository method
@@ -245,19 +253,30 @@ public class CategoriesController : ControllerBase
         //ez menyen file servicebe mert a questioncontrollerben is van file feltoltes.
         if (model.Image != null)
         {
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
-            Directory.CreateDirectory(uploadsFolder);
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(model.Image.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
+             var imageUrl = await UpdateImage(category.ImageUrl, model.Image);
+
+            if (imageUrl != null) 
             {
-                await model.Image.CopyToAsync(fileStream);
+                category.ImageUrl = imageUrl;
             }
-            category.ImageUrl = $"/images/{uniqueFileName}";
+            else
+            {
+                return BadRequest("invalid image file");
+            }
         }
 
         await _categoryRepository.UpdateAsync(category);
 
         return NoContent(); // 204 No Content response
+    }
+
+    private async Task<string?> UploadImage(IFormFile file)
+    {
+        return await _blobService.UploadImageAsync(file, uploadFolder);
+    }
+
+    private async Task<string?> UpdateImage(string? imageUrl, IFormFile file)
+    {
+        return await _blobService.UpdateImageAsync(imageUrl, file, uploadFolder);
     }
 }

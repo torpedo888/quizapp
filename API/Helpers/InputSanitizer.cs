@@ -9,7 +9,7 @@ public static class InputSanitizer
 {
     private static readonly char[] InvalidChars = {
         '<', '>', '{', '}', ';', '\'', '"', '(', ')', '[', ']', '`',
-        '=', '&', '|', '%', '\\', '/', '$', '#', '~'
+        '=', '&', '|', '%', '\\', '/', '#', '~'
     };
 
      public static bool ContainsInvalidChars(string input)

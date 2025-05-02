@@ -47,19 +47,17 @@ app.UseCors(x => x.AllowAnyHeader()
                   .WithOrigins("http://localhost:4200")
                   .AllowCredentials()); // Add this line if you're sending credentials
 
-app.UseStaticFiles();  // Serves files from wwwroot by default
-// Optionally add custom middleware to serve from uploads directory
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads")),
-    RequestPath = "/wwwroot/uploads"
-});
-
 app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.UseDefaultFiles();
+
+app.UseStaticFiles();  // Serves files from wwwroot by default
+
 app.MapControllers();
+
+app.MapFallbackToController("Index", "Fallback");
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
