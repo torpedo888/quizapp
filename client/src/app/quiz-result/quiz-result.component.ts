@@ -60,6 +60,6 @@ export class QuizResultComponent {
   }
 
   goToCategories() {
-    this.router.navigate([`/categories`]);
+    this.router.navigate([`/quiz`]);
   }
 }
