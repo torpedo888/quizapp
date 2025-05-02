@@ -46,7 +46,6 @@ public class CategoriesController : ControllerBase
             Id = c.Id,
             Name = c.Name,
             IsActive = c.IsActive,
-            //ImageUrl = c.ImageUrl != null ? $"{Request.Scheme}://{Request.Host}{c.ImageUrl}" : null,
             ImageUrl = c.ImageUrl
         }).ToList();
 
@@ -62,16 +61,6 @@ public class CategoriesController : ControllerBase
         return Ok(category);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateCategory([FromBody] Category category)
-    {
-        if (category == null || string.IsNullOrWhiteSpace(category.Name))
-            return BadRequest("Invalid category data");
-
-        await _categoryRepository.AddCategoryAsync(category);
-        return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
-    }
-
     [HttpPost("add")]
     public async Task<IActionResult> AddCategory([FromForm] CategoryCreateDto categoryDto)
     {
@@ -83,18 +72,6 @@ public class CategoriesController : ControllerBase
 
         if (categoryDto.Image != null)
         {
-            // var fileName = $"{Guid.NewGuid()}{Path.GetExtension(categoryDto.Image.FileName)}";
-            // var filePath = Path.Combine("wwwroot/uploads", fileName);
-            
-            // using (var stream = new FileStream(filePath, FileMode.Create))
-            // {
-            //     await categoryDto.Image.CopyToAsync(stream);
-            // }
-
-            // category.ImageUrl = $"/uploads/{fileName}";
-
-           // _blobService.UploadImageAsync()
-
             var imageUrl = await UploadImage(categoryDto.Image);
 
             if (imageUrl != null) 
@@ -103,7 +80,7 @@ public class CategoriesController : ControllerBase
             }
             else
             {
-                return BadRequest("invalid file");
+                return BadRequest("invalid image file");
             }
         }
 
@@ -120,92 +97,6 @@ public class CategoriesController : ControllerBase
         {
             return NotFound($"Category with {id} not found");
         }
-
-        return NoContent();
-    }
-
-    // POST: api/categories/upload
-    // [HttpPost("upload")]
-    // public async Task<IActionResult> UploadCategory([FromForm] string name, [FromForm] IFormFile imageFile)
-    // {
-    //     if (string.IsNullOrWhiteSpace(name) || imageFile == null)
-    //     {
-    //         return BadRequest("Category name and image are required.");
-    //     }
-
-    //     try
-    //     {
-    //     //     // Explicitly point to 'wwwroot/uploads' directory
-    //     //     string uploadDir = Path.Combine(_environment.WebRootPath, "uploads");
-
-    //     //     // Create the directory if it doesn't exist
-    //     //     if (!Directory.Exists(uploadDir))
-    //     //     {
-    //     //         Directory.CreateDirectory(uploadDir);
-    //     //     }
-
-
-    //     //     // Use a custom directory for file uploads
-    //     //    // string uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
-
-    //     //     // Ensure the directory exists, if not, create it
-    //     //     if (!Directory.Exists(uploadDir))
-    //     //     {
-    //     //         Directory.CreateDirectory(uploadDir);
-    //     //     }
-
-    //     //     // Generate unique file name
-    //     //     string fileName = $"{Guid.NewGuid()}_{imageFile.FileName}";
-    //     //     string filePath = Path.Combine(uploadDir, fileName);
-    //     //     string imageUrl = $"/uploads/{fileName}"; // Public path
-
-    //     //     // Save image
-    //     //     using (var stream = new FileStream(filePath, FileMode.Create))
-    //     //     {
-    //     //         await imageFile.CopyToAsync(stream);
-    //     //     }
-
-    //         _blobService.UpdateImageAsync(
-
-    //         // Save category to database
-    //         var category = new Category { Name = name, ImageUrl = "imageUrl" };
-    //         await _categoryRepository.AddCategoryAsync(category);
-
-    //         return CreatedAtAction(nameof(GetCategories), new { id = category.Id }, category);
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         return StatusCode(500, $"Internal server error: {ex.Message}");
-    //     }
-    // }
-
-    // Update category
-    public async Task<IActionResult> UpdateCategory(int id, [FromForm] string name, [FromForm] IFormFile? imageFile)
-    {
-        var category = await _categoryRepository.GetCategoryByIdAsync(id);
-        if (category == null)
-        {
-            return NotFound();
-        }
-
-        category.Name = name;
-
-        if (imageFile != null)
-        {
-            var imageUrl = await UpdateImage(category.ImageUrl, imageFile);
-
-            if (imageUrl != null) 
-            {
-                category.ImageUrl = imageUrl;
-            }
-            else
-            {
-                return BadRequest("invalid image file");
-            }
-        }
-
-        await _categoryRepository.UpdateAsync(category); // Use repository method
-        await _categoryRepository.SaveChangesAsync(); // Save changes
 
         return NoContent();
     }
@@ -240,7 +131,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateCategoryName(int id, [FromForm] CategoryUpdateDto model)
+    public async Task<IActionResult> UpdateCategory(int id, [FromForm] CategoryUpdateDto model)
     {
         var category = await _categoryRepository.GetByIdAsync(id);
         if (category == null)
