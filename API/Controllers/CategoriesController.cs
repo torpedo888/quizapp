@@ -52,6 +52,17 @@ public class CategoriesController : ControllerBase
         return Ok(categoryDtos);
     }
 
+    [AllowAnonymous]
+    [HttpGet("{categoryId}/quizzes")]
+    public async Task<IActionResult> GetQuizzesByCategory(int categoryId)
+    {
+        var quizzes = await _categoryRepository.GetQuizzesByCategoryAsync(
+        categoryId, Request.Scheme, Request.Host.ToString());
+
+        // Always return 200, even if empty
+        return Ok(quizzes);
+    }
+
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Category>> GetCategory(int id)
@@ -72,7 +83,7 @@ public class CategoriesController : ControllerBase
 
         if (categoryDto.Image != null)
         {
-            var imageUrl = await UploadImage(categoryDto.Image);
+            var imageUrl = await _blobService.UploadImageAsync(categoryDto.Image, uploadFolder);
 
             if (imageUrl != null) 
             {
@@ -101,16 +112,7 @@ public class CategoriesController : ControllerBase
         return NoContent();
     }
 
-    [AllowAnonymous]
-    [HttpGet("{categoryId}/quizzes")]
-    public async Task<IActionResult> GetQuizzesByCategory(int categoryId)
-    {
-        var quizzes = await _categoryRepository.GetQuizzesByCategoryAsync(
-        categoryId, Request.Scheme, Request.Host.ToString());
-
-        // Always return 200, even if empty
-        return Ok(quizzes);
-    }
+    
 
     [HttpPut("{id}/deactivate")]
     public async Task<IActionResult> DeactivateCategory(int id)
@@ -144,7 +146,7 @@ public class CategoriesController : ControllerBase
         //ez menyen file servicebe mert a questioncontrollerben is van file feltoltes.
         if (model.Image != null)
         {
-             var imageUrl = await UpdateImage(category.ImageUrl, model.Image);
+             var imageUrl = await _blobService.UpdateImageAsync(category.ImageUrl, model.Image, uploadFolder);
 
             if (imageUrl != null) 
             {
@@ -159,15 +161,5 @@ public class CategoriesController : ControllerBase
         await _categoryRepository.UpdateAsync(category);
 
         return NoContent(); // 204 No Content response
-    }
-
-    private async Task<string?> UploadImage(IFormFile file)
-    {
-        return await _blobService.UploadImageAsync(file, uploadFolder);
-    }
-
-    private async Task<string?> UpdateImage(string? imageUrl, IFormFile file)
-    {
-        return await _blobService.UpdateImageAsync(imageUrl, file, uploadFolder);
     }
 }

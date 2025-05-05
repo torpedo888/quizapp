@@ -14,14 +14,18 @@ namespace API.Controllers;
 [ApiController]
 public class QuizController : ControllerBase
 {
+    private const string uploadFolder = "quizzes";
+
     private readonly IQuizRepository _quizRepository;
     private readonly IQuizService _quizService;
+    private readonly IBlobService _blobService;
     private readonly IWebHostEnvironment _environment;
 
-    public QuizController(IQuizRepository quizRepository, IQuizService quizService, IWebHostEnvironment environment)
+    public QuizController(IQuizRepository quizRepository, IQuizService quizService, IBlobService blobService, IWebHostEnvironment environment)
     {
         _quizRepository = quizRepository;
         _quizService = quizService;
+        _blobService = blobService;
         _environment = environment;
     }
 
@@ -42,7 +46,7 @@ public class QuizController : ControllerBase
                 IsActive = q.IsActive,
                 CategoryId = q.CategoryId,
                 CategoryName = q.Category.Name,
-                ImageUrl = q.ImageUrl!=null ? $"{Request.Scheme}://{Request.Host}{q.ImageUrl}" : null,
+                ImageUrl = q.ImageUrl,
                 QuestionCount = q.Questions?.Count ?? 0
             }).ToList();
 
@@ -66,7 +70,7 @@ public class QuizController : ControllerBase
         {
             Id = quiz.Id,
             Title = quiz.Title,
-            ImageUrl = quiz.ImageUrl!=null ? $"{Request.Scheme}://{Request.Host}{quiz.ImageUrl}" : null,
+            ImageUrl = quiz.ImageUrl,
             Questions = quiz.Questions.Select(q => new QuestionDto
             {
                 Id = q.Id,
@@ -93,15 +97,15 @@ public class QuizController : ControllerBase
                 return BadRequest("Title and Image are required.");
             }
 
-            // Generate unique file name
-            var fileName = $"{Guid.NewGuid()}_{quizDto.ImageFile.FileName}";
-            var filePath = Path.Combine(_environment.WebRootPath, "uploads", fileName);
+            // // Generate unique file name
+            // var fileName = $"{Guid.NewGuid()}_{quizDto.ImageFile.FileName}";
+            // var filePath = Path.Combine(_environment.WebRootPath, "uploads", fileName);
 
-            // Save file
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await quizDto.ImageFile.CopyToAsync(stream);
-            }
+            // // Save file
+            // using (var stream = new FileStream(filePath, FileMode.Create))
+            // {
+            //     await quizDto.ImageFile.CopyToAsync(stream);
+            // }
 
             // Create new Quiz
             var quiz = new Quiz
@@ -109,9 +113,22 @@ public class QuizController : ControllerBase
                 Title = quizDto.Title,
                 Description = quizDto.Description,
                 IsActive = quizDto.IsActive,
-                ImageUrl = "/uploads/" + fileName,
                 CategoryId = quizDto.CategoryId
             };
+
+            if (quizDto.ImageFile != null)
+            {
+                var imageUrl = await _blobService.UploadImageAsync(quizDto.ImageFile, uploadFolder);
+
+                if (imageUrl != null) 
+                {
+                    quiz.ImageUrl = imageUrl;
+                }
+                else
+                {
+                    return BadRequest("invalid image file");
+                }
+            }
 
             await _quizRepository.AddQuizAsync(quiz);
 
@@ -139,27 +156,41 @@ public class QuizController : ControllerBase
         quiz.IsActive = quizDto.IsActive;
         quiz.CategoryId = quizDto.CategoryId;
 
+        // if (quizDto.ImageFile != null)
+        // {
+        //     // Delete the old image if it exists
+        //     if (!string.IsNullOrEmpty(quiz.ImageUrl))
+        //     {
+        //         var oldImagePath = Path.Combine("wwwroot", "uploads", Path.GetFileName(quiz.ImageUrl));
+        //         if (System.IO.File.Exists(oldImagePath))
+        //         {
+        //             System.IO.File.Delete(oldImagePath);
+        //         }
+        //     }
+
+        //     // Save the new image
+        //     var fileName = $"{Guid.NewGuid()}_{quizDto.ImageFile.FileName}";
+        //     var filePath = Path.Combine(_environment.WebRootPath, "uploads", fileName);
+
+        //     using (var stream = new FileStream(filePath, FileMode.Create))
+        //     {
+        //         await quizDto.ImageFile.CopyToAsync(stream);
+        //     }
+        //     quiz.ImageUrl = $"/uploads/{fileName}";
+        // }
+
         if (quizDto.ImageFile != null)
         {
-            // Delete the old image if it exists
-            if (!string.IsNullOrEmpty(quiz.ImageUrl))
-            {
-                var oldImagePath = Path.Combine("wwwroot", "uploads", Path.GetFileName(quiz.ImageUrl));
-                if (System.IO.File.Exists(oldImagePath))
-                {
-                    System.IO.File.Delete(oldImagePath);
-                }
-            }
+             var imageUrl = await _blobService.UpdateImageAsync(quiz.ImageUrl, quizDto.ImageFile, uploadFolder);
 
-            // Save the new image
-            var fileName = $"{Guid.NewGuid()}_{quizDto.ImageFile.FileName}";
-            var filePath = Path.Combine(_environment.WebRootPath, "uploads", fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            if (imageUrl != null) 
             {
-                await quizDto.ImageFile.CopyToAsync(stream);
+                quiz.ImageUrl = imageUrl;
             }
-            quiz.ImageUrl = $"/uploads/{fileName}";
+            else
+            {
+                return BadRequest("invalid image file");
+            }
         }
 
         await _quizRepository.UpdateAsync(quiz);
@@ -173,8 +204,6 @@ public class QuizController : ControllerBase
     {
         var questions = await _quizRepository.GetQuestionsWithOptionsByQuizIdAsync(quizId);
 
-      //  if (!questions.Any()) return NotFound();
-
         var questionDtos = questions.Select(q => new QuestionDto
         {
             Id = q.Id,
@@ -185,7 +214,7 @@ public class QuizController : ControllerBase
                 Text = o.Text,
                 IsCorrect = o.IsCorrect == 1
             }).ToList(),
-            ImageUrl = q.ImageUrl != null ? $"{Request.Scheme}://{Request.Host}{q.ImageUrl}" : null,
+            ImageUrl = q.ImageUrl,
             AudioUrl = q.AudioUrl,
             QuizId = q.QuizId
         }).ToList();

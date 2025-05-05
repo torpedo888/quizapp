@@ -3,82 +3,86 @@ using API.Data;
 using Microsoft.EntityFrameworkCore;
 using API.Entitites;
 using API.DTOs;
+using API.Interfaces;
 
 [Route("api/[controller]")]
 [ApiController]
-public class QuestionsController(DataContext context) : ControllerBase
+public class QuestionsController(DataContext context, IBlobService blobService) : ControllerBase
 {
+    private const string uploadFolder = "questions";
+
     private readonly DataContext _context = context;
+    private readonly IBlobService _blobService = blobService;
 
-    [HttpPost("create-quiz")]
-    public async Task<IActionResult> PostQuiz([FromBody] Quiz quiz)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+    // [HttpPost("create-quiz")]
+    // public async Task<IActionResult> PostQuiz([FromBody] Quiz quiz)
+    // {
+    //     if (!ModelState.IsValid)
+    //     {
+    //         return BadRequest(ModelState);
+    //     }
 
-        await _context.Quizzes.AddAsync(quiz);
-        await _context.SaveChangesAsync(); // This will set quiz.Id automatically
+    //     await _context.Quizzes.AddAsync(quiz);
+    //     await _context.SaveChangesAsync(); // This will set quiz.Id automatically
 
-        return Ok(quiz);
-    }
+    //     return Ok(quiz);
+    // }
 
-    [HttpPost("create-category")]
-    public async Task<IActionResult> PostCategory([FromBody] Category category)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+    // [HttpPost("create-category")]
+    // public async Task<IActionResult> PostCategory([FromBody] Category category)
+    // {
+    //     if (!ModelState.IsValid)
+    //     {
+    //         return BadRequest(ModelState);
+    //     }
 
-        await _context.Categories.AddAsync(category);
-        await _context.SaveChangesAsync(); // This will set category.Id automatically
+    //     await _context.Categories.AddAsync(category);
+    //     await _context.SaveChangesAsync(); // This will set category.Id automatically
 
-        return Ok(category);
-    }
+    //     return Ok(category);
+    // }
 
 
     // POST: api/questions/create
-    [HttpPost("create")]
-    public async Task<IActionResult> PostQuestion([FromBody] QuestionCreateRequest request)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+    // [HttpPost("create")]
+    // public async Task<IActionResult> PostQuestion([FromBody] QuestionCreateRequest request)
+    // {
+    //     if (!ModelState.IsValid)
+    //     {
+    //         return BadRequest(ModelState);
+    //     }
 
-        // Create a new Question entity
-        var question = new Question
-        {
-            Text = request.Text,
-            QuizId = request.QuizId,
-        };
+    //     // Create a new Question entity
+    //     var question = new Question
+    //     {
+    //         Text = request.Text,
+    //         QuizId = request.QuizId,
+    //     };
 
-        // Add the question to the context
-        await _context.Questions.AddAsync(question);
-        await _context.SaveChangesAsync();
+    //     // Add the question to the context
+    //     await _context.Questions.AddAsync(question);
+    //     await _context.SaveChangesAsync();
 
-        // Get the ID of the newly created question
-        var questionId = question.Id;
+    //     // Get the ID of the newly created question
+    //     var questionId = question.Id;
 
-        // Create the options and set the QuestionId
-        foreach (var option in request.Options)
-        {
-            var newOption = new Option
-            {
-                Text = option.Text,
-                QuestionId = questionId
-            };
+    //     // Create the options and set the QuestionId
+    //     foreach (var option in request.Options)
+    //     {
+    //         var newOption = new Option
+    //         {
+    //             Text = option.Text,
+    //             QuestionId = questionId
+    //         };
 
-            await _context.Options.AddAsync(newOption);
-        }
+    //         await _context.Options.AddAsync(newOption);
+    //     }
 
-        // Save all changes to the database
-        await _context.SaveChangesAsync();
+    //     // Save all changes to the database
+    //     await _context.SaveChangesAsync();
 
-        return Ok(question);
-    }
+    //     return Ok(question);
+    // }
 
     // GET method for retrieving a question
     [HttpGet("{id}")] // Example of a GET method
@@ -107,7 +111,7 @@ public class QuestionsController(DataContext context) : ControllerBase
             {
                 Id = q.Id,
                 Text = q.Text,
-                ImageUrl = q.ImageUrl != null ? $"{Request.Scheme}://{Request.Host}{q.ImageUrl}" : null,
+                ImageUrl = q.ImageUrl,
                 Options = q.Options.Select(o => new OptionDto
                 {
                     Id = o.Id,
@@ -174,17 +178,39 @@ public class QuestionsController(DataContext context) : ControllerBase
         string? audioUrl = null;
 
         //Handle Image Upload
+        // if (dto.ImageFile != null)
+        // {
+        //     var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+        //     Directory.CreateDirectory(uploadsFolder);
+        //     var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(dto.ImageFile.FileName);
+        //     var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+        //     using (var fileStream = new FileStream(filePath, FileMode.Create))
+        //     {
+        //         await dto.ImageFile.CopyToAsync(fileStream);
+        //     }
+        //     imageUrl = $"/images/{uniqueFileName}";
+        // }
+
+        var question = new Question
+        {
+            QuizId = quizId,
+            Text = dto.Text
+           // ImageUrl = imageUrl, // Store the image URL
+          //  AudioUrl = audioUrl // Store the audio URL
+        };
+
         if (dto.ImageFile != null)
         {
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
-            Directory.CreateDirectory(uploadsFolder);
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(dto.ImageFile.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            imageUrl = await _blobService.UploadImageAsync(dto.ImageFile, uploadFolder);
+
+            if (imageUrl != null) 
             {
-                await dto.ImageFile.CopyToAsync(fileStream);
+                question.ImageUrl = imageUrl;
             }
-            imageUrl = $"/images/{uniqueFileName}";
+            else
+            {
+                return BadRequest("invalid image file");
+            }
         }
 
         // ✅ Handle Audio Upload
@@ -204,13 +230,6 @@ public class QuestionsController(DataContext context) : ControllerBase
         // ✅ Deserialize options
         var options = System.Text.Json.JsonSerializer.Deserialize<List<OptionDto>>(dto.OptionsJson);
         
-        var question = new Question
-        {
-            QuizId = quizId,
-            Text = dto.Text,
-            ImageUrl = imageUrl, // Store the image URL
-            AudioUrl = audioUrl // Store the audio URL
-        };
         context.Questions.Add(question);
         await context.SaveChangesAsync();
 
@@ -244,33 +263,40 @@ public class QuestionsController(DataContext context) : ControllerBase
         string? imageUrl = question.ImageUrl; // Keep existing image
         string? audioUrl = question.AudioUrl; // Keep existing audio
 
-        // ✅ Handle Image Upload (Update if new image is provided)
+        // Delete image if requested
+        if (Request.Form.ContainsKey("deleteImage") && question.ImageUrl != null)
+        {
+            await _blobService.DeleteImageAsync(question.ImageUrl);
+            question.ImageUrl = null;
+        }
+
         if (imageFile != null)
         {
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
-            Directory.CreateDirectory(uploadsFolder);
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            imageUrl = await _blobService.UpdateImageAsync(question.ImageUrl, imageFile, uploadFolder);
+
+            if (imageUrl != null) 
             {
-                await imageFile.CopyToAsync(fileStream);
+                question.ImageUrl = imageUrl;
             }
-            imageUrl = $"/images/{uniqueFileName}";
+            else
+            {
+                return BadRequest("invalid image file");
+            }
         }
 
         // ✅ Handle Audio Upload (Update if new audio is provided)
-        if (audioFile != null)
-        {
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/audio");
-            Directory.CreateDirectory(uploadsFolder);
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(audioFile.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await audioFile.CopyToAsync(fileStream);
-            }
-            audioUrl = $"/audio/{uniqueFileName}";
-        }
+        // if (audioFile != null)
+        // {
+        //     var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/audio");
+        //     Directory.CreateDirectory(uploadsFolder);
+        //     var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(audioFile.FileName);
+        //     var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+        //     using (var fileStream = new FileStream(filePath, FileMode.Create))
+        //     {
+        //         await audioFile.CopyToAsync(fileStream);
+        //     }
+        //     audioUrl = $"/audio/{uniqueFileName}";
+        // }
 
         // ✅ Deserialize options
         var options = System.Text.Json.JsonSerializer.Deserialize<List<OptionDto>>(optionsJson);
@@ -278,7 +304,7 @@ public class QuestionsController(DataContext context) : ControllerBase
 
         // ✅ Update Question Fields
         question.Text = text;
-        question.ImageUrl = imageUrl;
+      //  question.ImageUrl = imageUrl;
         question.AudioUrl = audioUrl;
 
         _context.Questions.Update(question);
@@ -314,7 +340,7 @@ public class QuestionsController(DataContext context) : ControllerBase
             {
                 Id = q.Id,
                 Text = q.Text,
-                ImageUrl = string.IsNullOrEmpty(q.ImageUrl) ? null : $"{baseUrl}{q.ImageUrl}",
+                ImageUrl = q.ImageUrl,
                 Options = q.Options.Select(o => new OptionDto
                 {
                     Id = o.Id,

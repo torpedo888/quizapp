@@ -31,6 +31,8 @@ export class QuestionEditFormComponent implements OnInit {
   imageFile: File | null = null; // Store the selected image file
   audioFile: File | null = null;
 
+  imageDeleted = false;
+
   constructor(private fb: FormBuilder, private questionService: QuestionService, private quizService: QuizService) {
     this.questionForm = this.fb.group({
       text: ['', Validators.required],
@@ -155,6 +157,10 @@ export class QuestionEditFormComponent implements OnInit {
     }
 
     if (this.isEditMode && this.editingQuestionId !== null) {
+      if (this.imageDeleted) {
+        formData.append('deleteImage', 'true'); // <-- flag for backend
+      }
+
       this.questionService.updateQuestion(this.selectedQuizId, this.editingQuestionId, formData)
       .subscribe(() => {
         this.questionService.getQuestionById(this.selectedQuizId!, this.editingQuestionId!)
@@ -210,6 +216,12 @@ export class QuestionEditFormComponent implements OnInit {
         error: (err) => console.error('Delete failed', err)
       });
     }
+  }
+
+  removeImage(): void {
+    this.questionForm.patchValue({ imageUrl: null });
+    this.imageDeleted = true; // <-- Mark as deleted
+    this.imageFile = null;    // Prevent reupload if already uploaded
   }
 
 }

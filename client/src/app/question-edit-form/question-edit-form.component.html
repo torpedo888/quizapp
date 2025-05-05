@@ -67,6 +67,7 @@
             </div>
             <div *ngIf="questionForm.get('imageUrl')?.value">
               <img [src]="questionForm.get('imageUrl')?.value" class="img-thumbnail" style="max-width: 150px;">
+              <button type="button" class="btn btn-danger btn-sm ms-2" (click)="removeImage()">Delete Image</button>
             </div>
 
             <div class="mb-3">

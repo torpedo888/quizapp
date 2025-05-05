@@ -23,8 +23,7 @@ public class BlobService : IBlobService
         if(!validImageFile)
             return null;
 
-        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-        var blobName = $"{folder}/{fileName}";
+        var blobName = FileNameHelper.GenerateUniqueFileName(file.FileName, folder);
 
         var blobClient = _containerClient.GetBlobClient(blobName);
         await using var stream = file.OpenReadStream();
@@ -54,14 +53,41 @@ public class BlobService : IBlobService
             }
         }
 
-        // Upload new image
-        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(newFile.FileName)}";
-        var blobName = $"{folder}/{fileName}";
+        var blobName = FileNameHelper.GenerateUniqueFileName(newFile.FileName, folder);
+
         var blobClient = _containerClient.GetBlobClient(blobName);
+
         await using var stream = newFile.OpenReadStream();
         await blobClient.UploadAsync(stream, overwrite: true);
 
         return blobClient.Uri.ToString();
+    }
+
+    public async Task DeleteImageAsync(string imageUrl)
+    {
+        if (string.IsNullOrWhiteSpace(imageUrl))
+            return;
+
+        try
+        {
+            var blobUri = new Uri(imageUrl);
+            var containerUri = _containerClient.Uri;
+
+            // Make sure the imageUrl belongs to this container
+            if (!blobUri.AbsoluteUri.StartsWith(containerUri.AbsoluteUri, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            // Get the relative path of the blob (blob name)
+            var blobName = Uri.UnescapeDataString(blobUri.AbsoluteUri.Substring(containerUri.AbsoluteUri.Length).TrimStart('/'));
+
+            var blobClient = _containerClient.GetBlobClient(blobName);
+            await blobClient.DeleteIfExistsAsync();
+        }
+        catch (Exception ex)
+        {
+            // Log or throw as needed
+            Console.WriteLine($"Failed to delete blob: {ex.Message}");
+        }
     }
 
 }
