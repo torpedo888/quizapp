@@ -14,8 +14,11 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
+// Add services to the container.
 builder.Services.AddApplicationServices(builder.Configuration);
 
 builder.Services.AddIdentityService(builder.Configuration);
@@ -67,8 +70,13 @@ try
     var context = services.GetRequiredService<DataContext>();
     var userManager = services.GetRequiredService<UserManager<AppUser>>();
     var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
+
+    // if (app.Environment.IsDevelopment())
+    // {
     await context.Database.MigrateAsync();
 
+    await Seed.SeedUsers(userManager, roleManager);
+    //}
 }
 catch (Exception ex)
 {
