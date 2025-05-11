@@ -1,0 +1,101 @@
+{
+  "category": {
+    "name": "Geography"
+  },
+  "quiz": {
+    "title": "Discover Budapest",
+    "imageUrl": "imgs/quiz/budapest.png"
+  },
+  "questions": [
+    {
+      "text": "What two cities were united to form Budapest?",
+      "options": [
+        { "text": "Buda and Pest", "isCorrect": 1 },
+        { "text": "Pest and Vienna", "isCorrect": 0 },
+        { "text": "Buda and Bratislava", "isCorrect": 0 },
+        { "text": "Debrecen and Buda", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "Which river flows through Budapest?",
+      "options": [
+        { "text": "Thames", "isCorrect": 0 },
+        { "text": "Danube", "isCorrect": 1 },
+        { "text": "Rhine", "isCorrect": 0 },
+        { "text": "Seine", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "What is the name of the famous Parliament building in Budapest?",
+      "options": [
+        { "text": "House of Nations", "isCorrect": 0 },
+        { "text": "Hungarian Parliament Building", "isCorrect": 1 },
+        { "text": "Royal Assembly Hall", "isCorrect": 0 },
+        { "text": "Budapest National Center", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "What historic fortress overlooks Budapest from the Buda side?",
+      "options": [
+        { "text": "Budapest Citadel", "isCorrect": 1 },
+        { "text": "Chain Castle", "isCorrect": 0 },
+        { "text": "Visegrád Castle", "isCorrect": 0 },
+        { "text": "Danube Bastion", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "Which famous thermal bath is located in City Park?",
+      "options": [
+        { "text": "Gellért Bath", "isCorrect": 0 },
+        { "text": "Király Bath", "isCorrect": 0 },
+        { "text": "Széchenyi Thermal Bath", "isCorrect": 1 },
+        { "text": "Rudas Bath", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "Which iconic bridge connects Buda and Pest?",
+      "options": [
+        { "text": "Liberty Bridge", "isCorrect": 0 },
+        { "text": "Chain Bridge", "isCorrect": 1 },
+        { "text": "Margaret Bridge", "isCorrect": 0 },
+        { "text": "Elizabeth Bridge", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "In which country is Budapest located?",
+      "options": [
+        { "text": "Austria", "isCorrect": 0 },
+        { "text": "Hungary", "isCorrect": 1 },
+        { "text": "Slovakia", "isCorrect": 0 },
+        { "text": "Czech Republic", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "What is Heroes' Square known for?",
+      "options": [
+        { "text": "Shopping district", "isCorrect": 0 },
+        { "text": "Parliamentary debates", "isCorrect": 0 },
+        { "text": "Statues of Hungarian leaders", "isCorrect": 1 },
+        { "text": "Modern art museum", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "Which island on the Danube is a popular recreational area in Budapest?",
+      "options": [
+        { "text": "Csepel Island", "isCorrect": 0 },
+        { "text": "Margaret Island", "isCorrect": 1 },
+        { "text": "Liberty Island", "isCorrect": 0 },
+        { "text": "Castle Island", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "What architectural style is the Hungarian Parliament Building?",
+      "options": [
+        { "text": "Baroque", "isCorrect": 0 },
+        { "text": "Neoclassical", "isCorrect": 0 },
+        { "text": "Gothic Revival", "isCorrect": 1 },
+        { "text": "Modernist", "isCorrect": 0 }
+      ]
+    }
+  ]
+}

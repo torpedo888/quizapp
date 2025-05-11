@@ -1,0 +1,4 @@
+<h2>Upload Quiz JSON</h2>
+<input type="file" (change)="onFileSelected($event)" accept=".json" />
+<button (click)="upload()" [disabled]="!quizJson">Upload</button>
+<p *ngIf="uploadResult">{{ uploadResult }}</p>

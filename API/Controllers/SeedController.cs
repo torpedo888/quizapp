@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
+    [Authorize(Roles = "Admin, Moderator")]
     [Route("api/[controller]")]
     [ApiController]
     public class SeedController : ControllerBase
@@ -15,7 +16,7 @@ namespace API.Controllers
             _context = context;
         }
 
-        [HttpPost("seed")]
+        [HttpGet("seed")]
         public async Task<IActionResult> SeedDatabase()
         {
             try

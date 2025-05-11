@@ -1,0 +1,101 @@
+{
+  "category": {
+    "name": "Roblox"
+  },
+  "quiz": {
+    "title": "Roblox Mastery Challenge",
+    "imageUrl": "imgs/quiz/robloxmastery.png"
+  },
+  "questions": [
+    {
+      "text": "What year was Roblox officially released?",
+      "options": [
+        { "text": "2004", "isCorrect": 0 },
+        { "text": "2006", "isCorrect": 1 },
+        { "text": "2008", "isCorrect": 0 },
+        { "text": "2010", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "What is the in-game currency used in Roblox?",
+      "options": [
+        { "text": "Robux", "isCorrect": 1 },
+        { "text": "BloxCoins", "isCorrect": 0 },
+        { "text": "V-Bucks", "isCorrect": 0 },
+        { "text": "MineCoins", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "Which of these is NOT an official genre in Roblox?",
+      "options": [
+        { "text": "Tycoon", "isCorrect": 0 },
+        { "text": "Obby", "isCorrect": 0 },
+        { "text": "FPS", "isCorrect": 1 },
+        { "text": "RPG", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "What is the name of the programming language used to script games in Roblox?",
+      "options": [
+        { "text": "Python", "isCorrect": 0 },
+        { "text": "JavaScript", "isCorrect": 0 },
+        { "text": "Lua", "isCorrect": 1 },
+        { "text": "C#", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "Which of the following games is one of the most played in Roblox history?",
+      "options": [
+        { "text": "Adopt Me!", "isCorrect": 1 },
+        { "text": "Fortnite", "isCorrect": 0 },
+        { "text": "Among Us", "isCorrect": 0 },
+        { "text": "League of Legends", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "What is the maximum number of friends a Roblox user can have?",
+      "options": [
+        { "text": "100", "isCorrect": 0 },
+        { "text": "200", "isCorrect": 1 },
+        { "text": "500", "isCorrect": 0 },
+        { "text": "Unlimited", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "Which of these items can be used to customize a player's avatar?",
+      "options": [
+        { "text": "Game Pass", "isCorrect": 0 },
+        { "text": "UGC (User-Generated Content)", "isCorrect": 1 },
+        { "text": "Blueprint", "isCorrect": 0 },
+        { "text": "Blocky Code", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "What is the name of the premium subscription service in Roblox?",
+      "options": [
+        { "text": "Roblox Plus", "isCorrect": 0 },
+        { "text": "Builders Club", "isCorrect": 0 },
+        { "text": "Roblox Premium", "isCorrect": 1 },
+        { "text": "VIP Access", "isCorrect": 0 }
+      ]
+    },
+    {
+      "text": "Which company developed and owns Roblox?",
+      "options": [
+        { "text": "Epic Games", "isCorrect": 0 },
+        { "text": "Mojang", "isCorrect": 0 },
+        { "text": "Valve", "isCorrect": 0 },
+        { "text": "Roblox Corporation", "isCorrect": 1 }
+      ]
+    },
+    {
+      "text": "What happens when you type \"/e dance\" in the chat during a game?",
+      "options": [
+        { "text": "Your character starts dancing", "isCorrect": 1 },
+        { "text": "A secret code unlocks", "isCorrect": 0 },
+        { "text": "You receive free Robux", "isCorrect": 0 },
+        { "text": "Nothing happens", "isCorrect": 0 }
+      ]
+    }
+  ]
+}

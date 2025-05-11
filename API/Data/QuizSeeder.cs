@@ -38,6 +38,12 @@ public static class QuizSeeder
                 await context.SaveChangesAsync();
             }
 
+            //check if the quiz is already inserted. if yes then skip it.
+            if (await context.Quizzes.AnyAsync(q => q.Title.Trim() == quizData.Quiz.Title.Trim()))
+            {
+                continue; // Quiz already exists, move to the next file
+            }
+
             // Insert Quiz
             var quiz = new Quiz
             {
@@ -84,12 +90,13 @@ public static class QuizSeeder
 
         await context.SaveChangesAsync();
 
-        // Reset autoincrement values
-        await context.Database.ExecuteSqlRawAsync("DELETE FROM sqlite_sequence WHERE name='Options';");
-        await context.Database.ExecuteSqlRawAsync("DELETE FROM sqlite_sequence WHERE name='Questions';");
-        await context.Database.ExecuteSqlRawAsync("DELETE FROM sqlite_sequence WHERE name='Quizzes';");
-        await context.Database.ExecuteSqlRawAsync("DELETE FROM sqlite_sequence WHERE name='Categories';");
+        // Reset identity (auto-increment) values for SQL Server
+        await context.Database.ExecuteSqlRawAsync("DBCC CHECKIDENT ('Options', RESEED, 0);");
+        await context.Database.ExecuteSqlRawAsync("DBCC CHECKIDENT ('Questions', RESEED, 0);");
+        await context.Database.ExecuteSqlRawAsync("DBCC CHECKIDENT ('Quizzes', RESEED, 0);");
+        await context.Database.ExecuteSqlRawAsync("DBCC CHECKIDENT ('Categories', RESEED, 0);");
     }
+
 }
 
 public class QuizSeedData
