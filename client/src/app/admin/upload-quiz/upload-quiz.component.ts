@@ -32,8 +32,8 @@ export class UploadQuizComponent {
   }
 
   upload() {
-    //return this.http.get<Question[]>(`${this.apiQuizUrl}/${quizId}/questions`);
-    this.http.post(this.apiUrl + 'quiz-upload/upload', this.quizJson)
+    const urlUpload = this.apiUrl + 'quiz-upload/upload';
+    this.http.post(urlUpload, this.quizJson)
       .subscribe({
         next: () => this.uploadResult = 'Upload successful!',
         error: () => this.uploadResult = 'Upload failed.'

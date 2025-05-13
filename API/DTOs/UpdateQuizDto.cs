@@ -12,5 +12,6 @@ public class UpdateQuizDto
     public int CategoryId { get; set; }
     public IFormFile ImageFile { get; set; }  // Optional: If the image needs to be updated
     public bool IsActive { get; set; }    // Optional: If you want to enable/disable the quiz
+    public string ImageUrl { get; set; }
 }
 

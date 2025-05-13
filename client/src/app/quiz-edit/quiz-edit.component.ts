@@ -5,11 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule, NgFor } from '@angular/common';
 import { CategoryService } from '../_services/category.service';
 import { Category } from '../_models/Category';
+import { QuizImageSelectorComponent } from "../quiz-image-selector/quiz-image-selector.component";
 
 @Component({
   selector: 'app-quiz-edit',
   standalone: true,
-  imports: [CommonModule, NgFor, FormsModule],
+  imports: [CommonModule, NgFor, FormsModule, QuizImageSelectorComponent],
   templateUrl: './quiz-edit.component.html',
   styleUrl: './quiz-edit.component.css'
 })
@@ -22,6 +23,8 @@ export class QuizEditComponent implements OnInit {
   newQuiz: { title: string; description: string; imageUrl: string | null; imageFile: File | null; categoryId: number | null } | null = null;
 
   saveAttempted = false;
+
+  showImageSelector = false;
 
   ngOnInit(): void {
     this.loadCategories(true);
@@ -51,6 +54,7 @@ export class QuizEditComponent implements OnInit {
           editedTitle: quiz.title,
           editedDescription: quiz.description,
           editedImage: null,
+          editedImageUrl: null,
           imageUrl: quiz.imageUrl || 'assets/default-thumbnail.jpg', // Fallback if no image
           questionCount: quiz.questionCount
         })) as EditableQuiz[];
@@ -125,13 +129,6 @@ export class QuizEditComponent implements OnInit {
     editCategory(quiz: EditableQuiz): void {
       quiz.editing = true;
     }
-  
-    // onFileSelected(event: Event, category: any): void {
-    //   const input = event.target as HTMLInputElement;
-    //   if (input.files?.length) {
-    //     category.editedImage = input.files[0];
-    //   }
-    // }
 
     onFileSelected(event: Event, quiz: any) {
       const target = event.target as HTMLInputElement;
@@ -147,8 +144,13 @@ export class QuizEditComponent implements OnInit {
         reader.readAsDataURL(file);
       }
     }
+
+    onExistingImageSelected(url: string, quiz: any){
+      quiz.editedImageUrl = url;
+      quiz.imageUrl = url;
+      this.showImageSelector = false;
+    }
     
-  
     saveCategory(quiz: any): void {
       if (!quiz.editedTitle.trim()) {
         alert("quiz title cannot be empty!");
@@ -159,9 +161,13 @@ export class QuizEditComponent implements OnInit {
       formData.append('title', quiz.editedTitle);
       formData.append('description', quiz.editedDescription);
       formData.append('categoryId', quiz.categoryId.toString());
-
+      
       if (quiz.editedImage) {
         formData.append('imageFile', quiz.editedImage);
+      }
+
+      if (quiz.editedImageUrl) {
+        formData.append('imageUrl', quiz.editedImageUrl);
       }
     
     this.quizService.updateQuiz(quiz.id, formData)
@@ -221,4 +227,5 @@ interface EditableQuiz extends Quiz {
   editedTitle: String;
   editedDescription: String;
   editedImage: File | null;
+  editedImageUrl: string | null;
 }

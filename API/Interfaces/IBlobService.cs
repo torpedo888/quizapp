@@ -12,4 +12,6 @@ public interface IBlobService
     Task<string?> UpdateImageAsync(string? existingImageUrl, IFormFile newFile, string folder);
 
     Task DeleteImageAsync(string imageUrl);
+
+    Task<List<string>> GetImageListAsync();
 }

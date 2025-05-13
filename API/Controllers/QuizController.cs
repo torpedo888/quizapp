@@ -156,32 +156,12 @@ public class QuizController : ControllerBase
         quiz.IsActive = quizDto.IsActive;
         quiz.CategoryId = quizDto.CategoryId;
 
-        // if (quizDto.ImageFile != null)
-        // {
-        //     // Delete the old image if it exists
-        //     if (!string.IsNullOrEmpty(quiz.ImageUrl))
-        //     {
-        //         var oldImagePath = Path.Combine("wwwroot", "uploads", Path.GetFileName(quiz.ImageUrl));
-        //         if (System.IO.File.Exists(oldImagePath))
-        //         {
-        //             System.IO.File.Delete(oldImagePath);
-        //         }
-        //     }
-
-        //     // Save the new image
-        //     var fileName = $"{Guid.NewGuid()}_{quizDto.ImageFile.FileName}";
-        //     var filePath = Path.Combine(_environment.WebRootPath, "uploads", fileName);
-
-        //     using (var stream = new FileStream(filePath, FileMode.Create))
-        //     {
-        //         await quizDto.ImageFile.CopyToAsync(stream);
-        //     }
-        //     quiz.ImageUrl = $"/uploads/{fileName}";
-        // }
-
         if (quizDto.ImageFile != null)
         {
-             var imageUrl = await _blobService.UpdateImageAsync(quiz.ImageUrl, quizDto.ImageFile, uploadFolder);
+            var safeTitle = quiz.Title.Trim().Replace(" ", "_");
+            var uploadFolderWithQuizName = Path.Combine(uploadFolder, safeTitle);
+
+             var imageUrl = await _blobService.UpdateImageAsync(quiz.ImageUrl, quizDto.ImageFile, uploadFolderWithQuizName);
 
             if (imageUrl != null) 
             {
@@ -191,6 +171,11 @@ public class QuizController : ControllerBase
             {
                 return BadRequest("invalid image file");
             }
+        }
+
+        if(quizDto.ImageUrl != null)
+        {
+            quiz.ImageUrl = quizDto.ImageUrl;
         }
 
         await _quizRepository.UpdateAsync(quiz);

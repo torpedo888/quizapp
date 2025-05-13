@@ -16,6 +16,19 @@ public class BlobService : IBlobService
         _containerClient.CreateIfNotExists();
     }
 
+    public async Task<List<string>> GetImageListAsync()
+    {
+        var images = new List<string>();
+
+        await foreach (var blobItem in _containerClient.GetBlobsAsync())
+        {
+            var url = _containerClient.GetBlobClient(blobItem.Name).Uri.ToString();
+            images.Add(url);
+        }
+
+        return images;
+    }
+
     public async Task<string?> UploadImageAsync(IFormFile file, string folder)
     {
         var validImageFile = ImageHelper.IsValidImage(file);
@@ -89,5 +102,6 @@ public class BlobService : IBlobService
             Console.WriteLine($"Failed to delete blob: {ex.Message}");
         }
     }
+    
 
 }

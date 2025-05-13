@@ -1,0 +1,10 @@
+<div *ngIf="loading">Loading images...</div>
+<div *ngIf="!loading && images.length === 0">No images found.</div>
+
+<div class="image-grid" *ngIf="images.length > 0">
+    <img *ngFor="let img of images"
+        [src]="img"
+        (click)="selectImage(img)"
+        [class.selected]="img === selectedImageUrl"
+        class="image-thumbnail" />
+</div>

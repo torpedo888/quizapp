@@ -1,0 +1,20 @@
+.image-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-height: 500px;
+    overflow-y: auto;
+  }
+  .image-thumbnail {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid transparent;
+  }
+  .image-thumbnail:hover {
+    border-color: #007bff;
+  }
+  .selected {
+    border-color: green;
+  }
