@@ -41,11 +41,15 @@ export class CategoryService {
     return this.http.put<void>(`${this.apiUrl}/${categoryId}/activate`, {})
   }
 
-  updateCategory(categoryId: number, newName: string, imageFile?: File): Observable<void> {
+  updateCategory(categoryId: number, newName: string, imageFile?: File, editedImageUrl?: string): Observable<void> {
     const formData = new FormData();
     formData.append("name", newName);
     if (imageFile) {
       formData.append("image", imageFile);
+    }
+
+    if (editedImageUrl) {
+      formData.append('imageUrl', editedImageUrl);
     }
   
     return this.http.put<void>(`${this.apiUrl}/${categoryId}`, formData);

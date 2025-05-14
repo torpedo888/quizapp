@@ -54,7 +54,32 @@
           [(ngModel)]="category.editedName"
           class="form-control"
         />
-        <input *ngIf="category.editing" type="file" (change)="onFileSelected($event, category)" />
+        <!-- <input *ngIf="category.editing" type="file" (change)="onFileSelected($event, category)" /> -->
+
+        <div *ngIf="category.editing" class="mb-3">
+          <!-- Upload new image -->
+          <label class="form-label">Upload New Image</label>
+          <div class="input-group mb-2">
+            <input type="file" class="form-control" (change)="onFileSelected($event, category)">
+          </div>
+        
+          <!-- Button to show/hide cloud selector -->
+          <button class="btn btn-outline-primary mb-2" type="button" (click)="showImageSelector = !showImageSelector">
+            {{ showImageSelector ? 'Hide Cloud Images' : 'Select from Cloud Images' }}
+          </button>
+        
+          <!-- Cloud image selector component (toggle visible) -->
+          <div *ngIf="showImageSelector" class="mt-3 border rounded p-3 bg-light">
+            <app-quiz-image-selector (imageSelected)="onExistingImageSelected($event, category)"></app-quiz-image-selector>
+            <button class="btn btn-secondary mt-2" (click)="showImageSelector = false">Close</button>
+          </div>
+        
+          <!-- Image preview -->
+          <div *ngIf="category.editedImageUrl" class="mt-3">
+            <label class="form-label">Selected Image Preview:</label><br>
+            <img [src]="category.editedImageUrl" alt="Selected" class="img-thumbnail" style="max-width: 200px;">
+          </div>
+        </div>
       </td>
 
       <!-- Status -->

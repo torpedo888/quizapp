@@ -3,11 +3,12 @@ import { Category } from '../_models/Category';
 import { CategoryService } from '../_services/category.service';
 import { CommonModule, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { QuizImageSelectorComponent } from "../quiz-image-selector/quiz-image-selector.component";
 
 @Component({
   selector: 'app-category-edit',
   standalone: true,
-  imports: [CommonModule, NgFor, FormsModule],
+  imports: [CommonModule, NgFor, FormsModule, QuizImageSelectorComponent],
   templateUrl: './category-edit.component.html',
   styleUrl: './category-edit.component.css'
 })
@@ -16,6 +17,8 @@ export class CategoryEditComponent implements OnInit {
   categories: EditableCategory[] = [];
 
   newCategory: { name: string; imageUrl: string | null; imageFile: File | null } | null = null;
+
+  showImageSelector = false;
 
   constructor(private categoryService: CategoryService) {}
 
@@ -51,6 +54,16 @@ export class CategoryEditComponent implements OnInit {
       };
       reader.readAsDataURL(file);
     }
+  }
+
+  onExistingImageSelected(url: string, category: any){
+    //this is for the updating
+    category.editedImageUrl = url;
+
+    //this is for the view it will appear right away
+    category.imageUrl = url;
+
+    this.showImageSelector = false;
   }
   
   saveNewCategory(): void {
@@ -100,7 +113,8 @@ export class CategoryEditComponent implements OnInit {
       return;
     }
   
-    this.categoryService.updateCategory(category.id, category.editedName, category.editedImage)
+    this.categoryService.updateCategory(category.id, category.editedName, 
+          category.editedImage, category.editedImageUrl)
       .subscribe(() => {
         category.name = category.editedName; // Update name in UI
         if (category.editedImage) {
@@ -153,4 +167,5 @@ interface EditableCategory extends Category {
   editing: boolean;
   editedName: string;
   editedImage: File | null;
+  editedImageUrl: string | null;
 }

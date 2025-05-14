@@ -250,11 +250,9 @@ public class QuestionsController(DataContext context, IBlobService blobService) 
 
     [HttpPut("{quizId}/questions/{questionId}")]
     public async Task<IActionResult> UpdateQuestion(int quizId, int questionId,
-        [FromForm] IFormFile? imageFile,
-        [FromForm] IFormFile? audioFile,
-        [FromForm] string text,
-        [FromForm] string optionsJson)
+        [FromForm] QuestionUpdateDto dto)
     {
+        //var question = await _context.Questions.FindAsync(questionId);
         var question = await _context.Questions.FindAsync(questionId);
         if (question == null) return NotFound("Question not found");
 
@@ -270,9 +268,9 @@ public class QuestionsController(DataContext context, IBlobService blobService) 
             question.ImageUrl = null;
         }
 
-        if (imageFile != null)
+        if (dto.ImageFile != null)
         {
-            imageUrl = await _blobService.UpdateImageAsync(question.ImageUrl, imageFile, uploadFolder);
+            imageUrl = await _blobService.UpdateImageAsync(question.ImageUrl, dto.ImageFile, uploadFolder);
 
             if (imageUrl != null) 
             {
@@ -282,6 +280,12 @@ public class QuestionsController(DataContext context, IBlobService blobService) 
             {
                 return BadRequest("invalid image file");
             }
+        }
+
+        //edited imageurl, chosen from the cloud rather than uploading a new
+        if(dto.ImageUrl != null)
+        {
+            question.ImageUrl = dto.ImageUrl;
         }
 
         // ✅ Handle Audio Upload (Update if new audio is provided)
@@ -299,15 +303,15 @@ public class QuestionsController(DataContext context, IBlobService blobService) 
         // }
 
         // ✅ Deserialize options
-        var options = System.Text.Json.JsonSerializer.Deserialize<List<OptionDto>>(optionsJson);
+        var options = System.Text.Json.JsonSerializer.Deserialize<List<OptionDto>>(dto.OptionsJson);
         if (options == null) return BadRequest("Invalid options data");
 
         // ✅ Update Question Fields
-        question.Text = text;
+        question.Text = dto.Text;
       //  question.ImageUrl = imageUrl;
         question.AudioUrl = audioUrl;
 
-        _context.Questions.Update(question);
+      //  _context.Questions.Update(question);
         await _context.SaveChangesAsync();
 
         // ✅ Remove old options & add new ones
@@ -327,14 +331,85 @@ public class QuestionsController(DataContext context, IBlobService blobService) 
         }
         await _context.SaveChangesAsync();
 
-        return Ok(new { message = "Question updated successfully", question.Id });
+        // ✅ Fully detach question (safeguard)
+        _context.Entry(question).State = EntityState.Detached;
+
+        return Ok(new { message = "Question updated successfully", id = question.Id });
+        // return Ok(new QuestionUpdatedResultDto
+        // {
+        //     Message = "Question updated successfully",
+        //     QuestionId = entity.Id
+        // });
     }
+
+    // [HttpPut("{quizId}/questions/{questionId}")]
+    // public async Task<IActionResult> UpdateQuestion(int quizId, int questionId, [FromForm] QuestionUpdateDto dto)
+    // {
+    //     var entity = await _context.Questions
+    //         .FirstOrDefaultAsync(q => q.Id == questionId && q.QuizId == quizId);
+
+    //     if (entity == null) return NotFound("Question not found or does not belong to this quiz");
+
+    //     // Handle image deletion
+    //     if (Request.Form.ContainsKey("deleteImage") && entity.ImageUrl != null)
+    //     {
+    //         await _blobService.DeleteImageAsync(entity.ImageUrl);
+    //         entity.ImageUrl = null;
+    //     }
+
+    //     // Upload new image if provided
+    //     if (dto.ImageFile != null)
+    //     {
+    //         var imageUrl = await _blobService.UpdateImageAsync(entity.ImageUrl, dto.ImageFile, uploadFolder);
+    //         if (imageUrl == null) return BadRequest("Invalid image file");
+    //         entity.ImageUrl = imageUrl;
+    //     }
+
+    //     // Cloud image selected instead of upload
+    //     if (dto.ImageUrl != null)
+    //     {
+    //         entity.ImageUrl = dto.ImageUrl;
+    //     }
+
+    //     // Deserialize and validate options
+    //     var options = System.Text.Json.JsonSerializer.Deserialize<List<OptionDto>>(dto.OptionsJson);
+    //     if (options == null) return BadRequest("Invalid options data");
+
+    //     // Update fields
+    //     entity.Text = dto.Text;
+    //     // entity.AudioUrl = your audio logic here if needed
+
+    //     await _context.SaveChangesAsync();
+
+    //     // Update options
+    //     var existingOptions = _context.Options.Where(o => o.QuestionId == entity.Id);
+    //     _context.Options.RemoveRange(existingOptions);
+
+    //     foreach (var optionData in options)
+    //     {
+    //         _context.Options.Add(new Option
+    //         {
+    //             Text = optionData.Text,
+    //             IsCorrect = optionData.IsCorrect ? 1 : 0,
+    //             QuestionId = entity.Id
+    //         });
+    //     }
+
+    //     await _context.SaveChangesAsync();
+
+    //     return Ok(new QuestionUpdatedResultDto
+    //     {
+    //         Message = "Question updated successfully",
+    //         QuestionId = entity.Id
+    //     });
+    // }
+
 
     [HttpGet("{quizId}/questions/{questionId}")]
     public async Task<IActionResult> GetQuestion(int quizId, int questionId)
     {
         var baseUrl = $"{Request.Scheme}://{Request.Host}";
-        var questionDto  = _context.Questions
+        var questionDto  = await _context.Questions
             .Where(q => q.Id == questionId && q.QuizId == quizId)
             .Select(q => new QuestionDto
             {

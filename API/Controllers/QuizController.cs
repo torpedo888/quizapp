@@ -173,6 +173,7 @@ public class QuizController : ControllerBase
             }
         }
 
+        //edited imageurl, chosen from the cloud rather than uploading a new
         if(quizDto.ImageUrl != null)
         {
             quiz.ImageUrl = quizDto.ImageUrl;

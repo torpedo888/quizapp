@@ -143,7 +143,6 @@ public class CategoriesController : ControllerBase
 
         category.Name = model.Name;
 
-        //ez menyen file servicebe mert a questioncontrollerben is van file feltoltes.
         if (model.Image != null)
         {
              var imageUrl = await _blobService.UpdateImageAsync(category.ImageUrl, model.Image, uploadFolder);
@@ -156,6 +155,12 @@ public class CategoriesController : ControllerBase
             {
                 return BadRequest("invalid image file");
             }
+        }
+
+        //edited imageurl, chosen from the cloud rather than uploading a new
+        if(model.ImageUrl != null)
+        {
+            category.ImageUrl = model.ImageUrl;
         }
 
         await _categoryRepository.UpdateAsync(category);

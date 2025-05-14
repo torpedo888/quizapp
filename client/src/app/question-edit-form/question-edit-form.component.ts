@@ -5,11 +5,12 @@ import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFo
 import { QuestionService } from '../_services/question.service';
 import { QuizService } from '../_services/quiz.service';
 import { CommonModule } from '@angular/common';
+import { QuizImageSelectorComponent } from "../quiz-image-selector/quiz-image-selector.component";
 
 @Component({
   selector: 'app-question-edit-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule ],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, QuizImageSelectorComponent],
   templateUrl: './question-edit-form.component.html',
   styleUrl: './question-edit-form.component.css'
 })
@@ -32,6 +33,8 @@ export class QuestionEditFormComponent implements OnInit {
   audioFile: File | null = null;
 
   imageDeleted = false;
+
+  showImageSelector = false;
 
   constructor(private fb: FormBuilder, private questionService: QuestionService, private quizService: QuizService) {
     this.questionForm = this.fb.group({
@@ -99,6 +102,18 @@ export class QuestionEditFormComponent implements OnInit {
   onImageSelected(event: any) {
     this.imageFile = event.target.files[0];
   }
+
+  onExistingImageSelected(url: string){
+    //this is for the updating
+    //category.editedImageUrl = url;
+
+    //this is for the view it will appear right away
+    //question.imageUrl = url;
+
+    this.questionForm.patchValue({ imageUrl: url });
+
+    this.showImageSelector = false;
+  }
   
   onAudioSelected(event: any) {
     this.audioFile = event.target.files[0];
@@ -131,6 +146,7 @@ export class QuestionEditFormComponent implements OnInit {
     if (this.questionForm.invalid) return;
 
     const formData = new FormData();
+    
 
     formData.append('text', this.questionForm.get('text')?.value);
 
@@ -144,6 +160,9 @@ export class QuestionEditFormComponent implements OnInit {
     if (this.imageFile) {
       formData.append('imageFile', this.imageFile);
     }
+
+    //editalt cloud-bol valasztott url eseten
+    formData.append('imageUrl', this.questionForm.get('imageUrl')?.value)
   
     if (this.audioFile) {
       formData.append('audioFile', this.audioFile);
