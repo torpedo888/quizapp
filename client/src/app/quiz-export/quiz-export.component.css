@@ -1,0 +1,24 @@
+.export-sidebar {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 400px;
+  height: 100vh;
+  background-color: #f8f9fa;
+  border-left: 2px solid #dee2e6;
+  padding: 1rem;
+  overflow-y: auto;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+}
+
+.export-sidebar pre {
+  background-color: #272822;
+  color: #f8f8f2;
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: 0.85rem;
+}

@@ -25,7 +25,7 @@ public class QuizUploadController : ControllerBase
     {
         var category = await _context.Categories
             .FirstOrDefaultAsync(c => c.Name == dto.Category.Name)
-            ?? new Category { Name = dto.Category.Name };
+            ?? new Category { Name = dto.Category.Name, ImageUrl = dto.Category.ImageUrl };
 
         var quiz = new Quiz
         {
@@ -57,7 +57,11 @@ public class QuizUploadData
     public List<QuestionData> Questions { get; set; }
 }
 
-public class CategoryData { public string Name { get; set; } }
+public class CategoryData 
+{ 
+    public string Name { get; set; } 
+    public string ImageUrl { get; set; }
+}
 public class QuizData { public string Title { get; set; } public string ImageUrl { get; set; } }
 public class QuestionData
 {

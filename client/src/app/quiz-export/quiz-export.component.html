@@ -12,7 +12,10 @@
   <p><strong>Category:</strong> {{ quizData.category.name }}</p>
   <p><strong>Questions:</strong> {{ quizData.questions.length }}</p>
 
-  <pre>{{ quizData | json }}</pre>
+  <div class="export-sidebar">
+    <h3>Export Preview (JSON)</h3>
+    <pre>{{ quizData | json }}</pre>
+  </div>
 
   <button (click)="exportToJson()">Export as JSON</button>
 </div>
