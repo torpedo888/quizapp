@@ -14,78 +14,8 @@ public class QuestionsController(DataContext context, IBlobService blobService) 
     private readonly DataContext _context = context;
     private readonly IBlobService _blobService = blobService;
 
-    // [HttpPost("create-quiz")]
-    // public async Task<IActionResult> PostQuiz([FromBody] Quiz quiz)
-    // {
-    //     if (!ModelState.IsValid)
-    //     {
-    //         return BadRequest(ModelState);
-    //     }
-
-    //     await _context.Quizzes.AddAsync(quiz);
-    //     await _context.SaveChangesAsync(); // This will set quiz.Id automatically
-
-    //     return Ok(quiz);
-    // }
-
-    // [HttpPost("create-category")]
-    // public async Task<IActionResult> PostCategory([FromBody] Category category)
-    // {
-    //     if (!ModelState.IsValid)
-    //     {
-    //         return BadRequest(ModelState);
-    //     }
-
-    //     await _context.Categories.AddAsync(category);
-    //     await _context.SaveChangesAsync(); // This will set category.Id automatically
-
-    //     return Ok(category);
-    // }
-
-
-    // POST: api/questions/create
-    // [HttpPost("create")]
-    // public async Task<IActionResult> PostQuestion([FromBody] QuestionCreateRequest request)
-    // {
-    //     if (!ModelState.IsValid)
-    //     {
-    //         return BadRequest(ModelState);
-    //     }
-
-    //     // Create a new Question entity
-    //     var question = new Question
-    //     {
-    //         Text = request.Text,
-    //         QuizId = request.QuizId,
-    //     };
-
-    //     // Add the question to the context
-    //     await _context.Questions.AddAsync(question);
-    //     await _context.SaveChangesAsync();
-
-    //     // Get the ID of the newly created question
-    //     var questionId = question.Id;
-
-    //     // Create the options and set the QuestionId
-    //     foreach (var option in request.Options)
-    //     {
-    //         var newOption = new Option
-    //         {
-    //             Text = option.Text,
-    //             QuestionId = questionId
-    //         };
-
-    //         await _context.Options.AddAsync(newOption);
-    //     }
-
-    //     // Save all changes to the database
-    //     await _context.SaveChangesAsync();
-
-    //     return Ok(question);
-    // }
-
     // GET method for retrieving a question
-    [HttpGet("{id}")] // Example of a GET method
+    [HttpGet("{id}")]
     public IActionResult GetQuestion(int id)
     {
         var question = _context.Questions.Find(id);
@@ -177,20 +107,6 @@ public class QuestionsController(DataContext context, IBlobService blobService) 
         string? imageUrl = null;
         string? audioUrl = null;
 
-        //Handle Image Upload
-        // if (dto.ImageFile != null)
-        // {
-        //     var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
-        //     Directory.CreateDirectory(uploadsFolder);
-        //     var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(dto.ImageFile.FileName);
-        //     var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-        //     using (var fileStream = new FileStream(filePath, FileMode.Create))
-        //     {
-        //         await dto.ImageFile.CopyToAsync(fileStream);
-        //     }
-        //     imageUrl = $"/images/{uniqueFileName}";
-        // }
-
         var question = new Question
         {
             QuizId = quizId,
@@ -252,7 +168,6 @@ public class QuestionsController(DataContext context, IBlobService blobService) 
     public async Task<IActionResult> UpdateQuestion(int quizId, int questionId,
         [FromForm] QuestionUpdateDto dto)
     {
-        //var question = await _context.Questions.FindAsync(questionId);
         var question = await _context.Questions.FindAsync(questionId);
         if (question == null) return NotFound("Question not found");
 
@@ -288,30 +203,16 @@ public class QuestionsController(DataContext context, IBlobService blobService) 
             question.ImageUrl = dto.ImageUrl;
         }
 
-        // ✅ Handle Audio Upload (Update if new audio is provided)
-        // if (audioFile != null)
-        // {
-        //     var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/audio");
-        //     Directory.CreateDirectory(uploadsFolder);
-        //     var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(audioFile.FileName);
-        //     var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-        //     using (var fileStream = new FileStream(filePath, FileMode.Create))
-        //     {
-        //         await audioFile.CopyToAsync(fileStream);
-        //     }
-        //     audioUrl = $"/audio/{uniqueFileName}";
-        // }
-
         // ✅ Deserialize options
         var options = System.Text.Json.JsonSerializer.Deserialize<List<OptionDto>>(dto.OptionsJson);
         if (options == null) return BadRequest("Invalid options data");
 
         // ✅ Update Question Fields
         question.Text = dto.Text;
-      //  question.ImageUrl = imageUrl;
+        //  question.ImageUrl = imageUrl;
         question.AudioUrl = audioUrl;
 
-      //  _context.Questions.Update(question);
+        _context.Questions.Update(question);
         await _context.SaveChangesAsync();
 
         // ✅ Remove old options & add new ones
@@ -335,75 +236,7 @@ public class QuestionsController(DataContext context, IBlobService blobService) 
         _context.Entry(question).State = EntityState.Detached;
 
         return Ok(new { message = "Question updated successfully", id = question.Id });
-        // return Ok(new QuestionUpdatedResultDto
-        // {
-        //     Message = "Question updated successfully",
-        //     QuestionId = entity.Id
-        // });
     }
-
-    // [HttpPut("{quizId}/questions/{questionId}")]
-    // public async Task<IActionResult> UpdateQuestion(int quizId, int questionId, [FromForm] QuestionUpdateDto dto)
-    // {
-    //     var entity = await _context.Questions
-    //         .FirstOrDefaultAsync(q => q.Id == questionId && q.QuizId == quizId);
-
-    //     if (entity == null) return NotFound("Question not found or does not belong to this quiz");
-
-    //     // Handle image deletion
-    //     if (Request.Form.ContainsKey("deleteImage") && entity.ImageUrl != null)
-    //     {
-    //         await _blobService.DeleteImageAsync(entity.ImageUrl);
-    //         entity.ImageUrl = null;
-    //     }
-
-    //     // Upload new image if provided
-    //     if (dto.ImageFile != null)
-    //     {
-    //         var imageUrl = await _blobService.UpdateImageAsync(entity.ImageUrl, dto.ImageFile, uploadFolder);
-    //         if (imageUrl == null) return BadRequest("Invalid image file");
-    //         entity.ImageUrl = imageUrl;
-    //     }
-
-    //     // Cloud image selected instead of upload
-    //     if (dto.ImageUrl != null)
-    //     {
-    //         entity.ImageUrl = dto.ImageUrl;
-    //     }
-
-    //     // Deserialize and validate options
-    //     var options = System.Text.Json.JsonSerializer.Deserialize<List<OptionDto>>(dto.OptionsJson);
-    //     if (options == null) return BadRequest("Invalid options data");
-
-    //     // Update fields
-    //     entity.Text = dto.Text;
-    //     // entity.AudioUrl = your audio logic here if needed
-
-    //     await _context.SaveChangesAsync();
-
-    //     // Update options
-    //     var existingOptions = _context.Options.Where(o => o.QuestionId == entity.Id);
-    //     _context.Options.RemoveRange(existingOptions);
-
-    //     foreach (var optionData in options)
-    //     {
-    //         _context.Options.Add(new Option
-    //         {
-    //             Text = optionData.Text,
-    //             IsCorrect = optionData.IsCorrect ? 1 : 0,
-    //             QuestionId = entity.Id
-    //         });
-    //     }
-
-    //     await _context.SaveChangesAsync();
-
-    //     return Ok(new QuestionUpdatedResultDto
-    //     {
-    //         Message = "Question updated successfully",
-    //         QuestionId = entity.Id
-    //     });
-    // }
-
 
     [HttpGet("{quizId}/questions/{questionId}")]
     public async Task<IActionResult> GetQuestion(int quizId, int questionId)

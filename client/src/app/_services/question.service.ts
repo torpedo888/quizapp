@@ -47,10 +47,6 @@ export class QuestionService {
   }
 
   getQuestionById(quizId: number, questionId: number): Observable<Question> {
-    // return this.http.get<{ result: Question }>(`${this.apiQuestionUrl}/${quizId}/questions/${questionId}`)
-    //   .pipe(
-    //     map(response => response.result) // Extract only the 'result' object
-    //   );
     return this.http.get<Question>(`${this.apiQuestionUrl}/${quizId}/questions/${questionId}`);
   }
 
