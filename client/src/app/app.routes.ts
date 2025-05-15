@@ -19,6 +19,7 @@ import { QuizEditComponent } from './quiz-edit/quiz-edit.component';
 import { QuestionEditFormComponent } from './question-edit-form/question-edit-form.component';
 import { CategoryListComponent } from './category-list/category-list.component';
 import { UploadQuizComponent } from './admin/upload-quiz/upload-quiz.component';
+import { QuizExportComponent } from './quiz-export/quiz-export.component';
 
 export const routes: Routes = [
   { path: '', component: CategoryListComponent },
@@ -40,7 +41,8 @@ export const routes: Routes = [
       { path: 'quiz-edit', component: QuizEditComponent},
       { path: 'question-list-edit', component: QuestionEditFormComponent},
       { path: 'admin', component: AdminPanelComponent, canActivate: [adminGuard]},
-      { path: 'upload-quiz', component: UploadQuizComponent, canActivate: [adminGuard]}
+      { path: 'upload-quiz', component: UploadQuizComponent, canActivate: [adminGuard]},
+      { path: 'quiz-export', component: QuizExportComponent, canActivate: [adminGuard] }
     ],
   },
   { path: 'errors', component: TestErrorsComponent },

@@ -81,6 +81,7 @@ public class QuizRepository : IQuizRepository
     public async Task<Quiz?> GetQuizWithQuestionsAndOptionsAsync(int id)
     {
         var quiz = await _context.Quizzes
+            .Include(q => q.Category)
             .Include(q => q.Questions)
             .ThenInclude(q => q.Options)
             .FirstOrDefaultAsync(k => k.Id == id);

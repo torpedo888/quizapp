@@ -27,12 +27,14 @@
               <li *appHasRole="['Admin']" class="nav-item" >
                 <a class="nav-link" routerLink="/upload-quiz" href="#">Upload Quiz</a>
               </li>
-              
+
+              <li *appHasRole="['Admin']" class="nav-item" >
+                <a class="nav-link" routerLink="/quiz-export" href="#">Export Quiz</a>
+              </li>
+
               <li class="nav-item">
                 <a class="nav-link" (click)="logout()" aria-disabled="true">Logout</a>
               </li>
-
-              
           }
           </ul>
 

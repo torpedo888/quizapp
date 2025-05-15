@@ -71,6 +71,7 @@ public class QuizController : ControllerBase
             Id = quiz.Id,
             Title = quiz.Title,
             ImageUrl = quiz.ImageUrl,
+            CategoryName = quiz.Category.Name,
             Questions = quiz.Questions.Select(q => new QuestionDto
             {
                 Id = q.Id,

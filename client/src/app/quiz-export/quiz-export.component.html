@@ -1,0 +1,18 @@
+<h2>Export Quiz</h2>
+
+<div>
+  <label>Quiz ID:
+    <input type="number" [(ngModel)]="quizId" placeholder="Enter Quiz ID" />
+  </label>
+  <button (click)="loadQuiz()">Load Quiz</button>
+</div>
+
+<div *ngIf="quizData">
+  <h3>{{ quizData.quiz.title }}</h3>
+  <p><strong>Category:</strong> {{ quizData.category.name }}</p>
+  <p><strong>Questions:</strong> {{ quizData.questions.length }}</p>
+
+  <pre>{{ quizData | json }}</pre>
+
+  <button (click)="exportToJson()">Export as JSON</button>
+</div>
