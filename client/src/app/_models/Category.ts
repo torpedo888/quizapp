@@ -3,4 +3,5 @@ export interface Category {
     name: string;
     isActive: boolean;
     imageUrl: string | null;
+    languageShortName: string | null;
   }  

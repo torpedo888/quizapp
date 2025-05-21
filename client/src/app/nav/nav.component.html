@@ -38,6 +38,39 @@
           }
           </ul>
 
+          <!-- Language dropdown -->
+          <div class="dropdown me-2">
+            <button
+              type="button"
+              class="btn btn-outline-light dropdown-toggle"
+              data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <!-- {{ languageService.language() | uppercase }} -->
+              {{ getEmojiFlag(currentLanguage) }} {{ getLanguageName(currentLanguage) }}
+            </button>
+            <ul class="dropdown-menu">
+            <li *ngFor="let lang of languages">
+              <a class="dropdown-item" href="#" (click)="changeLanguage(lang.code)">
+                <!-- {{ getEmojiFlag(lang.code) }} {{ lang.name }} -->
+                <!-- <span style="font-family: Segoe UI Emoji;">{{ getEmojiFlag(lang.code) }} {{ lang.name }}</span> -->
+                 {{ getEmojiFlag(lang.code) }} {{ lang.name }}
+              </a>
+            </li>
+          </ul>
+            <!-- <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="#" (click)="changeLanguage('en')">
+                  {{ getEmojiFlag(lang.code) }} {{ lang.name }}
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#" (click)="changeLanguage('hu')">Magyar</a>
+              </li>
+            </ul> -->
+          </div>
+
+
+
         @if(this.accountService.currentUser()){
           <div dropdown class="dropdown">
             <a dropdownToggle class="dropdown-toggle text-light text-decoration-none">

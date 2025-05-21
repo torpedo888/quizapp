@@ -11,5 +11,6 @@ public class CategoryDto
     public string Name { get; set; }
     public bool IsActive { get; set; }
     public string ImageUrl { get; set; } // URL path to display images
+    public string LanguageShortName { get; set; }
 }
 

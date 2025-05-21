@@ -13,6 +13,7 @@ namespace API.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<Option> Options { get; set; }
+        public DbSet<Language> Languages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -29,6 +30,11 @@ namespace API.Data
                 .WithOne(u => u.Role)         // Each UserRole has one AppRole
                 .HasForeignKey(ur => ur.RoleId) // RoleId in UserRoles is the foreign key
                 .IsRequired();
+
+            builder.Entity<Language>().HasData(
+                new Language { Id = 1, ShortName = "en", Description = "English" },
+                new Language { Id = 2, ShortName = "hu", Description = "Hungarian" }
+            );
 
             builder.Entity<Category>()
                 .HasMany(c => c.Quizzes)

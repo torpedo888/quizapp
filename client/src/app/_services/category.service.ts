@@ -13,7 +13,7 @@ export class CategoryService {
 
   constructor(private http: HttpClient) {}
 
-  getCategories(onlyActive: boolean): Observable<Category[]> {
+  getCategories(onlyActive: boolean, lang: string): Observable<Category[]> {
     return this.http.get<Category[]>(`${this.apiUrl}?onlyActive=${onlyActive}`);
   }
 

@@ -14,5 +14,7 @@ public class Category
 
     public bool IsActive { get; set; } = true;
 
+    public Language Language { get; set; } 
+
     public ICollection<Quiz> Quizzes { get; set; } = new List<Quiz>();
 }

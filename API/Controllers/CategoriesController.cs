@@ -19,12 +19,15 @@ public class CategoriesController : ControllerBase
     private readonly ICategoryRepository _categoryRepository;
     private readonly ICategoryService _categoryService;
     private readonly IBlobService _blobService;
+    private readonly ILanguageRepository _languageRepository;
     private readonly IWebHostEnvironment _environment;
 
-    public CategoriesController(ICategoryRepository categoryRepository, ICategoryService categoryService, 
-                                IBlobService blobService, IWebHostEnvironment environment)
+    public CategoriesController(ICategoryRepository categoryRepository,ILanguageRepository languageRepository,
+                                ICategoryService categoryService, IBlobService blobService, 
+                                IWebHostEnvironment environment)
     {
         _categoryRepository = categoryRepository;
+        _languageRepository = languageRepository;
         _categoryService = categoryService;
         _blobService = blobService;
         _environment = environment;
@@ -32,8 +35,16 @@ public class CategoriesController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories([FromQuery] bool onlyActive = false )
+    public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories(
+        [FromQuery] bool onlyActive = false, [FromQuery] string languageName = "en")
     {
+        var language = await _languageRepository.GetLanguageByNameAsync(languageName);
+
+        if (language == null)
+        {
+            return BadRequest($"Language '{languageName}' not found.");
+        }
+
         var categories = await _categoryRepository.GetAllCategoriesAsync();
 
         if (onlyActive)
@@ -41,12 +52,15 @@ public class CategoriesController : ControllerBase
             categories = categories.Where(c=>c.IsActive).ToList();
         }
 
-        var categoryDtos = categories.Select(c => new CategoryDto
+        var categoryDtos = categories
+       // .Where(c => c.Language.Id == language.Id)
+        .Select(c => new CategoryDto
         {
             Id = c.Id,
             Name = c.Name,
             IsActive = c.IsActive,
-            ImageUrl = c.ImageUrl
+            ImageUrl = c.ImageUrl,
+            LanguageShortName = c.Language.ShortName
         }).ToList();
 
         return Ok(categoryDtos);
@@ -73,17 +87,26 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPost("add")]
-    public async Task<IActionResult> AddCategory([FromForm] CategoryCreateDto categoryDto)
+    public async Task<IActionResult> AddCategory([FromForm] CategoryCreateDto dto)
     {
+        var language = await _languageRepository.GetLanguageByNameAsync(dto.Language);
+
+        if (language == null)
+        {
+            return BadRequest($"Language '{dto.Language}' not found.");
+        }
+        
         var category = new Category
         {
-            Name = categoryDto.Name,
-            IsActive = true // Default active
+            Name = dto.Name,
+            IsActive = true,
+            ImageUrl = dto.ImageUrl,
+            Language = language
         };
 
-        if (categoryDto.Image != null)
+        if (dto.Image != null)
         {
-            var imageUrl = await _blobService.UploadImageAsync(categoryDto.Image, uploadFolder);
+            var imageUrl = await _blobService.UploadImageAsync(dto.Image, uploadFolder);
 
             if (imageUrl != null) 
             {

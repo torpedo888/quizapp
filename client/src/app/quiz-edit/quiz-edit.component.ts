@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Quiz } from '../_models/Quiz';
 import { QuizService } from '../_services/quiz.service';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +6,7 @@ import { CommonModule, NgFor } from '@angular/common';
 import { CategoryService } from '../_services/category.service';
 import { Category } from '../_models/Category';
 import { QuizImageSelectorComponent } from "../quiz-image-selector/quiz-image-selector.component";
+import { LanguageService } from '../_services/language.service';
 
 @Component({
   selector: 'app-quiz-edit',
@@ -15,6 +16,10 @@ import { QuizImageSelectorComponent } from "../quiz-image-selector/quiz-image-se
   styleUrl: './quiz-edit.component.css'
 })
 export class QuizEditComponent implements OnInit {
+
+  private languageService = inject(LanguageService);
+  
+  lang = this.languageService.getCurrentLanguage();
 
   categories: Category[] = [];
   
@@ -36,7 +41,7 @@ export class QuizEditComponent implements OnInit {
   }
 
   loadCategories(onlyActive: boolean) {
-    this.categoryService.getCategories(onlyActive).subscribe(
+    this.categoryService.getCategories(onlyActive, this.lang).subscribe(
       (data) => {
         this.categories = data;
       },

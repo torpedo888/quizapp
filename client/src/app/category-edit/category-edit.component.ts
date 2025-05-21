@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Category } from '../_models/Category';
 import { CategoryService } from '../_services/category.service';
 import { CommonModule, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { QuizImageSelectorComponent } from "../quiz-image-selector/quiz-image-selector.component";
+import { LanguageService } from '../_services/language.service';
 
 @Component({
   selector: 'app-category-edit',
@@ -14,20 +15,30 @@ import { QuizImageSelectorComponent } from "../quiz-image-selector/quiz-image-se
 })
 
 export class CategoryEditComponent implements OnInit {
+
+  private languageService = inject(LanguageService);
+    
+  lang = this.languageService.getCurrentLanguage();
+    
   categories: EditableCategory[] = [];
 
-  newCategory: { name: string; imageUrl: string | null; imageFile: File | null } | null = null;
+  newCategory: { 
+    name: string; 
+    imageUrl: string | null; 
+    imageFile: File | null;
+    language: string | null;
+  } | null = null;
 
   showImageSelector = false;
 
   constructor(private categoryService: CategoryService) {}
 
   ngOnInit(): void {
-    this.loadCategories(false);
+    this.loadCategories(false, this.lang);
   }
 
-  loadCategories(onlyActive: boolean): void {
-    this.categoryService.getCategories(onlyActive).subscribe((data: Category[]) => {
+  loadCategories(onlyActive: boolean, lang: string): void {
+    this.categoryService.getCategories(onlyActive, lang).subscribe((data: Category[]) => {
       this.categories = data.map(category => ({
         ...category,
         editing: false,
@@ -39,8 +50,16 @@ export class CategoryEditComponent implements OnInit {
   }
 
   addNewCategory(): void {
-    this.newCategory = { name: '', imageUrl: null, imageFile: null };
+    this.newCategory = { name: '', imageUrl: null, imageFile: null, language: null };
   }
+
+  selectLanguage(lang: string, event: Event) {
+    event.preventDefault();
+    if (this.newCategory) {
+      this.newCategory.language = lang;
+    }
+  }
+
   
   onNewFileSelected(event: any): void {
     const file = event.target.files[0];
@@ -54,6 +73,20 @@ export class CategoryEditComponent implements OnInit {
       };
       reader.readAsDataURL(file);
     }
+  }
+
+  onExistingImageSelectedForNewCategory(url: string){
+    //this is for the updating
+    // category.editedImageUrl = url;
+
+    // //this is for the view it will appear right away
+    // category.imageUrl = url;
+
+    if(this.newCategory){
+      this.newCategory.imageUrl = url; // Show preview
+    }
+
+    this.showImageSelector = false;
   }
 
   onExistingImageSelected(url: string, category: any){
@@ -75,12 +108,25 @@ export class CategoryEditComponent implements OnInit {
     // Prepare form data for API call
     const formData = new FormData();
     formData.append('name', this.newCategory.name);
+
     if (this.newCategory.imageFile) {
       formData.append('image', this.newCategory.imageFile);
     }
+
+    if (this.newCategory.imageUrl) {
+      formData.append('imageUrl', this.newCategory.imageUrl);
+    }
+
+    if (this.newCategory.language) {
+      formData.append('language', this.newCategory.language);
+    }
+    else {
+      alert('language cannot be null');
+      return;
+    }
   
     this.categoryService.addCategory(formData).subscribe((newCat) => {
-      this.loadCategories(false); // Reload categories after adding
+      this.loadCategories(false, this.lang); // Reload categories after adding
       this.newCategory = null; // Reset form
     });
   }

@@ -30,6 +30,7 @@ namespace API.Extensions
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IQuizService, QuizService>();
             services.AddScoped<IBlobService, BlobService>();
+            services.AddScoped<ILanguageRepository, LanguageRepository>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             return services;

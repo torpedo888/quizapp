@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CategoryService } from '../_services/category.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { LanguageService } from '../_services/language.service';
 
 @Component({
   selector: 'app-category-list',
@@ -12,16 +13,22 @@ import { RouterModule } from '@angular/router';
   imports: [CommonModule, RouterModule]
 })
 export class CategoryListComponent implements OnInit {
+
+  private languageService = inject(LanguageService);
+  
+  lang = this.languageService.getCurrentLanguage();
+
   categories: any[] = [];
+
 
   constructor(private categoryService: CategoryService, private router: Router) {}
 
   ngOnInit(): void {
-    this.loadCategories(true);
+    this.loadCategories(true, this.lang);
   }
 
-  loadCategories(onlyActive: boolean): void {
-    this.categoryService.getCategories(onlyActive).subscribe({
+  loadCategories(onlyActive: boolean, lang: string): void {
+    this.categoryService.getCategories(onlyActive, lang).subscribe({
       next: (data) => this.categories = data,
       error: (err) => console.error('Error fetching categories:', err)
     });
