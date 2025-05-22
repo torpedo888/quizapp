@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AccountService } from '../_services/account.service';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
@@ -38,12 +38,11 @@ export class NavComponent {
   isDesktopView = true;
 
   languages = [
-    { code: 'en', name: 'English' },
-    { code: 'hu', name: 'Magyar' },
-    // Add more as needed
+    { code: 'en', name: 'English', flag: 'assets/flags/gb.png' },
+    { code: 'hu', name: 'Magyar', flag: 'assets/flags/hu.png' }
   ];
 
-  currentLanguage = this.languageService.language();
+  currentLanguage = computed(() => this.languageService.language());
 
   login() {
     console.log(this.model);
@@ -76,37 +75,16 @@ export class NavComponent {
 
   changeLanguage(lang: string) {
     this.languageService.setLanguage(lang);
+    window.location.reload(); // Force full reload to reflect the new language
   }
-
-//   getEmojiFlag(code: string): string {
-//   const map: Record<string, string> = {
-//     en: '🇬🇧',
-//     hu: '🇭🇺',
-//     fr: '🇫🇷',
-//     de: '🇩🇪'
-//   };
-//   return map[code] || '🏳️';
-// }
-
-  getEmojiFlag(langCode: string): string {
-    const langToCountryMap: Record<string, string> = {
-      en: 'gb', // or 'us' depending on your preference
-      hu: 'hu',
-      de: 'de',
-      fr: 'fr',
-      // add more if needed
-    };
-
-    const countryCode = langToCountryMap[langCode.toLowerCase()];
-    if (!countryCode) return '🏳️'; // fallback if not found
-
-    const OFFSET = 127397;
-    return String.fromCodePoint(...[...countryCode.toUpperCase()].map(c => c.charCodeAt(0) + OFFSET));
-  }
-
 
   getLanguageName(code: string): string {
     const lang = this.languages.find(l => l.code === code);
     return lang ? lang.name : code;
+  }
+
+  getCurrentLangFlag(): string {
+    const lang = this.languages.find(l => l.code === this.currentLanguage());
+    return lang?.flag ?? 'assets/flags/default.png';
   }
 }

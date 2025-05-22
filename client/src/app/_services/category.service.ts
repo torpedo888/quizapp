@@ -13,8 +13,8 @@ export class CategoryService {
 
   constructor(private http: HttpClient) {}
 
-  getCategories(onlyActive: boolean, lang: string): Observable<Category[]> {
-    return this.http.get<Category[]>(`${this.apiUrl}?onlyActive=${onlyActive}`);
+  getCategories(onlyActive: boolean, language: string): Observable<Category[]> {
+    return this.http.get<Category[]>(`${this.apiUrl}?onlyActive=${onlyActive}&languageName=${language}`);
   }
 
   getCategoryById(id: number): Observable<any> {

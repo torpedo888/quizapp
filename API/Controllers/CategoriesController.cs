@@ -53,7 +53,7 @@ public class CategoriesController : ControllerBase
         }
 
         var categoryDtos = categories
-       // .Where(c => c.Language.Id == language.Id)
+        .Where(c => c.Language.Id == language.Id)
         .Select(c => new CategoryDto
         {
             Id = c.Id,

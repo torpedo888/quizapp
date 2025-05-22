@@ -27,8 +27,8 @@ export class CategoryListComponent implements OnInit {
     this.loadCategories(true, this.lang);
   }
 
-  loadCategories(onlyActive: boolean, lang: string): void {
-    this.categoryService.getCategories(onlyActive, lang).subscribe({
+  loadCategories(onlyActive: boolean, language: string): void {
+    this.categoryService.getCategories(onlyActive, language).subscribe({
       next: (data) => this.categories = data,
       error: (err) => console.error('Error fetching categories:', err)
     });
