@@ -21,7 +21,7 @@ export class QuizExportComponent {
 
     this.quizService.getQuizById(this.quizId).subscribe(data => {
       this.quizData = {
-        category: { name: data.categoryName, imageUrl: data.categoryImageUrl },
+        category: { name: data.categoryName, imageUrl: data.categoryImageUrl, languageShortName: data.categoryLanguageShortName},
         quiz: { title: data.title, imageUrl: data.imageUrl },
         questions: data.questions.map((q: any) => ({
           text: q.text,

@@ -82,6 +82,7 @@ public class QuizRepository : IQuizRepository
     {
         var quiz = await _context.Quizzes
             .Include(q => q.Category)
+            .Include(c=> c.Category.Language)
             .Include(q => q.Questions)
             .ThenInclude(q => q.Options)
             .FirstOrDefaultAsync(k => k.Id == id);

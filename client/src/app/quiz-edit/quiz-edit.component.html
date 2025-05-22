@@ -8,6 +8,7 @@
   <table class="table table-bordered table-striped">
     <thead>
       <tr>
+        <th>Id</th>
         <th>Image</th>
         <th>Quiz Title</th>
         <th>Category</th>
@@ -56,6 +57,9 @@
       </tr>
       
       <tr *ngFor="let quiz of quizes">
+        <td>
+          {{quiz.id}}
+        </td>
         <!-- Display Thumbnail Image -->
         <td>
           <img 

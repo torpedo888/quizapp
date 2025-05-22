@@ -15,6 +15,7 @@ public class QuizDto
     public int CategoryId { get; set; } 
     public string CategoryName { get; set; } 
     public string CategoryImageUrl { get; set; }
+    public string CategoryLanguageShortName { get; set; }
     public List<QuestionDto> Questions { get; set; }
     public int QuestionCount { get; set; }
 }
