@@ -1,0 +1,9 @@
+{
+  "routes": [
+    {
+      "route": "/api/*",
+      "allowedRoles": ["anonymous"],
+      "rewrite": "https://frankquiz-d6hcdqgbctacf6dh.westeurope-01.azurewebsites.net/api/{*}"
+    }
+  ]
+}
