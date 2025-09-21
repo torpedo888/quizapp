@@ -28,7 +28,7 @@ jobs:
           npm run build
 
       - name: Copy staticwebapp.config.json to build output
-        run: cp client/staticwebapp.config.json client/dist/client/browser/
+        run: cp client/staticwebapp.config.json client/dist/client/browser
 
       - name: List build output
         run: ls -la client/dist/client
@@ -41,5 +41,6 @@ jobs:
           action: "upload"
           app_location: "client"
           output_location: "dist/client/browser"
+
 
 
