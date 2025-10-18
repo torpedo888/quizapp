@@ -11,12 +11,23 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add logging
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
+// builder.Logging.ClearProviders();
+// builder.Logging.AddConsole();
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Warning() // choose your default log level
+    .WriteTo.Console()
+    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+// Replace default logging with Serilog
+builder.Host.UseSerilog();
 
 // Add services to the container.
 builder.Services.AddApplicationServices(builder.Configuration);
@@ -77,6 +88,7 @@ try
 
     await Seed.SeedUsers(userManager, roleManager);
     //}
+
 }
 catch (Exception ex)
 {

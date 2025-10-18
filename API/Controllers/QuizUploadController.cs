@@ -6,6 +6,7 @@ using API.Entitites;
 using API.Helpers;
 using API.Data;
 using API.Interfaces;
+using Serilog;
 
 namespace API.Controllers;
 
@@ -26,16 +27,24 @@ public class QuizUploadController : ControllerBase
     [HttpPost("upload")]
     public async Task<IActionResult> UploadQuiz([FromBody] QuizUploadData dto)
     {
+        if (string.IsNullOrWhiteSpace(dto.Category.LanguageShortName))
+        {
+            Log.Warning("Quiz upload failed: LanguageShortName is null or empty. Payload: {@Dto}", dto);
+            return BadRequest("LanguageShortName is required.");
+        }
+
         var language = await _languageRepository.GetLanguageByNameAsync(dto.Category.LanguageShortName);
 
         if (language == null)
         {
+            Log.Warning("Quiz upload failed: Language '{LanguageShortName}' not found. Payload: {@Dto}", 
+                dto.Category.LanguageShortName, dto);
             return BadRequest($"Language '{dto.Category.LanguageShortName}' not found.");
         }
 
         var category = await _context.Categories
             .FirstOrDefaultAsync(c => c.Name == dto.Category.Name)
-            ?? new Category { Name = dto.Category.Name, ImageUrl = dto.Category.ImageUrl, Language= language};
+            ?? new Category { Name = dto.Category.Name, ImageUrl = dto.Category.ImageUrl, Language = language };
 
         var quiz = new Quiz
         {
@@ -53,10 +62,26 @@ public class QuizUploadController : ControllerBase
             }).ToList()
         };
 
-        _context.Quizzes.Add(quiz);
-        await _context.SaveChangesAsync();
+        // _context.Quizzes.Add(quiz);
+        // await _context.SaveChangesAsync();
 
-        return Ok(new { message = "Quiz uploaded successfully" });
+        // return Ok(new { message = "Quiz uploaded successfully" });
+        
+        try
+        {
+            _context.Quizzes.Add(quiz);
+            await _context.SaveChangesAsync();
+
+            Log.Information("Quiz uploaded successfully. Title: {Title}, Category: {Category}", 
+                dto.Quiz.Title, dto.Category.Name);
+
+            return Ok(new { message = "Quiz uploaded successfully" });
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Unexpected error while uploading quiz. Payload: {@Dto}", dto);
+            return StatusCode(500, "An error occurred while uploading the quiz.");
+        }
     }
 }
 
