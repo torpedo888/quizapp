@@ -13,7 +13,10 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/client",
+            "outputPath": {
+              "base": "dist/client",
+              "browser": ""
+            },
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -23,6 +26,7 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
+              "src/staticwebapp.config.json",
               {
                 "glob": "**/*",
                 "input": "node_modules/flag-icons/flags",
