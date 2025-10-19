@@ -58,7 +58,10 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCors(x => x.AllowAnyHeader()
                   .AllowAnyMethod()
-                  .WithOrigins("http://localhost:4200")
+                  .WithOrigins(
+                    "http://localhost:4200",
+                    "https://red-pebble-0acdc741e.2.azurestaticapps.net" // live site
+                    )
                   .AllowCredentials()); // Add this line if you're sending credentials
 
 app.UseAuthentication();

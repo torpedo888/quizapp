@@ -14,6 +14,7 @@ export class CategoryService {
   constructor(private http: HttpClient) {}
 
   getCategories(onlyActive: boolean, language: string): Observable<Category[]> {
+    console.log('API URL:', this.apiUrl);
     return this.http.get<Category[]>(`${this.apiUrl}?onlyActive=${onlyActive}&languageName=${language}`);
   }
 
