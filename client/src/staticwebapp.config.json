@@ -1,13 +1,12 @@
 {
-  "navigationFallback": {
-    "rewrite": "/index.html",
-    "exclude": ["/api/*", "/favicon.ico", "/assets/*"]
-  },
   "routes": [
     {
       "route": "/api/*",
-      "rewrite": "https://frankquiz-d6hcdqgbctacf6dh.westeurope-01.azurewebsites.net/api/:path*",
-      "allowedRoles": ["anonymous"]
+      "rewrite": "https://frankquiz-d6hcdqgbctacf6dh.westeurope-01.azurewebsites.net/api/{*restOfPath}"
     }
-  ]
+  ],
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/api/*"]
+  }
 }
