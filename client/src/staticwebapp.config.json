@@ -6,7 +6,8 @@
   "routes": [
     {
       "route": "/api/*",
-      "rewrite": "https://frankquiz-d6hcdqgbctacf6dh.westeurope-01.azurewebsites.net/api/:path*"
+      "rewrite": "https://frankquiz-d6hcdqgbctacf6dh.westeurope-01.azurewebsites.net/api/:path*",
+      "allowedRoles": ["anonymous"]
     }
   ]
 }
