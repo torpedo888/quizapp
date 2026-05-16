@@ -10,17 +10,41 @@ namespace API.Data;
 
 public static class QuizSeeder
 {
+    public static async Task SeedDatabaseIfEmpty(DataContext context, string seedFolderPath)
+    {
+        if (await context.Quizzes.AnyAsync())
+        {
+            return;
+        }
+
+        await SeedFromFiles(context, seedFolderPath);
+    }
+
     public static async Task SeedDatabase(DataContext context, string seedFolderPath)
     {
 
         // Clear existing data
         await EmptyQuizDatabase(context);
 
+        await SeedFromFiles(context, seedFolderPath);
+    }
+
+    private static async Task SeedFromFiles(DataContext context, string seedFolderPath)
+    {
         // Ensure database is created
         await context.Database.EnsureCreatedAsync();
 
         // Get all JSON files from the folder
         var jsonFiles = Directory.GetFiles(seedFolderPath, "*.json");
+
+        var defaultLanguage = await context.Languages
+            .OrderBy(l => l.Id)
+            .FirstOrDefaultAsync();
+
+        if (defaultLanguage == null)
+        {
+            throw new InvalidOperationException("No languages found. Run migrations/seeding for Languages first.");
+        }
 
         foreach (var file in jsonFiles)
         {
@@ -33,7 +57,11 @@ public static class QuizSeeder
             var category = await context.Categories.FirstOrDefaultAsync(c => c.Name == quizData.Category.Name);
             if (category == null)
             {
-                category = new Category { Name = quizData.Category.Name };
+                category = new Category
+                {
+                    Name = quizData.Category.Name,
+                    Language = defaultLanguage
+                };
                 context.Categories.Add(category);
                 await context.SaveChangesAsync();
             }
@@ -100,47 +128,47 @@ public static class QuizSeeder
 }
 
 public class QuizSeedData
-    {
-        [JsonPropertyName("category")]
-        public CategoryData Category { get; set; }
+{
+    [JsonPropertyName("category")]
+    public CategoryData Category { get; set; }
 
-        [JsonPropertyName("quiz")]
-        public QuizData Quiz { get; set; }
+    [JsonPropertyName("quiz")]
+    public QuizData Quiz { get; set; }
 
-        [JsonPropertyName("questions")]
-        public List<QuestionData> Questions { get; set; }
-    }
+    [JsonPropertyName("questions")]
+    public List<QuestionData> Questions { get; set; }
+}
 
-    public class CategoryData
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
-    }
+public class CategoryData
+{
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
+}
 
-    public class QuizData
-    {
-        [JsonPropertyName("title")]
-        public string Title { get; set; }
+public class QuizData
+{
+    [JsonPropertyName("title")]
+    public string Title { get; set; }
 
-         [JsonPropertyName("imageUrl")]
-        public string? ImageUrl { get; set; }    
-    }
+    [JsonPropertyName("imageUrl")]
+    public string? ImageUrl { get; set; }
+}
 
-    public class QuestionData
-    {
-        [JsonPropertyName("text")]
-        public string Text { get; set; }
+public class QuestionData
+{
+    [JsonPropertyName("text")]
+    public string Text { get; set; }
 
-        [JsonPropertyName("options")]
-        public List<OptionData> Options { get; set; }
-    }
+    [JsonPropertyName("options")]
+    public List<OptionData> Options { get; set; }
+}
 
-    public class OptionData
-    {
-        [JsonPropertyName("text")]
-        public string Text { get; set; }
+public class OptionData
+{
+    [JsonPropertyName("text")]
+    public string Text { get; set; }
 
-        [JsonPropertyName("isCorrect")]
-        public int IsCorrect { get; set; }
+    [JsonPropertyName("isCorrect")]
+    public int IsCorrect { get; set; }
 
-    }
+}

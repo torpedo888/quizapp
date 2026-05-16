@@ -1,4 +1,5 @@
 {
     "appService.defaultWebAppToDeploy": "/subscriptions/d63199a9-b46b-43e9-af08-a4dc646d8d5c/resourceGroups/FrankQuiz/providers/Microsoft.Web/sites/frankquiz",
-    "appService.deploySubpath": "API\\bin\\Publish"
+    "appService.deploySubpath": "API\\bin\\Publish",
+    "snyk.advanced.autoSelectOrganization": true
 }

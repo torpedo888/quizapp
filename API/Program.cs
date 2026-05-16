@@ -16,8 +16,8 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add logging
-// builder.Logging.ClearProviders();
-// builder.Logging.AddConsole();
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
@@ -27,7 +27,7 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 // Replace default logging with Serilog
-builder.Host.UseSerilog();
+//builder.Host.UseSerilog();
 
 // Add services to the container.
 builder.Services.AddApplicationServices(builder.Configuration);
@@ -74,7 +74,9 @@ app.UseStaticFiles();  // Serves files from wwwroot by default
 
 app.MapControllers();
 
-app.MapFallbackToController("Index", "Fallback");
+//app.MapFallbackToController("Index", "Fallback");
+
+app.MapGet("/", () => "API is running");
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
@@ -85,12 +87,15 @@ try
     var userManager = services.GetRequiredService<UserManager<AppUser>>();
     var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
 
-    // if (app.Environment.IsDevelopment())
-    // {
+    // Apply pending migrations at startup so a fresh database gets the schema.
     await context.Database.MigrateAsync();
 
+    // Seed identity data only when the user table is empty.
     await Seed.SeedUsers(userManager, roleManager);
-    //}
+
+    // Seed quiz data only when there are no quizzes yet.
+    var seedFolderPath = Path.Combine(app.Environment.ContentRootPath, "SeedData");
+    await QuizSeeder.SeedDatabaseIfEmpty(context, seedFolderPath);
 
 }
 catch (Exception ex)
@@ -98,5 +103,8 @@ catch (Exception ex)
     var logger = services.GetRequiredService<ILogger<Program>>();
     logger.LogError(ex, "error occured during migration");
 }
-
+foreach (var address in app.Urls)
+{
+    Console.WriteLine($"Listening on: {address}");
+}
 app.Run();

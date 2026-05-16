@@ -15,7 +15,12 @@ namespace API.Data
                 .Build();
 
             var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
-            optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection")); // or UseSqlite(...)
+            var connectionString =
+                config.GetConnectionString("DefaultConnection2") ??
+                config.GetConnectionString("DefaultConnection") ??
+                throw new InvalidOperationException("No SQL connection string configured.");
+
+            optionsBuilder.UseSqlServer(connectionString);
 
             return new DataContext(optionsBuilder.Options);
         }
