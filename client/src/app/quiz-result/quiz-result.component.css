@@ -1,2 +1,8 @@
+.result-image {
+  max-width: min(100%, 500px);
+  height: auto;
+  margin-bottom: 20px;
+}
+
 h2 { margin-bottom: 20px; }
 p { font-size: 1.2rem; }
