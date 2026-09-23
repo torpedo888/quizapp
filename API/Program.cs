@@ -41,6 +41,11 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 var app = builder.Build();
 
+Console.WriteLine($"TokenKey exists: {!string.IsNullOrWhiteSpace(builder.Configuration["TokenKey"])}");
+
+Console.WriteLine($"DefaultConnection2 exists: {!string.IsNullOrWhiteSpace(
+    builder.Configuration.GetConnectionString("DefaultConnection2"))}");
+
 Console.WriteLine($"WebRootPath: {builder.Environment.WebRootPath}");
 Console.WriteLine(Directory.GetCurrentDirectory());
 
@@ -60,7 +65,9 @@ app.UseCors(x => x.AllowAnyHeader()
                   .AllowAnyMethod()
                   .WithOrigins(
                     "http://localhost:4200",
-                    "https://red-pebble-0acdc741e.2.azurestaticapps.net" // live site
+                    "https://red-pebble-0acdc741e.2.azurestaticapps.net",
+                    "https://kvizabc.hu",
+                    "https://www.kvizabc.hu" // live site
                     )
                   .AllowCredentials()); // Add this line if you're sending credentials
 

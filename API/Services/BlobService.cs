@@ -10,8 +10,14 @@ public class BlobService : IBlobService
 
     public BlobService(IConfiguration config)
     {
-        var connectionString = config["AzureBlobStorage:ConnectionString"];
-        var containerName = config["AzureBlobStorage:ContainerName"];
+        var blobConn = config["Blob:Conn"];
+        var blobContainer = config["Blob:Container"];
+
+        Console.WriteLine($"Blob:Conn exists = {!string.IsNullOrWhiteSpace(blobConn)}");
+        Console.WriteLine($"Blob:Container = '{blobContainer}'");
+
+        var connectionString = config["AzureBlobStorage:ConnectionString"] ?? config["Blob:Conn"]; ;
+        var containerName = config["AzureBlobStorage:ContainerName"] ?? config["Blob:Container"]; ;
         _containerClient = new BlobContainerClient(connectionString, containerName);
         _containerClient.CreateIfNotExists();
     }
@@ -33,7 +39,7 @@ public class BlobService : IBlobService
     {
         var validImageFile = ImageHelper.IsValidImage(file);
 
-        if(!validImageFile)
+        if (!validImageFile)
             return null;
 
         var blobName = FileNameHelper.GenerateUniqueFileName(file.FileName, folder);
@@ -41,7 +47,7 @@ public class BlobService : IBlobService
         var blobClient = _containerClient.GetBlobClient(blobName);
         await using var stream = file.OpenReadStream();
         await blobClient.UploadAsync(stream, overwrite: true);
-        
+
         return blobClient.Uri.ToString();
     }
 
@@ -102,6 +108,6 @@ public class BlobService : IBlobService
             Console.WriteLine($"Failed to delete blob: {ex.Message}");
         }
     }
-    
+
 
 }
