@@ -1,95 +1,30 @@
-.quiz-option label:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.option-box {
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-  
-.option-box:hover {
-  background-color: #e9ecef;
-}
-
-.selected-option {
-  background-color: #ffbb99 !important; /* warm peach to match E4865C */
-  color: #222 !important; /* readable dark text */
-}
-
-.correct-answer {
-  background-color: #28a745 !important;
-  color: #fff !important;
-  border-color: #28a745 !important;
-}
-
-.wrong-answer {
-  background-color: #ff6961 !important;
-  color: #fff !important;
-  border-color: #ff6961 !important;
-}
-
-label.form-check-label {
-  opacity: 1 !important;
-  pointer-events: auto !important;
-  color: white !important; /* Ensure text color stays unchanged */
-}
-
-label.form-check-label.selected-option {
-  background-color: #fff9db;
-  color: #005dc7 !important; /* override the !important from the default */
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-  max-height: 300px; /* Adjust as needed */
-  border-radius: 10px;
-}
-
-.rounded-checkmark {
-  font-size: 24px; /* Adjust size as needed */
-  border-radius: 50%; /* This makes the icon rounded */
-  background-color: #4CAF50; /* Green background, or customize */
-  color: white; /* White checkmark color */
-  padding: 10px; /* Space around the checkmark */
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.rounded-xmark {
-  font-size: 24px; /* Adjust size as needed */
-  border-radius: 50%; /* This makes the icon rounded */
-  background-color: #f90000; /* Green background, or customize */
-  color: white; /* White checkmark color */
-  padding: 10px; /* Space around the checkmark */
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.radio-circle {
-  visibility: hidden;
-}
-
-.selected-option {
-  background-color: #fff9db; /* soft yellow */
-}
-
-.quiz-card {
-  background-color: #E4865C !important;
-}
-
-.sound-toggle-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 10;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+:host { display: block; }
+.quiz-page { padding: 16px 0 32px; }
+.quiz-card { width: 100%; max-width: 760px; margin: 0 auto; padding: 28px; background: #e4865c; color: white; border-radius: 20px; box-shadow: 0 12px 36px #54240e18; }
+.quiz-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; }
+.quiz-eyebrow { font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.sound-toggle-btn { width: 44px; height: 44px; padding: 0; flex-shrink: 0; border-radius: 50%; display: grid; place-items: center; }
+.question-text { margin: 28px 0 24px; font-size: clamp(1.35rem, 3vw, 2rem); line-height: 1.3; font-weight: 700; text-align: center; overflow-wrap: anywhere; }
+.question-image { margin-top: 20px; text-align: center; }
+.question-image img { max-width: 100%; max-height: 260px; object-fit: contain; border-radius: 12px; }
+.quiz-options { display: grid; gap: 10px; }
+.quiz-option { min-width: 0; }
+.option-label { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 58px; padding: 14px 16px; border: 1px solid #ffffff70; border-radius: 12px; background: #ffffff12; cursor: pointer; text-align: left; }
+.option-label:hover { background: #ffffff25; }
+.option-label:focus-within { outline: 3px solid #33251e; outline-offset: 3px; }
+.option-input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.radio-circle { width: 18px; height: 18px; border: 2px solid currentColor; border-radius: 50%; flex-shrink: 0; }
+.option-input:checked + .radio-circle { background: currentColor; box-shadow: inset 0 0 0 3px #ffdcc6; }
+.option-text { flex: 1; min-width: 0; overflow-wrap: anywhere; font-size: 1rem; line-height: 1.4; }
+.selected-option, .selected-option:hover { background: #ffdcc6; color: #442413; border-color: #fff; }
+.rounded-checkmark, .rounded-xmark { display: grid; place-items: center; flex-shrink: 0; width: 30px; height: 30px; font-size: 17px; border-radius: 50%; color: white; margin-left: 0 !important; }
+.rounded-checkmark { background: #238636; }
+.rounded-xmark { background: #d62828; }
+.quiz-action { display: block; width: 100%; min-height: 48px; margin-top: 20px; font-weight: 700; border-radius: 12px; }
+@media (max-width: 575.98px) {
+  .quiz-page { padding-top: 0; }
+  .quiz-card { padding: 16px; border-radius: 16px; }
+  .quiz-toolbar { margin-bottom: 12px; }
+  .question-text { margin: 22px 0 18px; }
+  .option-label { padding: 12px; gap: 10px; }
 }

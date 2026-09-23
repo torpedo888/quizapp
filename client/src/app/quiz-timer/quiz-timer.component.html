@@ -1,14 +1,8 @@
-<div class="quiz-timer-info d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
-    <div class="d-flex align-items-center">
-      <div class="rounded-circle border border-success d-flex justify-content-center align-items-center me-2" 
-        style="width: 40px; height: 40px; color: rgb(0, 0, 0);">
-        <strong>{{ timeLeft }}</strong>
-      </div>
-      <span class="fw-bold" style="color: rgb(255 238 0);">+{{ pointsPerQuestion }}</span>
-    </div>
-  
-    <div><strong>{{ currentQuestion }} of {{ totalQuestions }}</strong></div>
-  
-    <div class="fw-bold">Score: {{ score }}</div>
+<div class="quiz-timer-info">
+  <div class="timer-stat">
+    <span class="stat-label">Time left</span>
+    <div class="time-value"><strong class="timer-circle">{{ timeLeft }}</strong><span class="points">+{{ pointsPerQuestion }}</span></div>
   </div>
-  
+  <div class="progress-stat"><span class="stat-label">Question</span><strong>{{ currentQuestion }} / {{ totalQuestions }}</strong></div>
+  <div class="score-stat"><span class="stat-label">Score</span><strong>{{ score }}</strong></div>
+</div>

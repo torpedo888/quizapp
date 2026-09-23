@@ -1,21 +1,10 @@
-<div class="container d-flex justify-content-center align-items-center mt-5">
+<div class="quiz-page">
 
-  <div class="quiz-card w-75 p-5 shadow-lg rounded-3 position-relative">
+  <div class="quiz-card">
     
-    <!-- Progress Bar -->
-    <!-- <div class="position-absolute top-0 start-0 w-100 px-4 pt-3">
-      <div class="d-flex justify-content-between align-items-center">
-        <span class="text-white fw-bold">{{ currentQuestionIndex + 1 }} / {{ totalQuestions }}</span>
-      </div>
-      <div class="progress mt-2" style="height: 6px; background-color: rgba(255, 255, 255, 0.3);">
-        <div class="progress-bar bg-white" role="progressbar" 
-             [style.width]="((currentQuestionIndex + 1) / totalQuestions) * 100 + '%'">
-        </div>
-      </div>
-    </div> -->
-
-    <div>
-      <button (click)="toggleSound()" class="btn btn-light sound-toggle-btn" title="Toggle sound">
+    <div class="quiz-toolbar">
+      <span class="quiz-eyebrow">Quiz challenge</span>
+      <button (click)="toggleSound()" class="btn btn-light sound-toggle-btn" title="Toggle sound" [attr.aria-label]="isSoundEnabled ? 'Mute sound' : 'Enable sound'" [attr.aria-pressed]="isSoundEnabled">
         <i [class]="soundService.isSoundEnabled ? 'fa fa-volume-up' : 'fa fa-volume-mute'"></i>
       </button>
       
@@ -33,31 +22,31 @@
     </div>
 
     <!-- Question Image -->
-    <div class="text-center mt-4">
+    <div class="question-image" *ngIf="questions[currentQuestionIndex]?.imageUrl">
       <img *ngIf="questions[currentQuestionIndex]?.imageUrl" 
           [src]="questions[currentQuestionIndex]?.imageUrl" 
           alt="Question Image" 
           class="rounded mx-auto d-block"
-          style="max-width: 500px; height: auto; margin-bottom: 20px;" />
+ />
     </div>
 
     <!-- Question Text -->
-    <h2 class="text-white text-center fw-bold mt-5">
+    <h2 class="question-text">
       {{ questions[currentQuestionIndex]?.text }}
     </h2>
 
-    <div class="mt-4 px-4">
-      <div *ngFor="let option of questions[currentQuestionIndex]?.options" class="form-check quiz-option">
+    <div class="quiz-options" role="group" aria-label="Answer choices">
+      <div *ngFor="let option of questions[currentQuestionIndex]?.options" class="quiz-option">
 
         <!-- Wrap everything in a label for full clickability -->
-        <label class="form-check-label fs-5 d-flex align-items-center w-100 p-3 rounded"
+        <label class="option-label"
           [for]="'option' + option.id"
           style="cursor: pointer;"
           [ngClass]="{
             'selected-option': selectedAnswers[questions[currentQuestionIndex].id] === option.id
           }">
 
-          <input class="form-check-input d-none"
+          <input class="option-input"
               type="radio"
               name="question{{currentQuestionIndex}}"
               [value]="option.id"
@@ -66,8 +55,8 @@
               id="option{{ option.id }}"
               [attr.disabled]="answerSubmitted ? true : null">
 
-          <span class="radio-circle me-2"></span>
-          {{ option.text }}
+          <span class="radio-circle" aria-hidden="true"></span>
+          <span class="option-text">{{ option.text }}</span>
 
           <!-- Show checkmark if the user selected the correct answer -->
           <i *ngIf="answerSubmitted && selectedAnswers[questions[currentQuestionIndex].id] === option.id && option.isCorrect" 
@@ -81,19 +70,19 @@
           <i *ngIf="answerSubmitted && option.isCorrect && selectedAnswers[questions[currentQuestionIndex].id] !== option.id" 
             class="fa-solid fa-check rounded-checkmark ms-3"></i>
         </label>
-        <span class="underline"></span>
+
       </div>
     </div>
 
     <!-- Submit Button -->
-    <button class="btn btn-light btn-lg px-5"
+    <button class="btn btn-light quiz-action"
         (click)="submitCurrentAnswer()"
         *ngIf="!answerSubmitted">
         Submit
     </button>
 
     <!-- Next Button -->
-    <button class="btn btn-primary btn-lg px-5"
+    <button class="btn btn-primary quiz-action"
         (click)="nextQuestion()"
         *ngIf="answerSubmitted">
         Next
@@ -107,62 +96,4 @@
     
 </div>
 
-<!-- Styles -->
-<style>
-  .quiz-card {
-    background-color: #E4865C;
-    color: white;
-    text-align: center;
-    border-radius: 20px;
-    width: 80%;
-  }
-  .progress-bar {
-    background-color: white !important;
-  }
-  .form-check-label {
-    cursor: pointer;
-    font-size: 20px;
-    display: flex;
-    align-items: center;
-    position: relative;
-    padding-left: 30px;
-  }
-  
-  .radio-circle {
-    width: 18px;
-    height: 18px;
-    border: 2px solid white !important;
-    border-radius: 50%;
-    display: inline-block;
-    position: absolute;
-    left: 0;
-  }
-  .form-check-input:checked + .form-check-label .radio-circle {
-    background-color: white;
-  }
-
-  .quiz-options {
-    margin-top: 20px;
-  }
-
-  .quiz-option {
-    padding: 10px;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #ccc;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-  }
-
-  .quiz-option input[type="radio"] {
-    margin-right: 10px;
-  }
-
-  .quiz-option label {
-    font-size: 16px;
-  }
-
-  .quiz-option input[type="radio"]:checked + label {
-    font-weight: bold;
-  }
-</style>
+</div>

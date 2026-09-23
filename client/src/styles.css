@@ -1,1 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Keep development diagnostics readable and selectable, including long API responses. */
+#toast-container .dev-error-toast {
+  width: min(680px, calc(100vw - 24px));
+  max-height: 70vh;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  user-select: text;
+}

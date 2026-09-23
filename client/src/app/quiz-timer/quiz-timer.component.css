@@ -1,17 +1,9 @@
-.quiz-timer-info {
-  font-size: 1.2rem; /* base size for everything */
-  color: white;
-}
-
-.quiz-timer-info strong {
-  font-size: 1.5rem; /* larger for key info */
-}
-
-.quiz-timer-info .rounded-circle {
-  font-size: 1.4rem;
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-.quiz-timer-info span {
-  font-size: 1.3rem;
-}
+:host { display: block; }
+.quiz-timer-info { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px; align-items: start; padding: 0 0 16px; border-bottom: 1px solid #ffffff70; color: white; }
+.stat-label { display: block; margin-bottom: 6px; font-size: .7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.quiz-timer-info strong { font-size: 1.1rem; line-height: 32px; }
+.progress-stat { text-align: center; }
+.score-stat { text-align: right; overflow-wrap: anywhere; }
+.time-value { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.timer-circle { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: #ffffff30; }
+.points { color: #fff3a3; font-size: .8rem; font-weight: 700; }
