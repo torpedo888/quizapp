@@ -59,6 +59,7 @@ public class QuizController : ControllerBase
     }
 
     // GET api/quiz/{id}
+    [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<ActionResult<QuizDto>> GetQuizById(int id)
     {
@@ -243,4 +244,3 @@ public class QuizController : ControllerBase
     }
 
 }
-

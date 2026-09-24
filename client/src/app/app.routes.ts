@@ -22,6 +22,7 @@ import { UploadQuizComponent } from './admin/upload-quiz/upload-quiz.component';
 import { QuizExportComponent } from './quiz-export/quiz-export.component';
 
 export const routes: Routes = [
+  // Browsing, playing quizzes, and viewing results are available without login.
   { path: '', component: CategoryListComponent },
   { path: 'quiz', component: CategoryListComponent },
   { path: 'quiz-list/:categoryId', component: QuizListComponent },
@@ -36,7 +37,6 @@ export const routes: Routes = [
       { path: 'members/:id', component: MemberDetailComponent },
       { path: 'lists', component: ListsComponent },
       { path: 'messages', component: MessagesComponent },
-      { path: '', component: CategoryListComponent }, // Homepage
       { path: 'edit-categories', component: CategoryEditComponent },
       { path: 'quiz-edit', component: QuizEditComponent},
       { path: 'question-list-edit', component: QuestionEditFormComponent},
