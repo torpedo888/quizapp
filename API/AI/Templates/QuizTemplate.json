@@ -1,0 +1,34 @@
+{
+  "category": {
+    "name": "<category name>",
+    "imageUrl": "<category image URL>",
+    "languageShortName": "<language short name, e.g. en>"
+  },
+  "quiz": {
+    "title": "<quiz title>",
+    "imageUrl": "<quiz image URL>"
+  },
+  "questions": [
+    {
+      "text": "<question>",
+      "options": [
+        {
+          "text": "<answer option>",
+          "isCorrect": 0
+        },
+        {
+          "text": "<answer option>",
+          "isCorrect": 1
+        },
+        {
+          "text": "<answer option>",
+          "isCorrect": 0
+        },
+        {
+          "text": "<answer option>",
+          "isCorrect": 0
+        }
+      ]
+    }
+  ]
+}
